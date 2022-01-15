@@ -9,6 +9,7 @@ import dev.westernpine.pulse.events.console.ConsoleEvent;
 import dev.westernpine.pulse.events.system.SystemStartedEvent;
 import dev.westernpine.pulse.listeners.console.ConsoleListener;
 import dev.westernpine.pulse.listeners.system.SystemStartedListener;
+import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import dev.westernpine.pulse.properties.SystemProperties;
 import net.dv8tion.jda.api.JDA;
@@ -141,7 +142,7 @@ public class Pulse {
                     .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                     .setChunkingFilter(ChunkingFilter.NONE)
                     .setRawEventsEnabled(true)
-                    /*.addEventListeners(new ReadyListener())*/
+                    .addEventListeners(new ReadyListener())
                     .setStatus(OnlineStatus.DO_NOT_DISTURB)
                     .setActivity(Activity.playing("Starting up..."))
                     .build();
