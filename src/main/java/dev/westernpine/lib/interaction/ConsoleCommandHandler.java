@@ -1,16 +1,6 @@
-package dev.westernpine.lib.command;
+package dev.westernpine.lib.interaction;
 
 public interface ConsoleCommandHandler extends CommandHandler {
-	
-	/**
-	 * @return The command signifier string.
-	 */
-    public String command();
-	
-    /**
-     * @return The command description.
-     */
-	public String description();
 	
 	/**
 	 * The handler for the console command.

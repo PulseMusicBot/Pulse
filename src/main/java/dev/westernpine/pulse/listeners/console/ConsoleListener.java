@@ -2,7 +2,7 @@ package dev.westernpine.pulse.listeners.console;
 
 import dev.westernpine.eventapi.objects.EventHandler;
 import dev.westernpine.eventapi.objects.Listener;
-import dev.westernpine.lib.command.ConsoleCommandHandler;
+import dev.westernpine.lib.interaction.ConsoleCommandHandler;
 import dev.westernpine.pulse.commands.StopCommand;
 import dev.westernpine.pulse.events.console.ConsoleEvent;
 

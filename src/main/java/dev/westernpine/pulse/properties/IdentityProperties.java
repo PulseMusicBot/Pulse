@@ -13,11 +13,17 @@ public class IdentityProperties extends PropertiesFile {
     @PropertyField
     public static final Property PREMIUM = new Property("premium", "false");
 
-    public IdentityProperties(String identity) {
+    @PropertyField
+    public static final Property HOST = new Property("host", "pulsebot.gg");
+
+    @PropertyField
+    public static final Property COLOR = new Property("color", "#000000");
+
+    public IdentityProperties(String identity) throws Throwable {
         super(identity + ".properties", PropertyFile.getDeclaredProperties(IdentityProperties.class));
     }
     @Override
-    public PropertyFile reload() {
+    public PropertyFile reload() throws Throwable {
         super.reload();
         return this;
     }

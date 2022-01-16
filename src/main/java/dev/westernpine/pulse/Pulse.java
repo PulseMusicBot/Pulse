@@ -9,12 +9,15 @@ import dev.westernpine.pulse.events.console.ConsoleEvent;
 import dev.westernpine.pulse.events.system.SystemStartedEvent;
 import dev.westernpine.pulse.listeners.console.ConsoleListener;
 import dev.westernpine.pulse.listeners.system.SystemStartedListener;
+import dev.westernpine.pulse.listeners.system.jda.InteractionListener;
+import dev.westernpine.pulse.listeners.system.jda.GuildInitializer;
 import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import dev.westernpine.pulse.properties.SystemProperties;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -23,6 +26,8 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +35,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -60,10 +66,16 @@ public class Pulse {
     Near the bottom and out of order in case of some un-set values.
     */
     public static Runnable shutdownHook = () -> {
-        System.out.println("Initiating system shutdown.");
+        System.out.println("System Shutdown >> Terminating scheduler.");
         scheduler.shutdownNow();
+        System.out.println("System Shutdown >> Closing console inputs.");
         Try.of(input::close).onFailure(Throwable::printStackTrace);
-        System.out.println("System shutdown completed. Goodbye!");
+        if (Objects.nonNull(shardManager)) {
+            System.out.println("System Shutdown >> Shutting down shard-manager.");
+            shardManager.shutdown();
+        }
+        System.out.println("System Shutdown >> System shutdown completed. Goodbye!");
+        Try.of(() -> Thread.sleep(1000L));
     };
 
     public static void main(String[] args) {
@@ -77,38 +89,45 @@ public class Pulse {
             file = new File(file.getPath(), new SimpleDateFormat("MM dd yyyy HH-mm-ss").format(new Date()) + ".log");
             LoggingPrintStream.initialize(file);
 
-            System.out.println("Startup >> Starting Pulse (v)" + version);
+            System.out.println("System Startup >> Starting Pulse (v)" + version);
 
             /*
             Add a shutdown hook for whenever the environment shuts down.
              */
-            System.out.println("Startup >> Adding shutdown hook listener.");
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> Pulse.shutdownHook.run()));
+            System.out.println("System Startup >> Adding shutdown hook listener.");
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                System.out.println("System Shutdown >> Initiating system shutdown.");
+                Pulse.shutdownHook.run();
+            }));
 
             /*
             Register events before system startup.
              */
-            System.out.println("Startup >> Registering system event listeners.");
+            System.out.println("System Startup >> Registering system event listeners.");
             eventManager.registerListeners(new ConsoleListener());
             eventManager.registerListeners(new SystemStartedListener());
 
             /*
             Set up console listening system via events.
              */
-            System.out.println("Startup >> Initializing console listener.");
+            System.out.println("System Startup >> Initializing console listener.");
             scheduler.runAsync(() -> Scheduler.loop(() -> true, () -> Try.of(() -> Scheduler.loop(() -> !Try.of(input::ready).getUnchecked(), () -> Try.of(() -> Thread.sleep(100)).map(nv -> false).getUnchecked())).map(nv -> Try.of(input::readLine).map(ConsoleEvent::new).onSuccess(event -> Try.of(() -> eventManager.call(event)).onFailure(Throwable::printStackTrace).onFailure(throwable -> System.out.println("Exception caught in command handler."))).map(so -> false).orElse(true)).orElse(true)));
 
             /*
             Load up system properties.
              */
-            System.out.println("Startup >> Loading system properties.");
+            System.out.println("System Startup >> Loading system properties.");
             systemProperties = new SystemProperties();
 
             /*
              Load up identity properties.
              */
-            System.out.println("Startup >> Loading " + systemProperties.get(SystemProperties.IDENTITY) + " identity properties.");
+            System.out.println("System Startup >> Loading " + systemProperties.get(SystemProperties.IDENTITY) + " identity properties.");
             identityProperties = new IdentityProperties(systemProperties.get(SystemProperties.IDENTITY));
+
+            /*
+            Start initializing and registering commands.
+             */
 
             /*
 			Initialize the ready notifier format completion.
@@ -121,16 +140,18 @@ public class Pulse {
             readyHandler = event -> {
                 JDA jda = event.getJDA();
                 int shardId = jda.getShardInfo().getShardId();
-                System.out.println("Startup >> Ready event fired for shard ID: " + shardId);
+                System.out.println("System Startup >> Ready event fired for shard ID: " + shardId);
                 jda.getPresence().setPresence(OnlineStatus.IDLE, Activity.watching("Shard initialized! Waiting for other shards..."));
                 if (!readyNotifier.isDone() && shardManager.getShardsQueued() <= 0)
                     readyNotifier.complete(true);
+
+
             };
 
             /*
             Load up the shard manager.
              */
-            System.out.println("Startup >> Building and initializing the shard manager.");
+            System.out.println("System Startup >> Building and initializing the shard manager.");
             shardManager = DefaultShardManagerBuilder
                     .create(identityProperties.get(IdentityProperties.TOKEN),
                             GatewayIntent.GUILD_MESSAGES,
@@ -142,9 +163,11 @@ public class Pulse {
                     .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                     .setChunkingFilter(ChunkingFilter.NONE)
                     .setRawEventsEnabled(true)
-                    .addEventListeners(new ReadyListener())
                     .setStatus(OnlineStatus.DO_NOT_DISTURB)
                     .setActivity(Activity.playing("Starting up..."))
+                    .addEventListeners(new ReadyListener())
+                    .addEventListeners(new GuildInitializer())
+                    .addEventListeners(new InteractionListener())
                     .build();
 
             /*
@@ -152,15 +175,18 @@ public class Pulse {
             */
             readyNotifier.get();
 
-            /*
-            Fire the system startup completed event.
-             */
-            eventManager.call(new SystemStartedEvent());
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable t) {
+            t.printStackTrace();
             System.exit(0);
         }
+    }
+
+    public static Color color(@Nullable Guild guild) {
+        return Objects.isNull(guild) ? color() : guild.getSelfMember().getColor();
+    }
+
+    public static Color color() {
+        return Color.decode(identityProperties.get(IdentityProperties.COLOR));
     }
 
 }

@@ -10,11 +10,11 @@ public class SystemProperties extends PropertiesFile {
     @PropertyField
     public static final Property IDENTITY = new Property("identity", "WesternPine");
 
-    public SystemProperties() {
+    public SystemProperties() throws Throwable {
         super("system.properties", PropertyFile.getDeclaredProperties(SystemProperties.class));
     }
     @Override
-    public PropertyFile reload() {
+    public PropertyFile reload() throws Throwable {
         super.reload();
         return this;
     }

@@ -1,8 +1,13 @@
 package dev.westernpine.pulse.commands;
 
-import dev.westernpine.lib.command.ConsoleCommandHandler;
+import dev.westernpine.lib.interaction.ConsoleCommandHandler;
 
 public class StopCommand implements ConsoleCommandHandler {
+
+	@Override
+	public String[] usages() {
+		return new String[] {"stop"};
+	}
 
 	@Override
 	public String command() {

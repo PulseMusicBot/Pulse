@@ -28,7 +28,7 @@ public interface PropertyFile {
                 .collect(Collectors.toList());
     }
 
-    public PropertyFile reload();
+    public PropertyFile reload() throws Throwable;
 
     public String get(Property property);
 
