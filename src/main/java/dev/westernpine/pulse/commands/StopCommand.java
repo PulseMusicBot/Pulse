@@ -20,6 +20,11 @@ public class StopCommand implements ConsoleCommandHandler {
 	}
 
 	@Override
+	public String category() {
+		return "Management";
+	}
+
+	@Override
 	public boolean handle(String command, String[] args) {
 		System.out.println("Shutting down...");
 		System.exit(0);

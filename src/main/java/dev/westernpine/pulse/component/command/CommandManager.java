@@ -7,8 +7,6 @@ import dev.westernpine.pulse.component.command.commands.Help;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO: Turn this into an extendable object! Reuse methods and initializers.
-
 public class CommandManager {
 
     public static List<SlashCommandComponentHandler> slashCommandComponentHandlers;
