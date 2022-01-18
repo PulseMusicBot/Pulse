@@ -58,17 +58,19 @@ public class Help implements SlashCommandComponentHandler {
     static MessageEmbed commandEmbed(SlashCommandComponentHandler handler) {
         return new EmbedBuilder()
                 .setColor(Pulse.color())
-                .setTitle("Command: " + handler.command())
-                .setDescription("Description: " + handler.description())
-                .addField("Usages (<> = Optional, [] = Required)", " - " + String.join("\n - ", handler.usages()), false)
+                .setTitle("Command: `" + handler.command() + "`")
+                .addField("Description", handler.description(), true)
+                .addBlankField(true)
+                .addField("Usages (<> = Optional, [] = Required)", " - " + String.join("\n - ", handler.usages()), true)
                 .build();
     }
 
     static MessageEmbed commandUnknownEmbed(String command) {
         return new EmbedBuilder()
                 .setColor(Color.RED)
-                .setTitle("Unknown Command: " + command)
-                .addField("Available Commands", "`/commands`", false)
+                .setTitle("Unknown Command: `" + command + "`")
+                .addField("Available Commands", "`/commands`", true)
+                .addBlankField(true)
                 .addField("Help Usages (<> = Optional, [] = Required)", " - " + String.join("\n - ", usages), true)
                 .build();
     }
@@ -89,6 +91,9 @@ public class Help implements SlashCommandComponentHandler {
     }
 
     @Override
+    public String category() { return "Utility"; }
+
+    @Override
     public LinkedList<OptionData> options() {
         LinkedList<OptionData> options = new LinkedList<>();
         options.add(OPTION_COMMAND);
@@ -97,7 +102,7 @@ public class Help implements SlashCommandComponentHandler {
 
     @Override
     public boolean handle(SlashCommandEvent event) {
-        if (!event.getName().equalsIgnoreCase(command()))
+        if (!event.getName().equals(command()))
             return false;
         if (event.getOptions().isEmpty()) {
             String host = Pulse.identityProperties.get(IdentityProperties.HOST);

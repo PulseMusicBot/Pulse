@@ -17,4 +17,9 @@ public abstract interface CommandHandler {
      */
     public String description();
 
+    /**
+     * @return The category of the command.
+     */
+    public String category();
+
 }

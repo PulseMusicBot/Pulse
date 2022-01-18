@@ -12,7 +12,7 @@ public class SystemStartedListener implements Listener {
     @EventHandler
     public void onSystemStartedEvent(SystemStartedEvent event) {
         System.out.println("Startup >> System startup completed!");
-        Pulse.shardManager.getShards().forEach(jda -> jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("/help")));
+        Pulse.shardManager.getShards().forEach(jda -> jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.listening("/help")));
     }
 
 }

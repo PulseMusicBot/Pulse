@@ -11,6 +11,7 @@ import dev.westernpine.pulse.listeners.console.ConsoleListener;
 import dev.westernpine.pulse.listeners.system.SystemStartedListener;
 import dev.westernpine.pulse.listeners.system.jda.InteractionListener;
 import dev.westernpine.pulse.listeners.system.jda.GuildInitializer;
+import dev.westernpine.pulse.listeners.system.jda.MessageDeletionRequestListener;
 import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import dev.westernpine.pulse.properties.SystemProperties;
@@ -168,12 +169,18 @@ public class Pulse {
                     .addEventListeners(new ReadyListener())
                     .addEventListeners(new GuildInitializer())
                     .addEventListeners(new InteractionListener())
+                    .addEventListeners(new MessageDeletionRequestListener())
                     .build();
 
             /*
             Await all shards to finish starting up.
             */
             readyNotifier.get();
+
+            /*
+            Call the System Started event.
+             */
+            eventManager.call(new SystemStartedEvent());
 
         } catch (Throwable t) {
             t.printStackTrace();
