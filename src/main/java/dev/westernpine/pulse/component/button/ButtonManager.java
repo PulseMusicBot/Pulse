@@ -4,22 +4,25 @@ import dev.westernpine.lib.interaction.component.button.ButtonComponentHandler;
 import dev.westernpine.pulse.component.button.buttons.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ButtonManager {
 
-    public static List<ButtonComponentHandler> buttonHandlers;
+    private static final LinkedList<ButtonComponentHandler> buttonHandlers = new LinkedList<>();
     static {
-        buttonHandlers = new ArrayList<>();
-        buttonHandlers.add(new DocsButton());
-        buttonHandlers.add(new FaqButton());
-        buttonHandlers.add(new InviteButton());
-        buttonHandlers.add(new SupportButton());
-        buttonHandlers.add(new WebsiteButton());
+        Stream.of(new DocsButton(),
+                        new FaqButton(),
+                        new InviteButton(),
+                        new SupportButton(),
+                        new WebsiteButton())
+                .sorted()
+                .forEachOrdered(buttonHandlers::add);
     }
 
-    public static List<ButtonComponentHandler> getComponentHandlers() {
+    public static LinkedList<ButtonComponentHandler> getComponentHandlers() {
         return buttonHandlers;
     }
 

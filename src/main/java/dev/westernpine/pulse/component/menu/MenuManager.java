@@ -4,17 +4,21 @@ import dev.westernpine.lib.interaction.component.button.ButtonComponentHandler;
 import dev.westernpine.lib.interaction.component.menu.MenuComponentHandler;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class MenuManager {
 
-    public static List<MenuComponentHandler> menuHandlers;
+    private static final LinkedList<MenuComponentHandler> menuHandlers = new LinkedList<>();
     static {
-        menuHandlers = new ArrayList<>();
+//        Stream.of()
+//                .sorted()
+//                .forEachOrdered(menuHandlers::add);
     }
 
-    public static List<MenuComponentHandler> getComponentHandlers() {
+    public static LinkedList<MenuComponentHandler> getComponentHandlers() {
         return menuHandlers;
     }
 

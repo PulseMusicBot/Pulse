@@ -1,6 +1,7 @@
 package dev.westernpine.pulse.component.command.commands;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
+import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.component.command.CommandManager;
 import dev.westernpine.pulse.listeners.system.jda.InteractionListener;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -40,11 +41,16 @@ public class Commands implements SlashCommandComponentHandler {
     public boolean handle(SlashCommandEvent event) {
         if(!event.getName().equals(command()))
             return false;
-
-
-
-        EmbedBuilder commandsEmbed = new EmbedBuilder().setTitle("All Commands");
-        event.replyEmbeds(commandsEmbed.build()).queue();
+        EmbedBuilder embed = new EmbedBuilder().setTitle("All Commands");
+        CommandManager.getSortedComponentHandlers().forEach((category, commands) -> {
+            embed.addField(category, String.join(", ", commands.stream().map(command -> "`" + command.id() + "`").toArray(String[]::new)), false);
+        });
+        embed.setColor(Pulse.color());
+        embed.setFooter("To learn more about a command, type \"/help command\"");
+        event
+                .replyEmbeds(embed.build())
+                .setEphemeral(true)
+                .queue();
         return true;
     }
 }

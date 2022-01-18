@@ -6,38 +6,38 @@ import dev.westernpine.pulse.component.command.commands.Help;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CommandManager {
 
-    public static List<SlashCommandComponentHandler> slashCommandComponentHandlers;
-    public static LinkedHashMap<String, SlashCommandComponentHandler> sortedCategory;
+    private static final LinkedList<SlashCommandComponentHandler> slashCommandComponentHandlers = new LinkedList<>();
+    private static final LinkedHashMap<String, LinkedList<SlashCommandComponentHandler>> sortedSlashCommandComponentHandlers = new LinkedHashMap<>();
     static {
-        slashCommandComponentHandlers = new ArrayList<>();
-        slashCommandComponentHandlers.add(new Help());
-        slashCommandComponentHandlers.add(new Commands());
+        Stream.of(new Help(),
+                new Commands())
+                .sorted()
+                .forEachOrdered(slashCommandComponentHandlers::add);
 
-        LinkedHashMap<String, LinkedList<SlashCommandComponentHandler>> commandCategories = new LinkedHashMap<>();
-        for(SlashCommandComponentHandler handler : getComponentHandlers()) {
-            String category = handler.category();
-            if(!commandCategories.containsKey(category))
-                commandCategories.put(category, new LinkedList<>());
-            commandCategories.get(category).add(handler);
-        }
-        LinkedHashMap<String, LinkedList<SlashCommandComponentHandler>> categories = new LinkedHashMap<>(commandCategories);
-        commandCategories.clear();
-        categories.keySet().stream().sorted().forEach(key ->  commandCategories.put(key, categories.get(key)));
-        for(Map.Entry<String, LinkedList<SlashCommandComponentHandler>> entry : commandCategories.entrySet()) {
-            String category = entry.getKey();
-            LinkedList<SlashCommandComponentHandler> commands = new LinkedList<>();
-            Map<String, SlashCommandComponentHandler> commandMap = entry.getValue().stream().collect(Collectors.toMap(SlashCommandComponentHandler::command, command -> command));
-            commandMap.keySet().stream().sorted().forEach(key -> commands.add(commandMap.get(key)));
-            commandCategories.put(category, commands);
-        }
+        //Sort commands into their respective categories.
+        Map<String, LinkedList<SlashCommandComponentHandler>> categorized = new HashMap<>();
+        CommandManager.getComponentHandlers().stream().forEachOrdered(command -> {
+            String category = command.category();
+            if(!categorized.containsKey(category))
+                categorized.put(category, new LinkedList<>());
+            categorized.get(category).add(command);
+        });
+        //Alphabetically sort categories. No need to re-sort all commands for each category, as they still maintain their order when being added to the map.
+        categorized.entrySet().stream().sorted((first, second) -> first.getKey().compareTo(second.getKey())).forEachOrdered(entry -> sortedSlashCommandComponentHandlers.put(entry.getKey(), entry.getValue()));
+
 
     }
 
-    public static List<SlashCommandComponentHandler> getComponentHandlers() {
+    public static LinkedList<SlashCommandComponentHandler> getComponentHandlers() {
         return slashCommandComponentHandlers;
+    }
+
+    public static LinkedHashMap<String, LinkedList<SlashCommandComponentHandler>> getSortedComponentHandlers() {
+        return sortedSlashCommandComponentHandlers;
     }
 
     public static Optional<SlashCommandComponentHandler> get(String command) {
