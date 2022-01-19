@@ -43,6 +43,16 @@ import java.util.function.Consumer;
 
 public class Pulse {
 
+    /*
+    TODO: Goals for today:
+     1. Put messages built inside code. - Done
+     2. Start work on the audio package.
+     3. Build Audio Track Wrapper.
+     4. Build Playlist Wrapper.
+     5. Possibly start on TrackFactories?
+     6. Possibly continue work on the controller, and SQL Integration for configuration?
+     */
+
     public static final Gson gson = new Gson();
 
     public static final String version = Optional.ofNullable(Pulse.class.getPackage().getImplementationVersion()).filter(String::isEmpty).orElse("Unknown");
