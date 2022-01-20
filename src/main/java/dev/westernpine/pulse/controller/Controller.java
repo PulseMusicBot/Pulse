@@ -1,14 +1,11 @@
 package dev.westernpine.pulse.controller;
 
-import com.google.gson.JsonObject;
-import dev.westernpine.lib.serialization.JsonSerializable;
 import dev.westernpine.pulse.Pulse;
 import net.dv8tion.jda.api.entities.Guild;
 
-import java.io.Serializable;
 import java.util.*;
 
-public class Controller implements JsonSerializable {
+public class Controller {
 
     //TODO: Make this class into a manager as well as a singleton object.
     // Let each controller store a "lastValidAccess" value that a timer can determine if it is viable to disconnect or not, then to delete or not (determined by a bots voice state).
@@ -35,7 +32,8 @@ public class Controller implements JsonSerializable {
         if(exists) {
             controller = controllers.get(guildId);
         } else {
-            controller = new Controller(guildId);
+            controller = new Controller();
+            controller.guildId = guildId;
         }
         if(reason.shouldOverride())
             controller.lastAccessReason = reason;
@@ -46,6 +44,11 @@ public class Controller implements JsonSerializable {
         return controller;
     }
 
+    //TODO: JsonInitialization
+    public Controller fromJson(String json, AccessReason reason) {
+        return null;
+    }
+
     public boolean isSaved(String guildId) {
         return controllers.containsKey(guildId);
     }
@@ -54,50 +57,31 @@ public class Controller implements JsonSerializable {
     Instance Starts Here.
      */
 
+    //TODO: constructor.
+
     private String guildId;
 
     private AccessReason lastAccessReason = AccessReason.INITIALIZATION;
 
     private long lifetime = 0L;
 
-    private Controller(String guildId) {
+    private Controller() {
 
-    }
-
-    public Controller() {}
-
-    public void assertInit() {
-        if(Objects.isNull(this.guildId))
-            throw new InitializationException();
-    }
-
-    @Override
-    public String serialize() {
-        assertInit();
-        return null;
-    }
-
-    @Override
-    public void deserialize(String json) {
     }
 
     public String getGuildId() {
-        assertInit();
         return guildId;
     }
 
     public Guild getGuild() {
-        assertInit();
         return Pulse.shardManager.getGuildById(guildId);
     }
 
     public AccessReason getLastAccessReason() {
-        assertInit();
         return lastAccessReason;
     }
 
     public long getLifetime() {
-        assertInit();
         return lifetime;
     }
 }

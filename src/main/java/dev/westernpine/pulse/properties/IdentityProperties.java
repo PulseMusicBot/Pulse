@@ -19,6 +19,9 @@ public class IdentityProperties extends PropertiesFile {
     @PropertyField
     public static final Property COLOR = new Property("color", "#000000");
 
+    @PropertyField
+    public static final Property IPBLOCKS = new Property("ipblocks", "");
+
     public IdentityProperties(String identity) throws Throwable {
         super(identity + ".properties", PropertyFile.getDeclaredProperties(IdentityProperties.class));
     }

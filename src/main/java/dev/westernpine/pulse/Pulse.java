@@ -1,10 +1,25 @@
 package dev.westernpine.pulse;
 
 import com.google.gson.Gson;
+import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeLinkRouter;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeSearchProvider;
+import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
+import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
+import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv4Block;
+import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.eventapi.EventManager;
 import dev.westernpine.lib.object.LoggingPrintStream;
 import dev.westernpine.lib.object.Scheduler;
+import dev.westernpine.pulse.audio.AudioFactory;
+import dev.westernpine.pulse.audio.request.Platform;
+import dev.westernpine.pulse.audio.request.Request;
+import dev.westernpine.pulse.audio.request.RequestFactory;
 import dev.westernpine.pulse.events.console.ConsoleEvent;
 import dev.westernpine.pulse.events.system.SystemStartedEvent;
 import dev.westernpine.pulse.listeners.console.ConsoleListener;
@@ -15,6 +30,7 @@ import dev.westernpine.pulse.listeners.system.jda.MessageDeletionRequestListener
 import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import dev.westernpine.pulse.properties.SystemProperties;
+import dev.westernpine.pulse.sources.Router;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -33,19 +49,22 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Pulse {
 
     /*
     TODO: Goals for today:
      1. Put messages built inside code. - Done
+     - CHANGE OF PLANS!
+     - - We need to convert everything from serializable to factories. Since each class has a different way of initializing, serializing, and deserializing, its better to just make a factory for each.
      2. Start work on the audio package.
      3. Build Audio Track Wrapper.
      4. Build Playlist Wrapper.
@@ -70,6 +89,12 @@ public class Pulse {
     public static CompletableFuture<Boolean> readyNotifier;
 
     public static Consumer<ReadyEvent> readyHandler;
+
+    public static AudioPlayerManager audioPlayerManager;
+
+    public static YoutubeAudioSourceManager youtubeAudioSourceManager;
+
+    public static SoundCloudAudioSourceManager soundCloudAudioSourceManager;
 
     public static ShardManager shardManager;
 
@@ -137,10 +162,6 @@ public class Pulse {
             identityProperties = new IdentityProperties(systemProperties.get(SystemProperties.IDENTITY));
 
             /*
-            Start initializing and registering commands.
-             */
-
-            /*
 			Initialize the ready notifier format completion.
             */
             readyNotifier = new CompletableFuture<>();
@@ -158,6 +179,46 @@ public class Pulse {
 
 
             };
+
+            /*
+            Initialize the audio player manager.
+             */
+            System.out.println("System Startup >> Building and initializing the audio player manager.");
+            audioPlayerManager = new DefaultAudioPlayerManager();
+            audioPlayerManager.setFrameBufferDuration(3000);
+            audioPlayerManager.getConfiguration().setFilterHotSwapEnabled(true);
+            audioPlayerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
+
+
+            /*
+            Initialize and register source managers.
+             */
+            System.out.println("System Startup >> Registering source managers and search providers.");
+            youtubeAudioSourceManager = new YoutubeAudioSourceManager(true);
+            String[] blocks = identityProperties.get(IdentityProperties.IPBLOCKS).split(", ");
+            if(blocks.length > 0) {
+                List<IpBlock> ipBlocks = Stream.of(blocks)
+                        .filter(String::isEmpty)
+                        .filter(block -> Ipv4Block.isIpv4CidrBlock(block) || Ipv6Block.isIpv6CidrBlock(block))
+                        .map(block -> (IpBlock) (Ipv4Block.isIpv4CidrBlock(block) ? new Ipv4Block(block) : new Ipv6Block(block)))
+                        .toList();
+                if(!ipBlocks.isEmpty()) {
+                    Router router = Router.ROTATING_NANO_SWITCH;
+                    System.out.println("System Startup >> Implementing IP Rotating router %s with %d IP Blocks.".formatted(router.name(), ipBlocks.size()));
+                    new YoutubeIpRotatorSetup(router.getRouter(ipBlocks))
+                            .forSource(youtubeAudioSourceManager)
+                            .withRetryLimit(Integer.MAX_VALUE)
+                            .setup();
+                }
+            }
+            soundCloudAudioSourceManager = SoundCloudAudioSourceManager.createDefault();
+            audioPlayerManager.registerSourceManager(youtubeAudioSourceManager);
+            audioPlayerManager.registerSourceManager(soundCloudAudioSourceManager);
+            //TODO: More sources!
+
+            //TODO: Refactor platform to resolve the track for us? (This uses youtube api... better off just resolving the track?)
+            //This is just a test for the new system...
+            System.out.println(AudioFactory.toTrack(AudioFactory.getAudioItem(RequestFactory.from("Rogue - Dreams monstercat", Platform.YOUTUBE)).get()).getInfo().uri);
 
             /*
             Load up the shard manager.
