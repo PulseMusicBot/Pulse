@@ -1,6 +1,7 @@
-package dev.westernpine.pulse.audio.request;
+package dev.westernpine.pulse.audio.track.userdata.request;
 
 import dev.westernpine.bettertry.Try;
+import dev.westernpine.pulse.audio.track.userdata.platform.Platform;
 
 import java.net.URI;
 import java.net.URL;
@@ -8,19 +9,13 @@ import java.net.URL;
 public class Request {
 
     String request;
-    Platform platform;
 
-    Request(String request, Platform platform) {
+    Request(String request) {
         this.request = request;
-        this.platform = platform;
     }
 
     public String getRequest() {
         return request;
-    }
-
-    public Platform getPlatform() {
-        return platform;
     }
 
     public URL toUrl() {
@@ -41,7 +36,7 @@ public class Request {
 
     @Override
     public String toString() {
-        return this.isUrl() ? this.request : platform.getPrefix() + this.request;
+        return this.request;
     }
 
 }

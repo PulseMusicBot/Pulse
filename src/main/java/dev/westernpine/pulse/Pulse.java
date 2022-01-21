@@ -6,8 +6,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeLinkRouter;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeSearchProvider;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv4Block;
@@ -17,9 +17,8 @@ import dev.westernpine.eventapi.EventManager;
 import dev.westernpine.lib.object.LoggingPrintStream;
 import dev.westernpine.lib.object.Scheduler;
 import dev.westernpine.pulse.audio.AudioFactory;
-import dev.westernpine.pulse.audio.request.Platform;
-import dev.westernpine.pulse.audio.request.Request;
-import dev.westernpine.pulse.audio.request.RequestFactory;
+import dev.westernpine.pulse.audio.track.userdata.platform.PlatformFactory;
+import dev.westernpine.pulse.audio.track.userdata.request.RequestFactory;
 import dev.westernpine.pulse.events.console.ConsoleEvent;
 import dev.westernpine.pulse.events.system.SystemStartedEvent;
 import dev.westernpine.pulse.listeners.console.ConsoleListener;
@@ -49,13 +48,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Pulse {
@@ -91,6 +88,8 @@ public class Pulse {
     public static Consumer<ReadyEvent> readyHandler;
 
     public static AudioPlayerManager audioPlayerManager;
+
+    public static YoutubeSearchProvider youtubeSearchProvider;
 
     public static YoutubeAudioSourceManager youtubeAudioSourceManager;
 
@@ -194,6 +193,7 @@ public class Pulse {
             Initialize and register source managers.
              */
             System.out.println("System Startup >> Registering source managers and search providers.");
+            youtubeSearchProvider = new YoutubeSearchProvider();
             youtubeAudioSourceManager = new YoutubeAudioSourceManager(true);
             String[] blocks = identityProperties.get(IdentityProperties.IPBLOCKS).split(", ");
             if(blocks.length > 0) {
@@ -207,6 +207,7 @@ public class Pulse {
                     System.out.println("System Startup >> Implementing IP Rotating router %s with %d IP Blocks.".formatted(router.name(), ipBlocks.size()));
                     new YoutubeIpRotatorSetup(router.getRouter(ipBlocks))
                             .forSource(youtubeAudioSourceManager)
+                            .forConfiguration(youtubeSearchProvider.getHttpConfiguration(), true)
                             .withRetryLimit(Integer.MAX_VALUE)
                             .setup();
                 }
@@ -216,9 +217,14 @@ public class Pulse {
             audioPlayerManager.registerSourceManager(soundCloudAudioSourceManager);
             //TODO: More sources!
 
-            //TODO: Refactor platform to resolve the track for us? (This uses youtube api... better off just resolving the track?)
-            //This is just a test for the new system...
-            System.out.println(AudioFactory.toTrack(AudioFactory.getAudioItem(RequestFactory.from("Rogue - Dreams monstercat", Platform.YOUTUBE)).get()).getInfo().uri);
+            AudioPlaylist result = Try.of(() -> AudioFactory.query("ytsearch:Grant - high tide").get()).map(item -> (AudioPlaylist)item).orElse(null);
+            if(result == null) {
+                System.out.println("Result was null!");
+            } else {
+                String json = AudioFactory.toJson(result);
+                System.out.println(json);
+                System.out.println(AudioFactory.toJson(AudioFactory.fromPlaylistJson(json).getTracks().get(0)));
+            }
 
             /*
             Load up the shard manager.
