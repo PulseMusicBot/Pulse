@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.audio.playlist;
+package dev.westernpine.lib.audio.playlist;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;

@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeSearchProvider;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv4Block;
@@ -16,9 +15,6 @@ import dev.westernpine.bettertry.Try;
 import dev.westernpine.eventapi.EventManager;
 import dev.westernpine.lib.object.LoggingPrintStream;
 import dev.westernpine.lib.object.Scheduler;
-import dev.westernpine.pulse.audio.AudioFactory;
-import dev.westernpine.pulse.audio.track.userdata.platform.PlatformFactory;
-import dev.westernpine.pulse.audio.track.userdata.request.RequestFactory;
 import dev.westernpine.pulse.events.console.ConsoleEvent;
 import dev.westernpine.pulse.events.system.SystemStartedEvent;
 import dev.westernpine.pulse.listeners.console.ConsoleListener;
@@ -216,7 +212,6 @@ public class Pulse {
             audioPlayerManager.registerSourceManager(youtubeAudioSourceManager);
             audioPlayerManager.registerSourceManager(soundCloudAudioSourceManager);
             //TODO: More sources!
-
 
             /*
             Load up the shard manager.

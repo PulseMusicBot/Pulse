@@ -19,6 +19,7 @@ public class AudioReceiver implements AudioReceiveHandler {
     @Override
     public boolean canReceiveUser() {
         return audioSession.getAgent().getGuildConfig().get(ConfigKey.AUDIO_SUPPRESSION).toBoolean();
+        return false;
     }
 
     @Override

@@ -1,11 +1,10 @@
-package dev.westernpine.pulse.audio.track;
+package dev.westernpine.lib.audio.track;
 
 import com.sedmelluq.discord.lavaplayer.track.*;
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.pulse.audio.AudioFactory;
-import dev.westernpine.pulse.audio.track.userdata.UserData;
-import dev.westernpine.pulse.audio.track.userdata.UserDataFactory;
+import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
+import dev.westernpine.lib.audio.AudioFactory;
 
 public class Track extends DelegatedAudioTrack {
 

@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.audio;
+package dev.westernpine.lib.audio;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -8,13 +8,11 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.*;
 import dev.westernpine.bettertry.Try;
+import dev.westernpine.lib.audio.playlist.SortedPlaylist;
+import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
 import dev.westernpine.pulse.Pulse;
-import dev.westernpine.pulse.audio.playlist.SortedPlaylist;
-import dev.westernpine.pulse.audio.track.Track;
-import dev.westernpine.pulse.audio.track.TrackFactory;
-import dev.westernpine.pulse.audio.track.userdata.UserData;
-import dev.westernpine.pulse.audio.track.userdata.UserDataFactory;
-import net.dv8tion.jda.api.entities.User;
+import dev.westernpine.lib.audio.track.TrackFactory;
+import dev.westernpine.lib.audio.track.userdata.UserData;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -2,7 +2,7 @@ package dev.westernpine.pulse.component.command.commands;
 
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
-import dev.westernpine.pulse.audio.AudioFactory;
+import dev.westernpine.lib.audio.AudioFactory;
 import dev.westernpine.pulse.controller.AccessReason;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;

@@ -1,8 +1,7 @@
-package dev.westernpine.pulse.audio.track.userdata.requester;
+package dev.westernpine.lib.audio.track.userdata.requester;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.westernpine.pulse.Pulse;
 import net.dv8tion.jda.api.entities.User;
 
 public class RequesterFactory {

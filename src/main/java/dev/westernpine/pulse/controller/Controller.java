@@ -2,32 +2,27 @@ package dev.westernpine.pulse.controller;
 
 import com.sedmelluq.discord.lavaplayer.filter.PcmFilterFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import dev.westernpine.pulse.Pulse;
-import dev.westernpine.pulse.audio.playlist.SortedPlaylist;
+import dev.westernpine.lib.audio.playlist.SortedPlaylist;
 import dev.westernpine.pulse.controller.handlers.AudioReceiver;
 import dev.westernpine.pulse.controller.handlers.AudioSender;
-import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
-import org.jetbrains.annotations.Nullable;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Controller {
 
     private final String guildId;
+
+    private String lastChannelId;
 
     AccessReason lastAccessReason = AccessReason.INITIALIZATION;
 
@@ -49,6 +44,30 @@ public class Controller {
         this.guildId = guildId;
         this.previousQueue = new SortedPlaylist(getGuild().getName() + "'s Previous Queue");
         this.queue = new SortedPlaylist(getGuild().getName() + "'s Queue");
+    }
+
+    public Controller perform(Consumer<Controller> controllerConsumer) {
+        controllerConsumer.accept(this);
+        return this;
+    }
+
+    public <R> R map(Function<Controller, R> controllerMapper) {
+        return controllerMapper.apply(this);
+    }
+
+    public String getLastChannelId() {
+        return this.lastChannelId;
+    }
+
+    public Controller updateLastChannelId(String lastChannelId) {
+        this.lastChannelId = lastChannelId;
+        return this;
+    }
+
+    public Controller updateLastChannelId(String lastChannelId, Supplier<Boolean> conditionalUpdateSupplier) {
+        if(conditionalUpdateSupplier.get())
+            return updateLastChannelId(lastChannelId);
+        return this;
     }
 
     public String getGuildId() {

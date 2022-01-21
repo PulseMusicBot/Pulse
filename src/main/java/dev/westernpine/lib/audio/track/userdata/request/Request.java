@@ -1,7 +1,6 @@
-package dev.westernpine.pulse.audio.track.userdata.request;
+package dev.westernpine.lib.audio.track.userdata.request;
 
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.pulse.audio.track.userdata.platform.Platform;
 
 import java.net.URI;
 import java.net.URL;

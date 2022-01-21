@@ -7,7 +7,8 @@ public enum AccessReason {
     //Should Save
 
     //Should Reset Lifetime
-    INITIALIZATION(false, false, true),
+    INITIALIZATION(true, true, true),
+    BACKEND_INITIALIZATION(true, true, true),
 
     //Should Save and Reset Lifetime
 

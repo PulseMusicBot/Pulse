@@ -1,10 +1,10 @@
-package dev.westernpine.pulse.audio.track.userdata.platform;
+package dev.westernpine.lib.audio.track.userdata.platform;
 
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.*;
+import dev.westernpine.lib.audio.track.Track;
 import dev.westernpine.pulse.Pulse;
-import dev.westernpine.pulse.audio.track.Track;
 
 import java.util.function.Function;
 import java.util.function.Supplier;

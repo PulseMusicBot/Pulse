@@ -1,10 +1,7 @@
-package dev.westernpine.pulse.audio.track.userdata.platform;
+package dev.westernpine.lib.audio.track.userdata.platform;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.*;
-import dev.westernpine.pulse.Pulse;
 
 import java.util.HashMap;
 import java.util.Map;

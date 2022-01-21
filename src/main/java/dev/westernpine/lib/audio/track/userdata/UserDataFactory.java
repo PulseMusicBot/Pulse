@@ -1,14 +1,13 @@
-package dev.westernpine.pulse.audio.track.userdata;
+package dev.westernpine.lib.audio.track.userdata;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.westernpine.pulse.Pulse;
-import dev.westernpine.pulse.audio.track.userdata.platform.Platform;
-import dev.westernpine.pulse.audio.track.userdata.platform.PlatformFactory;
-import dev.westernpine.pulse.audio.track.userdata.request.Request;
-import dev.westernpine.pulse.audio.track.userdata.request.RequestFactory;
-import dev.westernpine.pulse.audio.track.userdata.requester.Requester;
-import dev.westernpine.pulse.audio.track.userdata.requester.RequesterFactory;
+import dev.westernpine.lib.audio.track.userdata.request.Request;
+import dev.westernpine.lib.audio.track.userdata.platform.Platform;
+import dev.westernpine.lib.audio.track.userdata.platform.PlatformFactory;
+import dev.westernpine.lib.audio.track.userdata.request.RequestFactory;
+import dev.westernpine.lib.audio.track.userdata.requester.Requester;
+import dev.westernpine.lib.audio.track.userdata.requester.RequesterFactory;
 
 public class UserDataFactory {
 

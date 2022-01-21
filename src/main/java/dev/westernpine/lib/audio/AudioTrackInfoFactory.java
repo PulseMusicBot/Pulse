@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.audio;
+package dev.westernpine.lib.audio;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

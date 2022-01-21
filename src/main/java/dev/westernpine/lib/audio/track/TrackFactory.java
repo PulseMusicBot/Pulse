@@ -1,13 +1,8 @@
-package dev.westernpine.pulse.audio.track;
+package dev.westernpine.lib.audio.track;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.InternalAudioTrack;
-import dev.westernpine.pulse.audio.track.userdata.UserData;
-import dev.westernpine.pulse.audio.track.userdata.UserDataFactory;
-import dev.westernpine.pulse.audio.track.userdata.platform.Platform;
-import dev.westernpine.pulse.audio.track.userdata.request.Request;
-import dev.westernpine.pulse.audio.track.userdata.requester.Requester;
+import dev.westernpine.lib.audio.track.userdata.UserData;
 
 public class TrackFactory {
 
