@@ -3,18 +3,20 @@ package dev.westernpine.pulse.component.command;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.pulse.component.command.commands.Commands;
 import dev.westernpine.pulse.component.command.commands.Help;
+import dev.westernpine.pulse.component.command.commands.Test;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandManager {
 
     private static final LinkedList<SlashCommandComponentHandler> slashCommandComponentHandlers = new LinkedList<>();
     private static final LinkedHashMap<String, LinkedList<SlashCommandComponentHandler>> sortedSlashCommandComponentHandlers = new LinkedHashMap<>();
+
     static {
         Stream.of(new Help(),
-                new Commands())
+                        new Commands(),
+                        new Test())
                 .sorted()
                 .forEachOrdered(slashCommandComponentHandlers::add);
 
@@ -22,7 +24,7 @@ public class CommandManager {
         Map<String, LinkedList<SlashCommandComponentHandler>> categorized = new HashMap<>();
         CommandManager.getComponentHandlers().stream().forEachOrdered(command -> {
             String category = command.category();
-            if(!categorized.containsKey(category))
+            if (!categorized.containsKey(category))
                 categorized.put(category, new LinkedList<>());
             categorized.get(category).add(command);
         });
