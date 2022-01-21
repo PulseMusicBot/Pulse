@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.*;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.pulse.Pulse;
+import dev.westernpine.pulse.audio.playlist.SortedPlaylist;
 import dev.westernpine.pulse.audio.track.Track;
 import dev.westernpine.pulse.audio.track.TrackFactory;
 import dev.westernpine.pulse.audio.track.userdata.UserData;
@@ -54,64 +55,24 @@ public class AudioFactory {
         });
     }
 
-    public static AudioPlaylist toPlaylist(AudioItem audioItem) {
+    public static SortedPlaylist toPlaylist(AudioItem audioItem) {
         if (audioItem instanceof AudioPlaylist playlist)
-            return playlist;
+            return new SortedPlaylist(playlist);
         else {
             AudioTrack audioTrack = (AudioTrack) audioItem;
-            return new AudioPlaylist() {
-                @Override
-                public String getName() {
-                    return audioTrack.getInfo().title;
-                }
-
-                @Override
-                public List<AudioTrack> getTracks() {
-                    return List.of(audioTrack);
-                }
-
-                @Override
-                public AudioTrack getSelectedTrack() {
-                    return audioTrack;
-                }
-
-                @Override
-                public boolean isSearchResult() {
-                    return false;
-                }
-            };
+            return new SortedPlaylist(audioTrack.getInfo().title, List.of(audioTrack), audioTrack, false);
         }
     }
 
-    public static AudioPlaylist toPlaylist(String title, AudioItem... audioItems) {
-        List<AudioTrack> audioTracks = new LinkedList<>();
+    public static SortedPlaylist toPlaylist(String title, AudioItem... audioItems) {
+        SortedPlaylist playlist = new SortedPlaylist(title);
         for (AudioItem audioItem : audioItems) {
             if (audioItem instanceof AudioPlaylist audioPlaylist)
-                audioTracks.addAll(audioPlaylist.getTracks());
+                playlist.addAll(audioPlaylist.getTracks());
             else
-                audioTracks.add((AudioTrack) audioItem);
+                playlist.add((AudioTrack) audioItem);
         }
-        return new AudioPlaylist() {
-            @Override
-            public String getName() {
-                return title;
-            }
-
-            @Override
-            public List<AudioTrack> getTracks() {
-                return audioTracks;
-            }
-
-            @Override
-            public AudioTrack getSelectedTrack() {
-                return null;
-            }
-
-            @Override
-            public boolean isSearchResult() {
-                return false;
-            }
-        };
+        return playlist;
     }
 
     public static AudioTrack toTrack(AudioItem audioItem) {
@@ -183,7 +144,7 @@ public class AudioFactory {
             for(JsonElement jsonTrack : audioPlaylist.get("tracks").getAsJsonArray())
                 audioTracks.add(fromTrackJson(jsonTrack.getAsString()));
         }
-        return new BasicAudioPlaylist(name, audioTracks, selectedTrack, isSearchResult);
+        return new SortedPlaylist(name, audioTracks, selectedTrack, isSearchResult);
     }
 
 }

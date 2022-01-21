@@ -217,14 +217,6 @@ public class Pulse {
             audioPlayerManager.registerSourceManager(soundCloudAudioSourceManager);
             //TODO: More sources!
 
-            AudioPlaylist result = Try.of(() -> AudioFactory.query("ytsearch:Grant - high tide").get()).map(item -> (AudioPlaylist)item).orElse(null);
-            if(result == null) {
-                System.out.println("Result was null!");
-            } else {
-                String json = AudioFactory.toJson(result);
-                System.out.println(json);
-                System.out.println(AudioFactory.toJson(AudioFactory.fromPlaylistJson(json).getTracks().get(0)));
-            }
 
             /*
             Load up the shard manager.

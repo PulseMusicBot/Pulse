@@ -5,6 +5,7 @@ import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHa
 import dev.westernpine.pulse.audio.AudioFactory;
 import dev.westernpine.pulse.controller.AccessReason;
 import dev.westernpine.pulse.controller.Controller;
+import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -56,8 +57,7 @@ public class Test implements SlashCommandComponentHandler {
     public boolean handle(SlashCommandEvent event) {
         if(!event.getName().equals(command()))
             return false;
-        Controller controller = Controller.get(event.getGuild().getId(), AccessReason.UNKNOWN);
-        controller.connect(controller.getAudioChannel(event.getMember()), SpeakingMode.SOUNDSHARE);
+        Controller controller = ControllerFactory.get(event.getGuild().getId(), AccessReason.UNKNOWN).connect(event.getMember(), SpeakingMode.SOUNDSHARE);
         Try.of(() -> AudioFactory.toTrack(AudioFactory.query(event.getOption("query").getAsString()).get()))
                 .onSuccess(track -> controller.startTrack(track, true))
                 .onFailure(Throwable::printStackTrace);

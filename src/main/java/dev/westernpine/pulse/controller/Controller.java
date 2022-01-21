@@ -7,6 +7,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import dev.westernpine.pulse.Pulse;
+import dev.westernpine.pulse.audio.playlist.SortedPlaylist;
+import dev.westernpine.pulse.controller.handlers.AudioReceiver;
+import dev.westernpine.pulse.controller.handlers.AudioSender;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.*;
@@ -24,71 +27,29 @@ import java.util.concurrent.TimeoutException;
 
 public class Controller {
 
-    //TODO: Make this class into a manager as well as a singleton object.
-    // Let each controller store a "lastValidAccess" value that a timer can determine if it is viable to disconnect or not, then to delete or not (determined by a bots voice state).
-    // Dont forget to include settings...
-    // Audio Interface as well.
-    // serializeable controller to save the current state on shutdown.
-    // maximum allowed enques.
+    private final String guildId;
 
-    //TODO: Store tracks as plain wrappers... for EVERY track.
+    AccessReason lastAccessReason = AccessReason.INITIALIZATION;
 
-    public static final long MAX_LIFETIME = 15 * 60;
+    long lifetime = 0L;
 
-    private static Map<String, Controller> controllers = new HashMap<>();
+    private SortedPlaylist previousQueue;
 
-    static {
-        Pulse.scheduler.runLaterRepeatingAsync(() -> {
-            //TODO: Work on audio capabilities so we can track if controller needs to be deleted or cached.
-        }, 0L, 1000L);
-    }
-
-    public static Controller get(String guildId, AccessReason reason) {
-        Controller controller = null;
-        boolean exists = controllers.containsKey(guildId);
-        if (exists) {
-            controller = controllers.get(guildId);
-        } else {
-            controller = new Controller();
-            controller.guildId = guildId;
-        }
-        if (reason.shouldOverride())
-            controller.lastAccessReason = reason;
-        if (!exists && reason.shouldSave())
-            controllers.put(guildId, controller);
-        if (reason.shouldResetLifetime())
-            controller.lifetime = 0L;
-        return controller;
-    }
-
-    public String toJson(Controller controller) {
-        return null;
-    }
-
-    //TODO: JsonInitialization
-    public Controller fromJson(String json, AccessReason reason) {
-        return null;
-    }
-
-    public boolean isSaved(String guildId) {
-        return controllers.containsKey(guildId);
-    }
-
-    /*
-    Instance Starts Here.
-     */
-
-    //TODO: constructor.
-
-    private String guildId;
-
-    private AccessReason lastAccessReason = AccessReason.INITIALIZATION;
-
-    private long lifetime = 0L;
+    private SortedPlaylist queue;
 
     private AudioPlayer audioPlayer;
 
-    private Controller() {}
+    private AudioReceiver audioReceiver;
+
+    private AudioSender audioSender;
+
+    private int volume = 7;
+
+    Controller(String guildId) {
+        this.guildId = guildId;
+        this.previousQueue = new SortedPlaylist(getGuild().getName() + "'s Previous Queue");
+        this.queue = new SortedPlaylist(getGuild().getName() + "'s Queue");
+    }
 
     public String getGuildId() {
         return guildId;
@@ -129,6 +90,10 @@ public class Controller {
         return voiceState.getChannel();
     }
 
+    public Controller connect(Member member, SpeakingMode... speakingModes) throws InsufficientPermissionException {
+        return connect(getAudioChannel(member), speakingModes);
+    }
+
     public Controller connect(AudioChannel audioChannel, SpeakingMode... speakingModes) throws InsufficientPermissionException {
         AudioManager audioManager = getAudioManager();
         audioManager.setSelfDeafened(true);
@@ -137,28 +102,24 @@ public class Controller {
             audioPlayer = Pulse.audioPlayerManager.createPlayer();
             audioPlayer.setVolume(7);
         }
+        if(audioManager.getReceivingHandler() == null)
+            audioManager.setReceivingHandler(this.audioReceiver = new AudioReceiver(this));
         if(audioManager.getSendingHandler() == null)
-            audioManager.setSendingHandler(new AudioSendHandler() {
-                private AudioFrame lastFrame;
-                @Override
-                public boolean canProvide() {
-                    return (this.lastFrame = audioPlayer.provide()) != null;
-                }
-                @Override
-                public ByteBuffer provide20MsAudio() {
-                    return ByteBuffer.wrap(lastFrame.getData());
-                }
-                @Override
-                public boolean isOpus() {
-                    return true;
-                }
-            });
+            audioManager.setSendingHandler(this.audioSender = new AudioSender(this));
         audioManager.openAudioConnection(audioChannel);
         return this;
     }
 
     public AudioPlayer getAudioPlayer() {
         return audioPlayer;
+    }
+
+    public AudioReceiver getAudioReceiver() {
+        return audioReceiver;
+    }
+
+    public AudioSender getAudioSender() {
+        return audioSender;
     }
 
     /**
@@ -192,11 +153,11 @@ public class Controller {
     }
 
     public int getVolume() {
-        return audioPlayer.getVolume();
+        return this.volume;
     }
 
     public void setVolume(int volume) {
-        audioPlayer.setVolume(volume);
+        this.volume = volume;
     }
 
     public void setFilterFactory(PcmFilterFactory factory) {
@@ -217,14 +178,29 @@ public class Controller {
         audioPlayer.setPaused(value);
     }
 
+    public void clearQueues() {
+        this.previousQueue.clear();
+        this.queue.clear();
+    }
+
     /**
      * Destroy the player and stop playing track.
      */
     public void destroy() {
         AudioManager audioManager = getAudioManager();
         audioManager.closeAudioConnection();
-        audioManager.setSendingHandler(null);
-        audioPlayer.destroy();
-        audioPlayer = null;
+        audioManager.setSendingHandler(this.audioSender = null);
+        audioManager.setReceivingHandler(this.audioReceiver = null);
+        this.audioPlayer.destroy();
+        this.audioPlayer = null;
+        this.clearQueues();
+    }
+
+    public SortedPlaylist getPreviousQueue() {
+        return previousQueue;
+    }
+
+    public SortedPlaylist getQueue() {
+        return queue;
     }
 }
