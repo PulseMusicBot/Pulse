@@ -13,12 +13,21 @@ import dev.westernpine.pulse.audio.track.Track;
 import dev.westernpine.pulse.audio.track.TrackFactory;
 import dev.westernpine.pulse.audio.track.userdata.UserData;
 import dev.westernpine.pulse.audio.track.userdata.UserDataFactory;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class AudioFactory {
+
+    public <T extends AudioItem> T applyUserData(T audioItem, UserData userData) {
+        if(audioItem instanceof AudioTrack audioTrack)
+            audioTrack.setUserData(userData);
+        else if (audioItem instanceof AudioPlaylist audioPlaylist)
+            audioPlaylist.getTracks().forEach(track -> track.setUserData(userData));
+        return audioItem;
+    }
 
     public static CompletableFuture<AudioItem> query(String query) {
         return CompletableFuture.supplyAsync(() -> {
