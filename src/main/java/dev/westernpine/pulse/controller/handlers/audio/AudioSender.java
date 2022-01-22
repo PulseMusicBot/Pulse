@@ -1,7 +1,8 @@
-package dev.westernpine.pulse.controller.handlers;
+package dev.westernpine.pulse.controller.handlers.audio;
 
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import dev.westernpine.pulse.controller.Controller;
+import dev.westernpine.pulse.controller.settings.setting.Setting;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,8 +22,8 @@ public class AudioSender implements AudioSendHandler {
     @Override
     public boolean canProvide() {
         int volume = controller.getVolume();
-        Double adjusted = volume * 0.25D;
-        if(audioSession.getAgent().getGuildConfig().get(ConfigKey.AUDIO_SUPPRESSION).toBoolean())
+        Number adjusted = volume * 0.25D;
+        if(controller.getSettings().get(Setting.VOICE_DETECTION).toBoolean())
             if(Instant.now().minusSeconds(2).isBefore(controller.getAudioReceiver().getLastAudioDetected()))
                 volume = adjusted.intValue() > 0 ? adjusted.intValue() : (volume != 1 ? 1 : 0);
         if(volume != controller.getAudioPlayer().getVolume())

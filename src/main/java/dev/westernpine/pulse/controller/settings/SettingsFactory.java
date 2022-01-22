@@ -9,9 +9,11 @@ import dev.westernpine.pulse.controller.AccessReason;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.settings.backend.SettingsBackend;
+import dev.westernpine.pulse.controller.settings.backend.SqlBackend;
 import dev.westernpine.pulse.controller.settings.setting.SettingManager;
 import dev.westernpine.pulse.controller.settings.setting.value.SettingValue;
 import dev.westernpine.pulse.controller.settings.setting.value.SettingValueFactory;
+import dev.westernpine.pulse.properties.IdentityProperties;
 
 import java.io.ByteArrayInputStream;
 import java.util.stream.Collectors;
@@ -22,7 +24,7 @@ public class SettingsFactory {
     private static SettingsBackend backend;
 
     static {
-        backend = null;
+        backend = new SqlBackend(Pulse.identityProperties.get(IdentityProperties.SETTINGS_SQL_BACKEND), "settings");
         Pulse.shutdownHook = () -> {
             Pulse.shutdownHook.run();
             if(!backend.isClosed()) {
@@ -35,8 +37,11 @@ public class SettingsFactory {
     public static Settings from(Controller controller) {
         if(backend.exists(controller.getGuildId()))
             return fromJson(controller, backend.load(controller.getGuildId()));
-        else
-            return new Settings(controller, backend).loadDefaults(SettingManager.getSettings());
+        else {
+            Settings settings = new Settings(controller, backend).loadDefaults(SettingManager.getSettings());
+            backend.save(controller.getGuildId(), toJson(settings));
+            return settings;
+        }
     }
 
     public static String toJson(Settings settings) {

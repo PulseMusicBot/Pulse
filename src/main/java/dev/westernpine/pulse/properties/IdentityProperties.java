@@ -22,9 +22,16 @@ public class IdentityProperties extends PropertiesFile {
     @PropertyField
     public static final Property IPBLOCKS = new Property("ipblocks", "");
 
+    @PropertyField
+    public static final Property SETTINGS_SQL_BACKEND = new Property("settingsbackend", "settingsbackend");
+
+    @PropertyField
+    public static final Property CONTROLLERS_SQL_BACKEND = new Property("controllersbackend", "controllersbackend");
+
     public IdentityProperties(String identity) throws Throwable {
         super(identity + ".properties", PropertyFile.getDeclaredProperties(IdentityProperties.class));
     }
+
     @Override
     public PropertyFile reload() throws Throwable {
         super.reload();

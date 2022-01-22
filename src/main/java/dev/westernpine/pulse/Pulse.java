@@ -15,6 +15,8 @@ import dev.westernpine.bettertry.Try;
 import dev.westernpine.eventapi.EventManager;
 import dev.westernpine.lib.object.LoggingPrintStream;
 import dev.westernpine.lib.object.Scheduler;
+import dev.westernpine.pulse.controller.ControllerFactory;
+import dev.westernpine.pulse.controller.settings.SettingsFactory;
 import dev.westernpine.pulse.events.console.ConsoleEvent;
 import dev.westernpine.pulse.events.system.SystemStartedEvent;
 import dev.westernpine.pulse.listeners.console.ConsoleListener;
@@ -23,6 +25,7 @@ import dev.westernpine.pulse.listeners.system.jda.InteractionListener;
 import dev.westernpine.pulse.listeners.system.jda.GuildInitializer;
 import dev.westernpine.pulse.listeners.system.jda.MessageDeletionRequestListener;
 import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
+import dev.westernpine.pulse.listeners.system.player.AudioPlayerListener;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import dev.westernpine.pulse.properties.SystemProperties;
 import dev.westernpine.pulse.sources.Router;
@@ -137,6 +140,7 @@ public class Pulse {
             System.out.println("System Startup >> Registering system event listeners.");
             eventManager.registerListeners(new ConsoleListener());
             eventManager.registerListeners(new SystemStartedListener());
+            eventManager.registerListeners(new AudioPlayerListener());
 
             /*
             Set up console listening system via events.
@@ -155,6 +159,13 @@ public class Pulse {
              */
             System.out.println("System Startup >> Loading " + systemProperties.get(SystemProperties.IDENTITY) + " identity properties.");
             identityProperties = new IdentityProperties(systemProperties.get(SystemProperties.IDENTITY));
+
+            /*
+            Load up systems with backends to ensure proper connectivity before proceeding with initialization.
+             */
+            System.out.println("System Startup >> Loading system backends.");
+            Try.of(() -> Class.forName(SettingsFactory.class.getName())).getUnchecked();
+            Try.of(() -> Class.forName(ControllerFactory.class.getName())).getUnchecked();
 
             /*
 			Initialize the ready notifier format completion.

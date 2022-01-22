@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.*;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.audio.playlist.SortedPlaylist;
+import dev.westernpine.lib.audio.track.Track;
 import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.lib.audio.track.TrackFactory;
@@ -114,14 +115,14 @@ public class AudioFactory {
         return json.toString();
     }
 
-    public static AudioTrack fromTrackJson(String json) {
+    public static Track fromTrackJson(String json) {
         JsonObject audioTrack = JsonParser.parseString(json).getAsJsonObject();
         AudioTrackInfo audioTrackInfo = AudioTrackInfoFactory.fromJson(audioTrack.get("audioTrackInfo").getAsString());
         UserData userData = UserDataFactory.fromJson(audioTrack.get("userData").getAsString());
         return TrackFactory.from(audioTrackInfo, userData);
     }
 
-    public static AudioPlaylist fromPlaylistJson(String json) {
+    public static SortedPlaylist fromPlaylistJson(String json) {
         JsonObject audioPlaylist = JsonParser.parseString(json).getAsJsonObject();
         String name = audioPlaylist.get("name").getAsString();
         boolean isSearchResult = audioPlaylist.get("isSearchResult").getAsBoolean();
