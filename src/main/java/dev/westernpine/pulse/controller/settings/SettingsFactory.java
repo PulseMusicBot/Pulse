@@ -5,9 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.pulse.Pulse;
-import dev.westernpine.pulse.controller.AccessReason;
 import dev.westernpine.pulse.controller.Controller;
-import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.settings.backend.SettingsBackend;
 import dev.westernpine.pulse.controller.settings.backend.SqlBackend;
 import dev.westernpine.pulse.controller.settings.setting.SettingManager;
@@ -15,7 +13,6 @@ import dev.westernpine.pulse.controller.settings.setting.value.SettingValue;
 import dev.westernpine.pulse.controller.settings.setting.value.SettingValueFactory;
 import dev.westernpine.pulse.properties.IdentityProperties;
 
-import java.io.ByteArrayInputStream;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 

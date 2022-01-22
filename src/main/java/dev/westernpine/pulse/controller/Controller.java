@@ -30,9 +30,11 @@ public class Controller {
 
     private String lastChannelId;
 
-    AccessReason lastAccessReason = AccessReason.INITIALIZATION;
+    private boolean premium = false;
 
-    long lifetime = 0L;
+    protected long ttl = ControllerFactory.DEFAULT_TTL;
+
+    protected ActivityCheck activityCheck = ActivityCheck.CACHE;
 
     private Settings settings;
 
@@ -50,29 +52,21 @@ public class Controller {
 
     private boolean alone = false;
 
+    //TODO: update guild premium status on initialization.
+
     Controller(String guildId) {
         this.guildId = guildId;
         this.previousQueue = new SortedPlaylist(getGuild().getName() + "'s Previous Queue");
         this.queue = new SortedPlaylist(getGuild().getName() + "'s Queue");
     }
 
-    public Controller(String guildId, SortedPlaylist previousQueue, SortedPlaylist queue, AccessReason accessReason, long lifetime) {
+    public Controller(String guildId, SortedPlaylist previousQueue, SortedPlaylist queue, long ttl, ActivityCheck activityCheck, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone) {
         this.guildId = guildId;
         this.previousQueue = previousQueue;
         this.queue = queue;
-        this.lastAccessReason = accessReason;
-        this.lifetime = lifetime;
-    }
-
-    public Controller initialize(@Nullable String connectedChannel,
-                                 @Nullable String lastChannelId,
-                                 @Nullable Track track,
-                                 long position,
-                                 int volume,
-                                 boolean paused,
-                                 boolean alone) {
-        //todo
-        return this;
+        this.ttl = ttl;
+        this.activityCheck = activityCheck;
+        //todo: initialize
     }
 
     public Controller perform(Consumer<Controller> controllerConsumer) {
@@ -87,6 +81,14 @@ public class Controller {
 
     public <R> R map(Function<Controller, R> controllerMapper) {
         return controllerMapper.apply(this);
+    }
+
+    public String getGuildId() {
+        return guildId;
+    }
+
+    public Guild getGuild() {
+        return Pulse.shardManager.getGuildById(guildId);
     }
 
     public String getLastChannelId() {
@@ -104,20 +106,26 @@ public class Controller {
         return this;
     }
 
-    public String getGuildId() {
-        return guildId;
+    public boolean isPremium() {
+        return premium;
     }
 
-    public Guild getGuild() {
-        return Pulse.shardManager.getGuildById(guildId);
+    public void setPremium(boolean premium) {
+        this.premium = premium;
     }
 
-    public AccessReason getLastAccessReason() {
-        return lastAccessReason;
+    public Controller resetTtl(long ttl, ActivityCheck activityCheck) {
+        this.ttl = ttl;
+        this.activityCheck = activityCheck;
+        return this;
     }
 
-    public long getLifetime() {
-        return lifetime;
+    public Controller setTtl(long ttl, ActivityCheck activityCheck) {
+        if (this.activityCheck == null)
+            this.activityCheck = activityCheck;
+        if (this.activityCheck.equals(activityCheck))
+            this.ttl = ttl;
+        return this;
     }
 
     public Settings getSettings() {

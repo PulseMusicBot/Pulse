@@ -3,7 +3,6 @@ package dev.westernpine.pulse.component.command.commands;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.audio.AudioFactory;
-import dev.westernpine.pulse.controller.AccessReason;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.audio.SpeakingMode;

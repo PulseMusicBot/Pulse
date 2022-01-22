@@ -15,6 +15,9 @@ import net.dv8tion.jda.api.entities.AudioChannel;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ControllerFactory {
@@ -28,19 +31,15 @@ public class ControllerFactory {
 
     //TODO: Store tracks as plain wrappers... for EVERY track.
 
-    public static final long MAX_LIFETIME = 15 * 60;
+    public static final long DEFAULT_TTL = 900; //15 minutes of cache time, post timeouts, when not in use at all.
 
     private static final Map<String, Controller> controllers = new HashMap<>();
 
     private static ControllersBackend backend;
 
-    //TODO: Find guild ready listener, check if backend has guild, if so, initialize from there.
-    // NO! This has so many ways it can fault... We need to just initialize the guild on controller factory initialization, and handle the fail from there.
-    // Make seperate method for initializing controllers, as we need to wait for JDA to finish setting up first.
-
     static {
         backend = new SqlBackend(Pulse.identityProperties.get(IdentityProperties.CONTROLLERS_SQL_BACKEND), "controllers");
-        Pulse.scheduler.runLaterRepeatingAsync(() -> {
+        Pulse.scheduler.runLaterRepeating(() -> {
             //TODO: Work on audio capabilities so we can track if controller needs to be deleted or cached.
         }, 0L, 1000L);
         Pulse.shutdownHook = () -> {
@@ -61,29 +60,30 @@ public class ControllerFactory {
     }
 
     public static void initializeBackend() {
-        Map<String, String> serialized = backend.load();
-        //TODO: Do json stuff first to figure out how to process...
+        backend.load().forEach((guildId, controller) -> controllers.put(guildId, fromJson(controller)));
     }
 
-    public static Controller get(String guildId, AccessReason reason) {
-        Controller controller = null;
-        boolean exists = controllers.containsKey(guildId);
-        if (exists) {
-            controller = controllers.get(guildId);
-        } else {
-            controller = new Controller(guildId);
-        }
-        if (reason.shouldOverride())
-            controller.lastAccessReason = reason;
-        if (!exists && reason.shouldSave())
-            controllers.put(guildId, controller);
-        if (reason.shouldResetLifetime())
-            controller.lifetime = 0L;
-        return controller;
-    }
-
-    public boolean isSaved(String guildId) {
+    public static boolean isCached(String guildId) {
         return controllers.containsKey(guildId);
+    }
+
+    public static Controller get(String guildId, boolean cache) {
+        boolean exists = controllers.containsKey(guildId);
+        Controller controller = exists ? controllers.get(guildId) : new Controller(guildId);
+        if (cache)
+            controllers.put(guildId, controller);
+        return controller.setTtl(DEFAULT_TTL, ActivityCheck.CACHE);
+    }
+
+    public static void ifCached(String guildId, Consumer<Controller> controllerConsumer) {
+        if(isCached(guildId))
+            controllerConsumer.accept(get(guildId, false));
+    }
+
+    public static <T> Optional<T> ifCached(String guildId, Function<Controller, T> controllerFunction) {
+        if(isCached(guildId))
+            return Optional.of(controllerFunction.apply(get(guildId, false)));
+        return Optional.empty();
     }
 
     public static String toJson(Controller controller) {
@@ -92,8 +92,8 @@ public class ControllerFactory {
         AudioChannel connectedChannel = controller.getAudioManager().getConnectedChannel();
         json.addProperty("connectedChannel", connectedChannel == null ? "" : connectedChannel.getId());
         json.addProperty("lastChannelId", controller.getLastChannelId() == null ? "" : controller.getLastChannelId());
-        json.addProperty("lastAccessReason", controller.getLastAccessReason().toString());
-        json.addProperty("lifetime", controller.getLifetime());
+        json.addProperty("ttl", controller.ttl);
+        json.addProperty("activityCheck", controller.activityCheck.toString());
         json.addProperty("previousQueue", AudioFactory.toJson(controller.getPreviousQueue()));
         json.addProperty("queue", AudioFactory.toJson(controller.getQueue()));
         json.addProperty("track", controller.getPlayingTrack() == null ? "" : AudioFactory.toJson(controller.getPlayingTrack()));
@@ -112,8 +112,8 @@ public class ControllerFactory {
         connectedChannel = connectedChannel.isEmpty() ? null : connectedChannel;
         String lastChannelId = controller.get("lastChannelId").getAsString();
         lastChannelId = lastChannelId.isEmpty() ? null : lastChannelId;
-        AccessReason lastAccessReason = AccessReason.valueOf(controller.get("lastAccessReason").getAsString());
-        long lifetime = controller.get("lifetime").getAsLong();
+        long ttl = controller.get("ttl").getAsLong();
+        ActivityCheck activityCheck = ActivityCheck.valueOf(controller.get("activityCheck").getAsString());
         SortedPlaylist previousQueue = AudioFactory.fromPlaylistJson(controller.get("previousQueue").toString());
         SortedPlaylist queue = AudioFactory.fromPlaylistJson(controller.get("queue").toString());
         Track track = controller.get("track").toString().isEmpty() ? null : AudioFactory.fromTrackJson(controller.get("track").toString());
@@ -121,7 +121,7 @@ public class ControllerFactory {
         int volume = controller.get("volume").getAsInt();
         boolean paused = controller.get("paused").getAsBoolean();
         boolean alone = controller.get("alone").getAsBoolean();
-        return new Controller(guildId, previousQueue, queue, lastAccessReason, lifetime).initialize();
+        return new Controller(guildId, previousQueue, queue, ttl, activityCheck, connectedChannel, lastChannelId, track, position, volume, paused, alone);
     }
 
 }
