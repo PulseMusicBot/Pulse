@@ -17,7 +17,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -32,9 +31,9 @@ public class Controller {
 
     private boolean premium = false;
 
-    protected long ttl = ControllerFactory.DEFAULT_TTL;
+    protected long lifetime = 0;
 
-    protected ActivityCheck activityCheck = ActivityCheck.CACHE;
+    protected Status status = Status.CACHE;
 
     private Settings settings;
 
@@ -52,20 +51,24 @@ public class Controller {
 
     private boolean alone = false;
 
-    //TODO: update guild premium status on initialization.
+    //TODO:
+    // Initialize settings on initialization (we need it for the activity checks anyways...) - Done!
+    // update guild premium status on initialization.
 
     Controller(String guildId) {
         this.guildId = guildId;
+        this.settings = SettingsFactory.from(this);
         this.previousQueue = new SortedPlaylist(getGuild().getName() + "'s Previous Queue");
         this.queue = new SortedPlaylist(getGuild().getName() + "'s Queue");
     }
 
-    public Controller(String guildId, SortedPlaylist previousQueue, SortedPlaylist queue, long ttl, ActivityCheck activityCheck, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone) {
+    public Controller(String guildId, SortedPlaylist previousQueue, SortedPlaylist queue, long lifetime, Status status, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone) {
         this.guildId = guildId;
+        this.settings = SettingsFactory.from(this);
         this.previousQueue = previousQueue;
         this.queue = queue;
-        this.ttl = ttl;
-        this.activityCheck = activityCheck;
+        this.lifetime = lifetime;
+        this.status = status;
         //todo: initialize
     }
 
@@ -114,22 +117,22 @@ public class Controller {
         this.premium = premium;
     }
 
-    public Controller resetTtl(long ttl, ActivityCheck activityCheck) {
-        this.ttl = ttl;
-        this.activityCheck = activityCheck;
+    public Controller resetStatus(Status status) {
+        this.lifetime = 0;
+        this.status = status;
         return this;
     }
 
-    public Controller setTtl(long ttl, ActivityCheck activityCheck) {
-        if (this.activityCheck == null)
-            this.activityCheck = activityCheck;
-        if (this.activityCheck.equals(activityCheck))
-            this.ttl = ttl;
+    public Controller setLifetime(long lifetime, Status status) {
+        if (this.status == null)
+            this.status = status;
+        if (this.status.equals(status))
+            this.lifetime = lifetime;
         return this;
     }
 
     public Settings getSettings() {
-        return settings == null ? settings = SettingsFactory.from(this) : settings;
+        return settings;
     }
 
     public AudioManager getAudioManager() {
@@ -153,6 +156,11 @@ public class Controller {
         if (voiceState == null || !voiceState.inAudioChannel())
             return null;
         return voiceState.getChannel();
+    }
+
+    public List<Member> getConnectedMembers() {
+        AudioManager audioManager = getAudioManager();
+        return audioManager.isConnected() ? audioManager.getConnectedChannel().getMembers() : List.of();
     }
 
     public Controller connect(Member member, SpeakingMode... speakingModes) throws InsufficientPermissionException {
@@ -188,32 +196,18 @@ public class Controller {
         return audioSender;
     }
 
-    /**
-     * @return Currently playing track
-     */
     public AudioTrack getPlayingTrack() {
         return audioPlayer.getPlayingTrack();
     }
 
-    /**
-     * @param track The track to start playing
-     */
     public void playTrack(AudioTrack track) {
         audioPlayer.playTrack(track);
     }
 
-    /**
-     * @param track       The track to start playing, passing null will stop the current track and return false
-     * @param noInterrupt Whether to only start if nothing else is playing
-     * @return True if the track was started
-     */
     public boolean startTrack(AudioTrack track, boolean noInterrupt) {
         return audioPlayer.startTrack(track, noInterrupt);
     }
 
-    /**
-     * Stop currently playing track.
-     */
     public void stopTrack() {
         audioPlayer.stopTrack();
     }
@@ -238,18 +232,24 @@ public class Controller {
         audioPlayer.setFilterFactory(factory);
     }
 
-    /**
-     * @return Whether the player is paused
-     */
     public boolean isPaused() {
         return audioPlayer.isPaused();
     }
 
-    /**
-     * @param value True to pause, false to resume
-     */
-    public void setPaused(boolean value) {
-        audioPlayer.setPaused(value);
+    public void setPaused(boolean paused) {
+        boolean changeState = audioPlayer.isPaused() != paused;
+        if(!changeState)
+            return;
+        AudioTrack track = getPlayingTrack();
+        if(track != null) {
+            if(!track.isSeekable()) {
+                changeState = false;
+            }
+        } else {
+            paused = false;
+        }
+        if(changeState)
+            audioPlayer.setPaused(paused);
     }
 
     public void clearQueues() {
@@ -257,10 +257,7 @@ public class Controller {
         this.queue.clear();
     }
 
-    /**
-     * Destroy the player and stop playing track.
-     */
-    public void destroy() {
+    public void destroy(EndCase endCase) {
         AudioManager audioManager = getAudioManager();
         audioManager.closeAudioConnection();
         audioManager.setSendingHandler(this.audioSender = null);

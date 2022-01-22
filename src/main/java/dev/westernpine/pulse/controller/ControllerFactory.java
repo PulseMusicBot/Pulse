@@ -10,10 +10,12 @@ import dev.westernpine.lib.util.EntryUtil;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.backend.ControllersBackend;
 import dev.westernpine.pulse.controller.backend.SqlBackend;
+import dev.westernpine.pulse.controller.settings.setting.Setting;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import net.dv8tion.jda.api.entities.AudioChannel;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -22,16 +24,10 @@ import java.util.stream.Collectors;
 
 public class ControllerFactory {
 
-    //TODO: Make this class into a manager as well as a singleton object.
-    // Let each controller store a "lastValidAccess" value that a timer can determine if it is viable to disconnect or not, then to delete or not (determined by a bots voice state).
-    // Dont forget to include settings...
-    // Audio Interface as well.
-    // serializeable controller to save the current state on shutdown.
+    //TODO:
     // maximum allowed enques.
 
-    //TODO: Store tracks as plain wrappers... for EVERY track.
-
-    public static final long DEFAULT_TTL = 900; //15 minutes of cache time, post timeouts, when not in use at all.
+    public static final long MAX_LIFETIME = 900; //15 minutes of cache time, post timeouts, when not in use at all.
 
     private static final Map<String, Controller> controllers = new HashMap<>();
 
@@ -40,7 +36,63 @@ public class ControllerFactory {
     static {
         backend = new SqlBackend(Pulse.identityProperties.get(IdentityProperties.CONTROLLERS_SQL_BACKEND), "controllers");
         Pulse.scheduler.runLaterRepeating(() -> {
-            //TODO: Work on audio capabilities so we can track if controller needs to be deleted or cached.
+            Iterator<Map.Entry<String, Controller>> iterator = controllers.entrySet().iterator();
+            while(iterator.hasNext()) {
+                Map.Entry<String, Controller> entry = iterator.next();
+                String guildId = entry.getKey();
+                Controller controller = entry.getValue();
+                try {
+                    if(controller.getAudioManager().isConnected()) {
+                        Status status = controller.status;
+                        boolean changeableStatus = status.isnt(Status.INACTIVE) && status.isnt(Status.ALONE) && status.isnt(Status.PAUSED);
+                        boolean playing = controller.getPlayingTrack() != null;
+                        boolean alone = controller.getConnectedMembers().isEmpty();
+                        boolean paused = controller.isPaused();
+                        boolean activeWorthy = playing && !alone && !paused;
+                        boolean tfs = controller.getSettings().get(Setting.TWENTRY_FOUR_SEVEN).toBoolean();
+                        boolean endSession = false;
+                        if(tfs || (status.isnt(Status.ACTIVE) && (status.is(Status.CACHE) || activeWorthy)))
+                            controller.resetStatus(Status.ACTIVE);
+                        else {
+                            Status newStatus = Status.CACHE;
+                            if(!playing) {
+                                newStatus = Status.INACTIVE;
+                                if(changeableStatus)
+                                    controller.resetStatus(newStatus);
+                                endSession = controller.setLifetime(controller.lifetime+1, newStatus).lifetime >= MAX_LIFETIME;
+                            }
+                            if(alone) {
+                                newStatus = Status.ALONE;
+                                if(changeableStatus)
+                                    controller.resetStatus(newStatus);
+                                endSession = controller.setLifetime(controller.lifetime+1, newStatus).lifetime >= MAX_LIFETIME;
+                            }
+                            if(paused) {
+                                newStatus = Status.PAUSED;
+                                if(changeableStatus)
+                                    controller.resetStatus(newStatus);
+                                endSession = controller.setLifetime(controller.lifetime+1, newStatus).lifetime >= MAX_LIFETIME;
+                            }
+                            if(endSession) {
+                                controller.destroy(controller.status.getEndCase());
+                                controller.resetStatus(Status.CACHE);
+//                                continue; // This is technically the last statement in the loop... therefor unnecessary.
+                            }
+                        }
+                    } else {
+                        // Manage the cache state of a controller, and remove it when it's cache state times out.
+                        if(controller.status == null || !controller.status.equals(Status.CACHE))
+                            controller.resetStatus(Status.CACHE);
+                        else if(controller.setLifetime(controller.lifetime+1, Status.CACHE).lifetime >= MAX_LIFETIME)
+                            iterator.remove();
+                    }
+                } catch (Exception e) {
+                    Try.of(() -> controller.destroy(EndCase.FATAL_ERROR));
+                    iterator.remove();
+                    e.printStackTrace();
+                    System.out.println("A fatal error has occurred while managing the controller for guild: " + guildId);
+                }
+            }
         }, 0L, 1000L);
         Pulse.shutdownHook = () -> {
             Map<String, String> serialized = controllers
@@ -48,7 +100,7 @@ public class ControllerFactory {
                     .stream()
                     .map(entry -> EntryUtil.remapValue(entry, ControllerFactory::toJson))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            controllers.values().forEach(Controller::destroy);
+            controllers.values().forEach(controller -> controller.destroy(EndCase.BOT_RESTART));
             controllers.clear();
             backend.save(serialized);
             if (!backend.isClosed()) {
@@ -72,7 +124,7 @@ public class ControllerFactory {
         Controller controller = exists ? controllers.get(guildId) : new Controller(guildId);
         if (cache)
             controllers.put(guildId, controller);
-        return controller.setTtl(DEFAULT_TTL, ActivityCheck.CACHE);
+        return controller.setLifetime(0, Status.CACHE);
     }
 
     public static void ifCached(String guildId, Consumer<Controller> controllerConsumer) {
@@ -92,8 +144,8 @@ public class ControllerFactory {
         AudioChannel connectedChannel = controller.getAudioManager().getConnectedChannel();
         json.addProperty("connectedChannel", connectedChannel == null ? "" : connectedChannel.getId());
         json.addProperty("lastChannelId", controller.getLastChannelId() == null ? "" : controller.getLastChannelId());
-        json.addProperty("ttl", controller.ttl);
-        json.addProperty("activityCheck", controller.activityCheck.toString());
+        json.addProperty("lifetime", controller.lifetime);
+        json.addProperty("activityCheck", controller.status.toString());
         json.addProperty("previousQueue", AudioFactory.toJson(controller.getPreviousQueue()));
         json.addProperty("queue", AudioFactory.toJson(controller.getQueue()));
         json.addProperty("track", controller.getPlayingTrack() == null ? "" : AudioFactory.toJson(controller.getPlayingTrack()));
@@ -112,8 +164,8 @@ public class ControllerFactory {
         connectedChannel = connectedChannel.isEmpty() ? null : connectedChannel;
         String lastChannelId = controller.get("lastChannelId").getAsString();
         lastChannelId = lastChannelId.isEmpty() ? null : lastChannelId;
-        long ttl = controller.get("ttl").getAsLong();
-        ActivityCheck activityCheck = ActivityCheck.valueOf(controller.get("activityCheck").getAsString());
+        long lifetime = controller.get("lifetime").getAsLong();
+        Status status = Status.valueOf(controller.get("activityCheck").getAsString());
         SortedPlaylist previousQueue = AudioFactory.fromPlaylistJson(controller.get("previousQueue").toString());
         SortedPlaylist queue = AudioFactory.fromPlaylistJson(controller.get("queue").toString());
         Track track = controller.get("track").toString().isEmpty() ? null : AudioFactory.fromTrackJson(controller.get("track").toString());
@@ -121,33 +173,7 @@ public class ControllerFactory {
         int volume = controller.get("volume").getAsInt();
         boolean paused = controller.get("paused").getAsBoolean();
         boolean alone = controller.get("alone").getAsBoolean();
-        return new Controller(guildId, previousQueue, queue, ttl, activityCheck, connectedChannel, lastChannelId, track, position, volume, paused, alone);
+        return new Controller(guildId, previousQueue, queue, lifetime, status, connectedChannel, lastChannelId, track, position, volume, paused, alone);
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

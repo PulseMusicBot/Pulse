@@ -7,7 +7,6 @@ public class SettingManager {
     private static List<Setting> settings = new ArrayList<>();
 
     static {
-        //TODO: add in all settings.
         settings.add(Setting.DEFAULT_VOLUME);
         settings.add(Setting.IMAGE_SIZE);
         settings.add(Setting.SHUFFLE_PLAYLISTS);
