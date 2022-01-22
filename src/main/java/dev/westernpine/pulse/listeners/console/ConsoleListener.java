@@ -3,6 +3,7 @@ package dev.westernpine.pulse.listeners.console;
 import dev.westernpine.eventapi.objects.EventHandler;
 import dev.westernpine.eventapi.objects.Listener;
 import dev.westernpine.lib.interaction.ConsoleCommandHandler;
+import dev.westernpine.pulse.commands.ControllersCommand;
 import dev.westernpine.pulse.commands.StopCommand;
 import dev.westernpine.pulse.events.console.ConsoleEvent;
 
@@ -16,6 +17,7 @@ public class ConsoleListener implements Listener {
 	
 	public ConsoleListener() {
 		commands.add(new StopCommand());
+		commands.add(new ControllersCommand());
 	}
 	
 	@EventHandler

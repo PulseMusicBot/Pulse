@@ -22,13 +22,12 @@ public class SettingsFactory {
 
     static {
         backend = new SqlBackend(Pulse.identityProperties.get(IdentityProperties.SETTINGS_SQL_BACKEND), "settings");
-        Pulse.shutdownHook = () -> {
-            Pulse.shutdownHook.run();
+        Pulse.shutdownHooks.addLast(() -> {
             if(!backend.isClosed()) {
                 System.out.println("System Shutdown >> Closing settings backend.");
                 Try.of(() -> backend.close()).onFailure(Throwable::printStackTrace);
             }
-        };
+        });
     }
 
     public static Settings from(Controller controller) {
@@ -57,7 +56,7 @@ public class SettingsFactory {
                 backend,
                 StreamSupport
                         .stream(settings.get("settings").getAsJsonArray().spliterator(), true)
-                        .map(jsonElement -> SettingValueFactory.fromJson(jsonElement.toString()))
+                        .map(jsonElement -> SettingValueFactory.fromJson(jsonElement.getAsString()))
                         .collect(Collectors.toMap(settingValue -> settingValue.getSetting().getUuid(), SettingValue::getValue)));
     }
 

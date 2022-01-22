@@ -1,6 +1,7 @@
 package dev.westernpine.pulse.commands;
 
 import dev.westernpine.lib.interaction.ConsoleCommandHandler;
+import dev.westernpine.pulse.Pulse;
 
 public class StopCommand implements ConsoleCommandHandler {
 
@@ -27,6 +28,7 @@ public class StopCommand implements ConsoleCommandHandler {
 	@Override
 	public boolean handle(String command, String[] args) {
 		System.out.println("Shutting down...");
+		Pulse.shutdownTask.run();
 		System.exit(0);
 		return true;
 	}

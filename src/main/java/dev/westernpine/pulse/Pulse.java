@@ -57,16 +57,37 @@ import java.util.stream.Stream;
 public class Pulse {
 
     /*
-    TODO: Goals for today:
-     1. Put messages built inside code. - Done
-     - CHANGE OF PLANS!
-     - - We need to convert everything from serializable to factories. Since each class has a different way of initializing, serializing, and deserializing, its better to just make a factory for each.
-     2. Start work on the audio package.
-     3. Build Audio Track Wrapper.
-     4. Build Playlist Wrapper.
-     5. Possibly start on TrackFactories?
-     6. Possibly continue work on the controller, and SQL Integration for configuration?
+    TODO:
+     Up Next:
+     - Test SQL backends.
+     - Player listeners.
+     - Controller events?
+     - Finish controller initialization on construction from json.
+     - Loading of tracks and playlists...
+     - Deeper playlist/queue functionality
+     - Management/Premium status
+     - More sources.
+     - Commands
+
      */
+
+    public static boolean stopped = false;
+
+    public static LinkedList<Runnable> shutdownHooks = new LinkedList<>();
+
+    public static final Runnable shutdownTask = () -> {
+        if(stopped)
+            return;
+        stopped = true;
+        System.out.println("System Shutdown >> Initiating system shutdown.");
+        Pulse.shutdownHooks.forEach(Runnable::run);
+        System.out.println("System Shutdown >> System shutdown completed. Goodbye!");
+        Try.of(() -> Thread.sleep(1000L));
+    };
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(shutdownTask));
+    }
 
     public static final Gson gson = new Gson();
 
@@ -96,22 +117,6 @@ public class Pulse {
 
     public static ShardManager shardManager;
 
-    /*
-    Near the bottom and out of order in case of some un-set values.
-    */
-    public static Runnable shutdownHook = () -> {
-        System.out.println("System Shutdown >> Terminating scheduler.");
-        scheduler.shutdownNow();
-        System.out.println("System Shutdown >> Closing console inputs.");
-        Try.of(input::close).onFailure(Throwable::printStackTrace);
-        if (Objects.nonNull(shardManager)) {
-            System.out.println("System Shutdown >> Shutting down shard-manager.");
-            shardManager.shutdown();
-        }
-        System.out.println("System Shutdown >> System shutdown completed. Goodbye!");
-        Try.of(() -> Thread.sleep(1000L));
-    };
-
     public static void main(String[] args) {
         try {
 
@@ -126,13 +131,18 @@ public class Pulse {
             System.out.println("System Startup >> Starting Pulse (v)" + version);
 
             /*
-            Add a shutdown hook for whenever the environment shuts down.
+            Shutdown hooks...
              */
-            System.out.println("System Startup >> Adding shutdown hook listener.");
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                System.out.println("System Shutdown >> Initiating system shutdown.");
-                Pulse.shutdownHook.run();
-            }));
+            shutdownHooks.add(() -> {
+                System.out.println("System Shutdown >> Terminating scheduler.");
+                scheduler.shutdownNow();
+                System.out.println("System Shutdown >> Closing console inputs.");
+                Try.of(input::close).onFailure(Throwable::printStackTrace);
+                if (Objects.nonNull(shardManager)) {
+                    System.out.println("System Shutdown >> Shutting down shardmanager.");
+                    shardManager.shutdown();
+                }
+            });
 
             /*
             Register events before system startup.
@@ -239,6 +249,7 @@ public class Pulse {
                     .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                     .setChunkingFilter(ChunkingFilter.NONE)
                     .setRawEventsEnabled(true)
+                    .setEnableShutdownHook(false)
                     .setStatus(OnlineStatus.DO_NOT_DISTURB)
                     .setActivity(Activity.playing("Starting up..."))
                     .addEventListeners(new ReadyListener())

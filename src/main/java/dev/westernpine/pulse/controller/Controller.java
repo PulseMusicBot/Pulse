@@ -3,6 +3,7 @@ package dev.westernpine.pulse.controller;
 import com.sedmelluq.discord.lavaplayer.filter.PcmFilterFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.TrackMarker;
 import dev.westernpine.lib.audio.track.Track;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.lib.audio.playlist.SortedPlaylist;
@@ -62,6 +63,16 @@ public class Controller {
         this.queue = new SortedPlaylist(getGuild().getName() + "'s Queue");
     }
 
+    public Controller(String guildId, long lifetime, Status status, String lastChannelId) {
+        this.guildId = guildId;
+        this.settings = SettingsFactory.from(this);
+        this.previousQueue = new SortedPlaylist(getGuild().getName() + "'s Previous Queue");
+        this.queue = new SortedPlaylist(getGuild().getName() + "'s Queue");
+        this.lifetime = lifetime;
+        this.status = status;
+        this.lastChannelId = lastChannelId;
+    }
+
     public Controller(String guildId, SortedPlaylist previousQueue, SortedPlaylist queue, long lifetime, Status status, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone) {
         this.guildId = guildId;
         this.settings = SettingsFactory.from(this);
@@ -69,7 +80,16 @@ public class Controller {
         this.queue = queue;
         this.lifetime = lifetime;
         this.status = status;
+        this.lastChannelId = lastChannelId;
         //todo: initialize
+        if(this.getGuild().getGuildChannelById(connectedChannel) instanceof AudioChannel audioChannel) {
+            this.connect(audioChannel);
+            this.setVolume(volume);
+            this.startTrack(track, false);
+            this.setPaused(paused);
+            this.getPlayingTrack().setPosition(position);
+        }
+        this.alone = alone;
     }
 
     public Controller perform(Consumer<Controller> controllerConsumer) {
@@ -163,14 +183,14 @@ public class Controller {
         return audioManager.isConnected() ? audioManager.getConnectedChannel().getMembers() : List.of();
     }
 
-    public Controller connect(Member member, SpeakingMode... speakingModes) throws InsufficientPermissionException {
-        return connect(getAudioChannel(member), speakingModes);
+    public Controller connect(Member member) throws InsufficientPermissionException {
+        return connect(getAudioChannel(member));
     }
 
-    public Controller connect(AudioChannel audioChannel, SpeakingMode... speakingModes) throws InsufficientPermissionException {
+    public Controller connect(AudioChannel audioChannel) throws InsufficientPermissionException {
         AudioManager audioManager = getAudioManager();
         audioManager.setSelfDeafened(true);
-        audioManager.setSpeakingMode(speakingModes.length == 0 ? List.of(SpeakingMode.SOUNDSHARE) : Arrays.asList(speakingModes));
+        audioManager.setSpeakingMode(SpeakingMode.SOUNDSHARE);
         if(audioPlayer == null) {
             audioPlayer = Pulse.audioPlayerManager.createPlayer();
             audioPlayer.setVolume(getSettings().get(Setting.DEFAULT_VOLUME).toInteger());
@@ -262,8 +282,10 @@ public class Controller {
         audioManager.closeAudioConnection();
         audioManager.setSendingHandler(this.audioSender = null);
         audioManager.setReceivingHandler(this.audioReceiver = null);
-        this.audioPlayer.destroy();
-        this.audioPlayer = null;
+        if(this.audioPlayer != null) {
+            this.audioPlayer.destroy();
+            this.audioPlayer = null;
+        }
         this.clearQueues();
     }
 

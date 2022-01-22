@@ -24,7 +24,7 @@ public class SqlProperties extends PropertiesFile {
     public static final Property PASSWORD = new Property("password", "password");
 
     public SqlProperties(String identity) throws Throwable {
-        super(identity + ".properties", PropertyFile.getDeclaredProperties(IdentityProperties.class));
+        super(identity + ".properties", PropertyFile.getDeclaredProperties(SqlProperties.class));
     }
 
     @Override

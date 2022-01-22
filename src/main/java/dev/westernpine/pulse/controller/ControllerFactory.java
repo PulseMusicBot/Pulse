@@ -14,10 +14,7 @@ import dev.westernpine.pulse.controller.settings.setting.Setting;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import net.dv8tion.jda.api.entities.AudioChannel;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -94,29 +91,35 @@ public class ControllerFactory {
                 }
             }
         }, 0L, 1000L);
-        Pulse.shutdownHook = () -> {
+        Pulse.shutdownHooks.addFirst(() -> {
             Map<String, String> serialized = controllers
                     .entrySet()
                     .stream()
-                    .map(entry -> EntryUtil.remapValue(entry, ControllerFactory::toJson))
+                    .filter(entry -> entry.getValue().getAudioPlayer() != null)
+                    .map(entry -> Try.of(() -> EntryUtil.remapValue(entry, ControllerFactory::toJson)).orElse(null))
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            controllers.values().forEach(controller -> controller.destroy(EndCase.BOT_RESTART));
+//            controllers.values().forEach(controller -> Try.of(() -> controller.destroy(EndCase.BOT_RESTART)));
             controllers.clear();
             backend.save(serialized);
             if (!backend.isClosed()) {
                 System.out.println("System Shutdown >> Closing controller backend.");
                 Try.of(() -> backend.close()).onFailure(Throwable::printStackTrace);
             }
-            Pulse.shutdownHook.run();
-        };
+        });
     }
 
     public static void initializeBackend() {
-        backend.load().forEach((guildId, controller) -> controllers.put(guildId, fromJson(controller)));
+        backend.load().forEach((guildId, controller) -> Try.of(() -> controllers.put(guildId, fromJson(controller))).onFailure(Throwable::printStackTrace));
+        backend.clear();
     }
 
     public static boolean isCached(String guildId) {
         return controllers.containsKey(guildId);
+    }
+
+    public static Map<String, Controller> getControllers() {
+        return controllers;
     }
 
     public static Controller get(String guildId, boolean cache) {
@@ -142,17 +145,21 @@ public class ControllerFactory {
         JsonObject json = new JsonObject();
         json.addProperty("guildId", controller.getGuildId());
         AudioChannel connectedChannel = controller.getAudioManager().getConnectedChannel();
-        json.addProperty("connectedChannel", connectedChannel == null ? "" : connectedChannel.getId());
         json.addProperty("lastChannelId", controller.getLastChannelId() == null ? "" : controller.getLastChannelId());
         json.addProperty("lifetime", controller.lifetime);
-        json.addProperty("activityCheck", controller.status.toString());
-        json.addProperty("previousQueue", AudioFactory.toJson(controller.getPreviousQueue()));
-        json.addProperty("queue", AudioFactory.toJson(controller.getQueue()));
-        json.addProperty("track", controller.getPlayingTrack() == null ? "" : AudioFactory.toJson(controller.getPlayingTrack()));
-        json.addProperty("position", controller.getPlayingTrack() == null ? -1L : controller.getPlayingTrack().getPosition());
-        json.addProperty("volume", controller.getVolume());
-        json.addProperty("paused", controller.isPaused());
-        json.addProperty("alone", controller.wasAlone());
+        json.addProperty("status", controller.status.toString());
+        boolean isConnected = controller.getAudioPlayer() != null;
+        json.addProperty("isConnected", isConnected);
+        if(isConnected) {
+            json.addProperty("connectedChannel", connectedChannel == null ? "" : connectedChannel.getId());
+            json.addProperty("previousQueue", AudioFactory.toJson(controller.getPreviousQueue()).toString());
+            json.addProperty("queue", AudioFactory.toJson(controller.getQueue()).toString());
+            json.addProperty("track", controller.getPlayingTrack() == null ? "" : AudioFactory.toJson(controller.getPlayingTrack()).toString());
+            json.addProperty("position", controller.getPlayingTrack() == null ? -1L : controller.getPlayingTrack().getPosition());
+            json.addProperty("volume", controller.getVolume());
+            json.addProperty("paused", controller.isPaused());
+            json.addProperty("alone", controller.wasAlone());
+        }
         return json.toString();
     }
 
@@ -160,20 +167,25 @@ public class ControllerFactory {
     public static Controller fromJson(String json) {
         JsonObject controller = JsonParser.parseString(json).getAsJsonObject();
         String guildId = controller.get("guildId").getAsString();
-        String connectedChannel = controller.get("connectedChannel").getAsString();
-        connectedChannel = connectedChannel.isEmpty() ? null : connectedChannel;
         String lastChannelId = controller.get("lastChannelId").getAsString();
         lastChannelId = lastChannelId.isEmpty() ? null : lastChannelId;
         long lifetime = controller.get("lifetime").getAsLong();
-        Status status = Status.valueOf(controller.get("activityCheck").getAsString());
-        SortedPlaylist previousQueue = AudioFactory.fromPlaylistJson(controller.get("previousQueue").toString());
-        SortedPlaylist queue = AudioFactory.fromPlaylistJson(controller.get("queue").toString());
-        Track track = controller.get("track").toString().isEmpty() ? null : AudioFactory.fromTrackJson(controller.get("track").toString());
-        long position = controller.get("position").getAsLong();
-        int volume = controller.get("volume").getAsInt();
-        boolean paused = controller.get("paused").getAsBoolean();
-        boolean alone = controller.get("alone").getAsBoolean();
-        return new Controller(guildId, previousQueue, queue, lifetime, status, connectedChannel, lastChannelId, track, position, volume, paused, alone);
+        Status status = Status.valueOf(controller.get("status").getAsString());
+        boolean isConnected = controller.get("isConnected").getAsBoolean();
+        if(!isConnected) {
+            return new Controller(guildId, lifetime, status, lastChannelId);
+        } else {
+            String connectedChannel = controller.get("connectedChannel").getAsString();
+            connectedChannel = connectedChannel.isEmpty() ? null : connectedChannel;
+            SortedPlaylist previousQueue = AudioFactory.fromPlaylistJson(controller.get("previousQueue").getAsString());
+            SortedPlaylist queue = AudioFactory.fromPlaylistJson(controller.get("queue").getAsString());
+            Track track = controller.get("track").toString().isEmpty() ? null : AudioFactory.fromTrackJson(controller.get("track").getAsString());
+            long position = controller.get("position").getAsLong();
+            int volume = controller.get("volume").getAsInt();
+            boolean paused = controller.get("paused").getAsBoolean();
+            boolean alone = controller.get("alone").getAsBoolean();
+            return new Controller(guildId, previousQueue, queue, lifetime, status, connectedChannel, lastChannelId, track, position, volume, paused, alone);
+        }
     }
 
 }

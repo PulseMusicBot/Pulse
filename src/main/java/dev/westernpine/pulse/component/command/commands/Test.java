@@ -56,7 +56,7 @@ public class Test implements SlashCommandComponentHandler {
     public boolean handle(SlashCommandEvent event) {
         if(!event.getName().equals(command()))
             return false;
-        Controller controller = ControllerFactory.get(event.getGuild().getId(), AccessReason.UNKNOWN).connect(event.getMember(), SpeakingMode.SOUNDSHARE);
+        Controller controller = ControllerFactory.get(event.getGuild().getId(), true).connect(event.getMember());
         Try.of(() -> AudioFactory.toTrack(AudioFactory.query(event.getOption("query").getAsString()).get()))
                 .onSuccess(track -> controller.startTrack(track, true))
                 .onFailure(Throwable::printStackTrace);
