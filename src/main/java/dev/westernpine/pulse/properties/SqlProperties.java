@@ -33,12 +33,6 @@ public class SqlProperties extends PropertiesFile {
         return this;
     }
 
-    @Override
-    public SqlProperties print() {
-        super.print();
-        return this;
-    }
-
     public SQL toSql() {
         return SQL.getBuilder()
                 .setIp(this.get(HOST))

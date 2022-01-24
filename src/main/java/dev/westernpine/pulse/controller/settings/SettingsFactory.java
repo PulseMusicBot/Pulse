@@ -16,6 +16,8 @@ import dev.westernpine.pulse.properties.IdentityProperties;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static dev.westernpine.pulse.logging.Logger.logger;
+
 public class SettingsFactory {
 
     private static SettingsBackend backend;
@@ -24,7 +26,7 @@ public class SettingsFactory {
         backend = new SqlBackend(Pulse.identityProperties.get(IdentityProperties.SETTINGS_SQL_BACKEND), "settings");
         Pulse.shutdownHooks.addLast(() -> {
             if(!backend.isClosed()) {
-                System.out.println("System Shutdown >> Closing settings backend.");
+                logger.info("Closing settings backend.");
                 Try.of(() -> backend.close()).onFailure(Throwable::printStackTrace);
             }
         });

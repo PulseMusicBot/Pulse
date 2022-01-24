@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.TrackMarker;
 import dev.westernpine.lib.audio.track.Track;
+import dev.westernpine.lib.object.TriState;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.lib.audio.playlist.SortedPlaylist;
 import dev.westernpine.pulse.controller.handlers.audio.AudioReceiver;
@@ -52,9 +53,18 @@ public class Controller {
 
     private boolean alone = false;
 
+    /*
+    Other controller properties.
+     */
+
+    //False = Track, None = Off, True = Queue.
+    private TriState repeating = TriState.NONE;
+
+    private int lastTrack = 0;
+
     //TODO:
-    // Initialize settings on initialization (we need it for the activity checks anyways...) - Done!
-    // update guild premium status on initialization.
+    // Initialize settings on initialization. (we need it for the activity checks anyways...) - Done!
+    // update guild premium status on initialization. (requires management)
 
     Controller(String guildId) {
         this.guildId = guildId;
@@ -73,7 +83,7 @@ public class Controller {
         this.lastChannelId = lastChannelId;
     }
 
-    public Controller(String guildId, SortedPlaylist previousQueue, SortedPlaylist queue, long lifetime, Status status, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone) {
+    public Controller(String guildId, SortedPlaylist previousQueue, SortedPlaylist queue, long lifetime, Status status, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone, TriState repeating, int lastTrack) {
         this.guildId = guildId;
         this.settings = SettingsFactory.from(this);
         this.previousQueue = previousQueue;
@@ -85,11 +95,13 @@ public class Controller {
         if(this.getGuild().getGuildChannelById(connectedChannel) instanceof AudioChannel audioChannel) {
             this.connect(audioChannel);
             this.setVolume(volume);
+            this.alone = alone;
+            this.repeating = repeating;
+            this.lastTrack = lastTrack;
             this.startTrack(track, false);
             this.setPaused(paused);
             this.getPlayingTrack().setPosition(position);
         }
-        this.alone = alone;
     }
 
     public Controller perform(Consumer<Controller> controllerConsumer) {
@@ -183,11 +195,31 @@ public class Controller {
         return audioManager.isConnected() ? audioManager.getConnectedChannel().getMembers() : List.of();
     }
 
-    public Controller connect(Member member) throws InsufficientPermissionException {
+    /**
+     * @throws:
+     * IllegalArgumentException –
+     * If the provided channel was null.
+     * If the provided channel is not part of the Guild that the current audio connection is connected to.
+     * UnsupportedOperationException – If audio is disabled due to an internal JDA error
+     * net.dv8tion.jda.api.exceptions.InsufficientPermissionException –
+     * If the currently logged in account does not have the Permission VOICE_CONNECT
+     * If the currently logged in account does not have the Permission VOICE_MOVE_OTHERS and the user limit has been exceeded!
+     */
+    public Controller connect(Member member) throws IllegalArgumentException, InsufficientPermissionException {
         return connect(getAudioChannel(member));
     }
 
-    public Controller connect(AudioChannel audioChannel) throws InsufficientPermissionException {
+    /**
+     * @throws:
+     * IllegalArgumentException –
+     * If the provided channel was null.
+     * If the provided channel is not part of the Guild that the current audio connection is connected to.
+     * UnsupportedOperationException – If audio is disabled due to an internal JDA error
+     * net.dv8tion.jda.api.exceptions.InsufficientPermissionException –
+     * If the currently logged in account does not have the Permission VOICE_CONNECT
+     * If the currently logged in account does not have the Permission VOICE_MOVE_OTHERS and the user limit has been exceeded!
+     */
+    public Controller connect(AudioChannel audioChannel) throws IllegalArgumentException, InsufficientPermissionException {
         AudioManager audioManager = getAudioManager();
         audioManager.setSelfDeafened(true);
         audioManager.setSpeakingMode(SpeakingMode.SOUNDSHARE);
@@ -277,6 +309,30 @@ public class Controller {
         this.queue.clear();
     }
 
+    public SortedPlaylist getPreviousQueue() {
+        return previousQueue;
+    }
+
+    public SortedPlaylist getQueue() {
+        return queue;
+    }
+
+    public TriState getRepeating() {
+        return repeating;
+    }
+
+    public void setRepeating(TriState repeating) {
+        this.repeating = repeating;
+    }
+
+    public int getLastTrack() {
+        return lastTrack;
+    }
+
+    public void setLastTrack(int lastTrack) {
+        this.lastTrack = lastTrack;
+    }
+
     public void destroy(EndCase endCase) {
         AudioManager audioManager = getAudioManager();
         audioManager.closeAudioConnection();
@@ -287,13 +343,7 @@ public class Controller {
             this.audioPlayer = null;
         }
         this.clearQueues();
-    }
-
-    public SortedPlaylist getPreviousQueue() {
-        return previousQueue;
-    }
-
-    public SortedPlaylist getQueue() {
-        return queue;
+        this.setRepeating(TriState.NONE);
+        this.lastTrack = 0;
     }
 }

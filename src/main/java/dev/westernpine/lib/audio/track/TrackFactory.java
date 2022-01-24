@@ -17,6 +17,8 @@ public class TrackFactory {
     }
 
     public static Track from(InternalAudioTrack internalAudioTrack) {
+        if(internalAudioTrack instanceof Track track)
+            return track;
         return new Track(internalAudioTrack);
     }
 

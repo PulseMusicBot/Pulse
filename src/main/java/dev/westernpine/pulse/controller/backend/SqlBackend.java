@@ -1,11 +1,15 @@
 package dev.westernpine.pulse.controller.backend;
 
 import dev.westernpine.lib.object.SQL;
+import dev.westernpine.pulse.Pulse;
+import dev.westernpine.lib.object.State;
 import dev.westernpine.pulse.properties.SqlProperties;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class SqlBackend implements ControllersBackend {
 
@@ -21,7 +25,8 @@ public class SqlBackend implements ControllersBackend {
             this.sql.update("CREATE TABLE IF NOT EXISTS `%s` (`guildId` VARCHAR(255) NOT NULL, `controller` LONGTEXT NOT NULL, PRIMARY KEY(guildId));".formatted(this.tableName));
         } catch (Throwable e) {
             e.printStackTrace();
-            System.exit(0);
+            logger.severe("Unable to initialize the controller backend.");
+            Pulse.setState(State.SHUTDOWN);
         }
         this.tableName = tableName;
     }

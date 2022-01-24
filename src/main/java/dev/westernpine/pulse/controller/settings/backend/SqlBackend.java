@@ -1,10 +1,13 @@
 package dev.westernpine.pulse.controller.settings.backend;
 
-import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.object.SQL;
+import dev.westernpine.pulse.Pulse;
+import dev.westernpine.lib.object.State;
 import dev.westernpine.pulse.properties.SqlProperties;
 
 import java.io.IOException;
+
+import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class SqlBackend implements SettingsBackend {
 
@@ -20,7 +23,8 @@ public class SqlBackend implements SettingsBackend {
             this.sql.update("CREATE TABLE IF NOT EXISTS `%s` (`guildId` VARCHAR(255) NOT NULL, `settings` LONGTEXT NOT NULL, PRIMARY KEY(guildId));".formatted(this.tableName));
         } catch (Throwable e) {
             e.printStackTrace();
-            System.exit(0);
+            logger.severe("Unable to initialize the settings backend.");
+            Pulse.setState(State.SHUTDOWN);
         }
         this.tableName = tableName;
     }

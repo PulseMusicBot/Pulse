@@ -6,6 +6,8 @@ import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
 import dev.westernpine.lib.audio.AudioFactory;
 
+import java.util.Objects;
+
 public class Track extends DelegatedAudioTrack {
 
     private final AudioTrackInfo originalAudioTrackInfo;
@@ -66,4 +68,20 @@ public class Track extends DelegatedAudioTrack {
             return this.audioTrack;
         return UserDataFactory.from(this.getUserData()).preferredPlatform().getAudioTrackFactory().apply(this);
     }
+
+    @Override
+    public int hashCode() {
+        return AudioFactory.hashAudioObject(originalAudioTrackInfo); // Not getInfo() because that can change when we initialize it with an audio track object.
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isInt = object instanceof Integer;
+        if(!isInt && !(object instanceof AudioTrack) && !(object instanceof AudioTrackInfo))
+            return false;
+        int hash = isInt ? (int) object : AudioFactory.hashAudioObject(object);
+        boolean originalHashEquals = hash == AudioFactory.hashAudioObject(originalAudioTrackInfo);
+        return this.audioTrack == null ? originalHashEquals : originalHashEquals || hash == AudioFactory.hashAudioObject(this.audioTrack.getInfo());
+    }
+
 }

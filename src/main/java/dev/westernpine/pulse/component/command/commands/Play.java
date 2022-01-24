@@ -5,14 +5,13 @@ import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHa
 import dev.westernpine.lib.audio.AudioFactory;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
-import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.LinkedList;
 
-public class Test implements SlashCommandComponentHandler {
+public class Play implements SlashCommandComponentHandler {
     /**
      * @return How the command should be used.
      */
@@ -26,7 +25,7 @@ public class Test implements SlashCommandComponentHandler {
      */
     @Override
     public String command() {
-        return "test";
+        return "play";
     }
 
     /**
@@ -34,7 +33,7 @@ public class Test implements SlashCommandComponentHandler {
      */
     @Override
     public String description() {
-        return "a test command";
+        return "A play command";
     }
 
     /**
@@ -42,7 +41,7 @@ public class Test implements SlashCommandComponentHandler {
      */
     @Override
     public String category() {
-        return "test";
+        return "play";
     }
 
     @Override

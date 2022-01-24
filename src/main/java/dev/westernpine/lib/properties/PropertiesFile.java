@@ -72,14 +72,6 @@ public class PropertiesFile implements PropertyFile {
 	}
 
 	/**
-	 * Prints the currently stored properties.
-	 */
-	public PropertyFile print() {
-		propertyList.forEach(property -> System.out.println(fileName + " Property: " + property.getIdentifier() + "=" + this.get(property)));
-		return this;
-	}
-
-	/**
 	 * The file name of the generated file.
 	 * @return The file name.
 	 */

@@ -23,6 +23,9 @@ public class IdentityProperties extends PropertiesFile {
     public static final Property IPBLOCKS = new Property("ipblocks", "");
 
     @PropertyField
+    public static final Property LOGGING_SQL_BACKEND = new Property("loggingbackend", "loggingbackend");
+
+    @PropertyField
     public static final Property SETTINGS_SQL_BACKEND = new Property("settingsbackend", "settingsbackend");
 
     @PropertyField
@@ -35,12 +38,6 @@ public class IdentityProperties extends PropertiesFile {
     @Override
     public PropertyFile reload() throws Throwable {
         super.reload();
-        return this;
-    }
-
-    @Override
-    public IdentityProperties print() {
-        super.print();
         return this;
     }
 }

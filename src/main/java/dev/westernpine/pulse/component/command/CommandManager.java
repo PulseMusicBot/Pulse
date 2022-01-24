@@ -3,7 +3,7 @@ package dev.westernpine.pulse.component.command;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.pulse.component.command.commands.Commands;
 import dev.westernpine.pulse.component.command.commands.Help;
-import dev.westernpine.pulse.component.command.commands.Test;
+import dev.westernpine.pulse.component.command.commands.Play;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -16,7 +16,7 @@ public class CommandManager {
     static {
         Stream.of(new Help(),
                         new Commands(),
-                        new Test())
+                        new Play())
                 .sorted()
                 .forEachOrdered(slashCommandComponentHandlers::add);
 

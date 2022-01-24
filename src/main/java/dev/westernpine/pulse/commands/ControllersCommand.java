@@ -5,6 +5,8 @@ import dev.westernpine.pulse.controller.ControllerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static dev.westernpine.pulse.logging.Logger.logger;
+
 public class ControllersCommand implements ConsoleCommandHandler {
 
     @Override
@@ -29,8 +31,8 @@ public class ControllersCommand implements ConsoleCommandHandler {
 
     @Override
     public boolean handle(String command, String[] args) {
-        System.out.println("Cached Controllers: ");
-        ControllerFactory.getControllers().forEach((guildId, controller) -> System.out.println(" - " + ControllerFactory.toJson(controller)));
+        logger.info("Cached Controllers: ");
+        ControllerFactory.getControllers().forEach((guildId, controller) -> logger.info(" - " + ControllerFactory.toJson(controller)));
         return true;
     }
 

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static dev.westernpine.pulse.logging.Logger.logger;
+
 public class ConsoleListener implements Listener {
 	
 	private List<ConsoleCommandHandler> commands = new ArrayList<>();
@@ -23,8 +25,8 @@ public class ConsoleListener implements Listener {
 	@EventHandler
 	public void onConsoleEvent(ConsoleEvent event) {
 		String message = event.getMessage();
-		
-		System.out.println("Console: " + message);
+
+		logger.info("Console: " + message);
 		
 		if(message == null || message.isBlank())
 			return;

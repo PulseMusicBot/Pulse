@@ -17,6 +17,7 @@ import dev.westernpine.lib.audio.track.userdata.UserData;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class AudioFactory {
@@ -144,6 +145,24 @@ public class AudioFactory {
                 audioTracks.add(fromTrackJson(jsonTrack.getAsString()));
         }
         return new SortedPlaylist(name, audioTracks, selectedTrack, isSearchResult);
+    }
+
+    private static int hashAudioTrackInfo(AudioTrackInfo info) {
+        return Objects.hash(info.uri, info.author, info.identifier, info.title);
+    }
+
+    private static int hashAudioPlaylist(AudioPlaylist audioPlaylist) {
+        return Objects.hash(audioPlaylist.getName(), audioPlaylist.getTracks().stream().map(AudioFactory::hashAudioObject).toList());
+    }
+
+    public static int hashAudioObject(Object object) {
+        if(object instanceof AudioPlaylist audioPlaylist)
+            return hashAudioPlaylist(audioPlaylist);
+        if(object instanceof AudioTrackInfo audioTrackInfo)
+            return hashAudioTrackInfo(audioTrackInfo);
+        if(object instanceof AudioTrack audioTrack)
+            return hashAudioTrackInfo(audioTrack.getInfo());
+        return object.hashCode();
     }
 
 }

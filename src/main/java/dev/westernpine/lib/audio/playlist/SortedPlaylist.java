@@ -2,7 +2,9 @@ package dev.westernpine.lib.audio.playlist;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
+import dev.westernpine.lib.audio.AudioFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -73,5 +75,20 @@ public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlayl
     @Override
     public boolean isSearchResult() {
         return this.isSearchResult;
+    }
+
+
+
+    @Override
+    public int hashCode() {
+        return AudioFactory.hashAudioObject(this);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isInt = object instanceof Integer;
+        if(!isInt && !(object instanceof AudioPlaylist))
+            return false;
+        return this.hashCode() == (isInt ? (int) object : AudioFactory.hashAudioObject(object));
     }
 }

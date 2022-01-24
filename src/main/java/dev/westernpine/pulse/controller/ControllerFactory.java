@@ -6,6 +6,7 @@ import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.audio.AudioFactory;
 import dev.westernpine.lib.audio.playlist.SortedPlaylist;
 import dev.westernpine.lib.audio.track.Track;
+import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.EntryUtil;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.backend.ControllersBackend;
@@ -18,6 +19,8 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class ControllerFactory {
 
@@ -87,7 +90,7 @@ public class ControllerFactory {
                     Try.of(() -> controller.destroy(EndCase.FATAL_ERROR));
                     iterator.remove();
                     e.printStackTrace();
-                    System.out.println("A fatal error has occurred while managing the controller for guild: " + guildId);
+                    logger.severe("An error has occurred while managing the controller for guild: " + guildId);
                 }
             }
         }, 0L, 1000L);
@@ -103,7 +106,7 @@ public class ControllerFactory {
             controllers.clear();
             backend.save(serialized);
             if (!backend.isClosed()) {
-                System.out.println("System Shutdown >> Closing controller backend.");
+                logger.info("Closing controller backend.");
                 Try.of(() -> backend.close()).onFailure(Throwable::printStackTrace);
             }
         });
@@ -159,6 +162,8 @@ public class ControllerFactory {
             json.addProperty("volume", controller.getVolume());
             json.addProperty("paused", controller.isPaused());
             json.addProperty("alone", controller.wasAlone());
+            json.addProperty("repeating", controller.getRepeating().toString());
+            json.addProperty("lastTrack", controller.getLastTrack());
         }
         return json.toString();
     }
@@ -184,7 +189,9 @@ public class ControllerFactory {
             int volume = controller.get("volume").getAsInt();
             boolean paused = controller.get("paused").getAsBoolean();
             boolean alone = controller.get("alone").getAsBoolean();
-            return new Controller(guildId, previousQueue, queue, lifetime, status, connectedChannel, lastChannelId, track, position, volume, paused, alone);
+            TriState repeating = TriState.valueOf(controller.get("repeating").getAsString());
+            int lastTrack = controller.get("lastTrack").getAsInt();
+            return new Controller(guildId, previousQueue, queue, lifetime, status, connectedChannel, lastChannelId, track, position, volume, paused, alone, repeating, lastTrack);
         }
     }
 
