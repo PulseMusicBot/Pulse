@@ -18,15 +18,15 @@ public class Request {
     }
 
     public URL toUrl() {
-        return Try.of(() -> new URL(request)).getUnchecked();
+        return Try.to(() -> new URL(request)).getUnchecked();
     }
 
     public URI toUri() {
-        return Try.of(() -> new URI(request)).getUnchecked();
+        return Try.to(() -> new URI(request)).getUnchecked();
     }
 
     public boolean isUrl() {
-        return Try.of(this::toUrl).isSuccessful();
+        return Try.to(this::toUrl).isSuccessful();
     }
 
     public boolean isUri() {

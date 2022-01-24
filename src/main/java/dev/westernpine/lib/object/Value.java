@@ -66,7 +66,7 @@ public class Value implements Serializable {
     }
 
     public Number toNumber() {
-        return Try.of(() -> (Number) this.toLong())
+        return Try.to(() -> (Number) this.toLong())
                 .orElseTry(() -> (Number) this.toInteger())
                 .orElseTry(() -> (Number) this.toDouble())
                 .orElseTry(() -> (Number) this.toFloat())

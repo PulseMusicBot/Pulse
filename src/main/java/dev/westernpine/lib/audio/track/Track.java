@@ -57,7 +57,7 @@ public class Track extends DelegatedAudioTrack {
 
     public InternalAudioTrack getAudioTrack() {
         if (this.getInfo().uri != null) {
-            AudioItem audioItem = Try.of(() -> AudioFactory.query(this.getInfo().uri).get()).orElse(null);
+            AudioItem audioItem = Try.to(() -> AudioFactory.query(this.getInfo().uri).get()).orElse(null);
             if (audioItem != null && AudioFactory.toTrack(audioItem) instanceof InternalAudioTrack internalAudioTrack) {
                 this.audioTrack = internalAudioTrack;
             }

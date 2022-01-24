@@ -13,6 +13,7 @@ public enum State {
     private String name;
     private boolean active;
     private boolean loggable;
+
     State(String name, boolean active, boolean loggable) {
         this.name = name;
         this.active = active;

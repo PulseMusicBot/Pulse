@@ -22,7 +22,7 @@ public interface PropertyFile {
                 .filter(field -> field.isAnnotationPresent(PropertyField.class))
                 .filter(field -> Modifier.isPublic(field.getModifiers()))
                 .filter(field -> Modifier.isStatic(field.getModifiers()))
-                .map(field -> Try.of(() -> field.get(null)).orElse(null))
+                .map(field -> Try.to(() -> field.get(null)).orElse(null))
                 .filter(Objects::nonNull)
                 .filter(obj -> obj instanceof Property)
                 .map(obj -> (Property) obj)

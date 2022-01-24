@@ -62,7 +62,7 @@ public class StartupListener implements Listener {
                 logger.info("Terminating scheduler.");
                 Pulse.scheduler.shutdownNow();
                 logger.info("Closing console inputs.");
-                Try.of(Pulse.input::close).onFailure(Throwable::printStackTrace);
+                Try.to(Pulse.input::close).onFailure(Throwable::printStackTrace);
                 if (Objects.nonNull(Pulse.shardManager)) {
                     logger.info("Shutting down shard manager.");
                     Pulse.shardManager.shutdown();
@@ -74,7 +74,7 @@ public class StartupListener implements Listener {
             Set up console listening system via events.
              */
             logger.info("Initializing console listener.");
-            Pulse.scheduler.runAsync(() -> Scheduler.loop(() -> true, () -> Try.of(() -> Scheduler.loop(() -> !Try.of(Pulse.input::ready).getUnchecked(), () -> Try.of(() -> Thread.sleep(100)).map(nv -> false).getUnchecked())).map(nv -> Try.of(Pulse.input::readLine).map(ConsoleEvent::new).onSuccess(consoleEvent -> Try.of(() -> Pulse.eventManager.call(consoleEvent)).onFailure(Throwable::printStackTrace).onFailure(throwable -> logger.warning("Exception caught in command handler."))).map(so -> false).orElse(true)).orElse(true)));
+            Pulse.scheduler.runAsync(() -> Scheduler.loop(() -> true, () -> Try.to(() -> Scheduler.loop(() -> !Try.to(Pulse.input::ready).getUnchecked(), () -> Try.to(() -> Thread.sleep(100)).map(nv -> false).getUnchecked())).map(nv -> Try.to(Pulse.input::readLine).map(ConsoleEvent::new).onSuccess(consoleEvent -> Try.to(() -> Pulse.eventManager.call(consoleEvent)).onFailure(Throwable::printStackTrace).onFailure(throwable -> logger.warning("Exception caught in command handler."))).map(so -> false).orElse(true)).orElse(true)));
 
 
 
@@ -82,8 +82,8 @@ public class StartupListener implements Listener {
             Load up systems with backends to ensure proper connectivity before proceeding with initialization.
              */
             logger.info("Loading system backends.");
-            Try.of(() -> Class.forName(SettingsFactory.class.getName())).getUnchecked();
-            Try.of(() -> Class.forName(ControllerFactory.class.getName())).getUnchecked();
+            Try.to(() -> Class.forName(SettingsFactory.class.getName())).getUnchecked();
+            Try.to(() -> Class.forName(ControllerFactory.class.getName())).getUnchecked();
 
             /*
 			Initialize the ready notifier format completion.

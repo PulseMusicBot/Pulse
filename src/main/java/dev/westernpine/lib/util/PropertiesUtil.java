@@ -19,7 +19,7 @@ public class PropertiesUtil {
     public static boolean createIfNotExists(String fileName) throws Throwable {
         File file = new File(fileName);
         if (!file.exists())
-            return Try.of(file::createNewFile).map(result -> false).get();
+            return Try.to(file::createNewFile).map(result -> false).get();
         return true;
     }
 

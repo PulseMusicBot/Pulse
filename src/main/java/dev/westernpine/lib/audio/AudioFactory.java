@@ -49,7 +49,7 @@ public class AudioFactory {
                     audioItemCompletableFuture.completeExceptionally(exception);
                 }
             });
-            return Try.of(() -> audioItemCompletableFuture.get()).getUnchecked(); //GetUnchecked will pass the throwable to the completableFutureWrapper.
+            return Try.to(() -> audioItemCompletableFuture.get()).getUnchecked(); //GetUnchecked will pass the throwable to the completableFutureWrapper.
         });
     }
 

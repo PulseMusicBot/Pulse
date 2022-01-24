@@ -45,11 +45,11 @@ public class LogManager extends Handler {
             timer.cancel();
             LinkedList<LogRecord> finalLogs = new LinkedList<>(logs);
             logs = null;
-            Try.of(() -> compileAndUpdate(finalLogs));
+            Try.to(() -> compileAndUpdate(finalLogs));
             sql.getConnection().close();
         }
         if (fileLogging) {
-            Try.of(() -> fileWriter.close());
+            Try.to(() -> fileWriter.close());
             fileWriter = null;
         }
     }
@@ -88,7 +88,7 @@ public class LogManager extends Handler {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (Try.of(() -> compileAndUpdate(logs)).orElse(false))
+                    if (Try.to(() -> compileAndUpdate(logs)).orElse(false))
                         logs.clear();
                 }
             }, 5000L, 5000L);
@@ -133,7 +133,7 @@ public class LogManager extends Handler {
     }
 
     private static boolean compileAndUpdate(LinkedList<LogRecord> logs) throws SQLException {
-        if (!sqlLogging || sql == null || Try.of(() -> sql.getConnection().getConnection().isClosed()).orElse(true) || logs == null || logs.isEmpty())
+        if (!sqlLogging || sql == null || Try.to(() -> sql.getConnection().getConnection().isClosed()).orElse(true) || logs == null || logs.isEmpty())
             return false;
         String statement = "INSERT INTO `%s` VALUES(now(),?,?,?);".formatted(tableName);
         logs.forEach(log -> sql.update(statement, identity, log.getLevel().toString(), log.getMessage()));
@@ -171,11 +171,11 @@ public class LogManager extends Handler {
             timer.cancel();
             LinkedList<LogRecord> finalLogs = new LinkedList<>(logs);
             logs = null;
-            Try.of(() -> compileAndUpdate(finalLogs));
+            Try.to(() -> compileAndUpdate(finalLogs));
             sql.getConnection().close();
         }
         if (fileLogging) {
-            Try.of(() -> fileWriter.close());
+            Try.to(() -> fileWriter.close());
             fileWriter = null;
         }
     }

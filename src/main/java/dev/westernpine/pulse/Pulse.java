@@ -39,7 +39,6 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - Modify better try to use #to for runnables, and ensure #orElseTry has a runnable form.
      - Modify SQL class to use Try...
      - Add in more controller functionality.
      - Deeper playlist/queue functionality
@@ -95,7 +94,7 @@ public class Pulse {
             Pulse.shutdownHooks.forEach(Runnable::run);
             System.out.println(State.SHUTDOWN.getName() + " >> System shutdown completed. Goodbye!");
             state = State.OFFLINE;
-            Try.of(() -> Thread.sleep(1000L)); //Allow JDA to finish everything it needs.
+            Try.to(() -> Thread.sleep(1000L)); //Allow JDA to finish everything it needs.
         }));
 
         setState(State.INITIALIZATION);

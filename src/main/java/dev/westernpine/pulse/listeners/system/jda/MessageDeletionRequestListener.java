@@ -39,7 +39,7 @@ public class MessageDeletionRequestListener extends ListenerAdapter {
             return;
         ShardManager manager = Pulse.shardManager;
         if (payload.has("guild_id"))
-            Try.of(() -> delete(manager.getTextChannelById(channelId), messageId, selfId));
+            Try.to(() -> delete(manager.getTextChannelById(channelId), messageId, selfId));
         else
             manager.retrieveUserById(userId).queue(user -> user.openPrivateChannel().queue(channel -> delete(channel, messageId, selfId)));
     }

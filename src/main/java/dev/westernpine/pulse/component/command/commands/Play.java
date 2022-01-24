@@ -56,7 +56,7 @@ public class Play implements SlashCommandComponentHandler {
         if (!event.getName().equals(command()))
             return false;
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true).connect(event.getMember());
-        Try.of(() -> AudioFactory.toTrack(AudioFactory.query(event.getOption("query").getAsString()).get()))
+        Try.to(() -> AudioFactory.toTrack(AudioFactory.query(event.getOption("query").getAsString()).get()))
                 .onSuccess(track -> controller.startTrack(track, true))
                 .onFailure(Throwable::printStackTrace);
         return true;

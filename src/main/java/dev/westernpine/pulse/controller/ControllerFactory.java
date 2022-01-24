@@ -87,7 +87,7 @@ public class ControllerFactory {
                             iterator.remove();
                     }
                 } catch (Exception e) {
-                    Try.of(() -> controller.destroy(EndCase.FATAL_ERROR));
+                    Try.to(() -> controller.destroy(EndCase.FATAL_ERROR));
                     iterator.remove();
                     e.printStackTrace();
                     logger.severe("An error has occurred while managing the controller for guild: " + guildId);
@@ -99,21 +99,21 @@ public class ControllerFactory {
                     .entrySet()
                     .stream()
                     .filter(entry -> entry.getValue().getAudioPlayer() != null)
-                    .map(entry -> Try.of(() -> EntryUtil.remapValue(entry, ControllerFactory::toJson)).orElse(null))
+                    .map(entry -> Try.to(() -> EntryUtil.remapValue(entry, ControllerFactory::toJson)).orElse(null))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-//            controllers.values().forEach(controller -> Try.of(() -> controller.destroy(EndCase.BOT_RESTART)));
+            controllers.values().forEach(controller -> Try.to(() -> controller.destroy(EndCase.BOT_RESTART)));
             controllers.clear();
             backend.save(serialized);
             if (!backend.isClosed()) {
                 logger.info("Closing controller backend.");
-                Try.of(() -> backend.close()).onFailure(Throwable::printStackTrace);
+                Try.to(() -> backend.close()).onFailure(Throwable::printStackTrace);
             }
         });
     }
 
     public static void initializeBackend() {
-        backend.load().forEach((guildId, controller) -> Try.of(() -> controllers.put(guildId, fromJson(controller))).onFailure(Throwable::printStackTrace));
+        backend.load().forEach((guildId, controller) -> Try.to(() -> controllers.put(guildId, fromJson(controller))).onFailure(Throwable::printStackTrace));
         backend.clear();
     }
 

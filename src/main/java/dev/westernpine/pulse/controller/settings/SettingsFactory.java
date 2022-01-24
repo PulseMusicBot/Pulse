@@ -27,7 +27,7 @@ public class SettingsFactory {
         Pulse.shutdownHooks.addLast(() -> {
             if (!backend.isClosed()) {
                 logger.info("Closing settings backend.");
-                Try.of(() -> backend.close()).onFailure(Throwable::printStackTrace);
+                Try.to(() -> backend.close()).onFailure(Throwable::printStackTrace);
             }
         });
     }

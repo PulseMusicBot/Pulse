@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.github.WesternPine</groupId>
             <artifactId>BetterTry</artifactId>
-            <version>525399d93d</version>
+            <version>bda464c17a</version>
         </dependency>
 
         <!-- Jar Loader -->

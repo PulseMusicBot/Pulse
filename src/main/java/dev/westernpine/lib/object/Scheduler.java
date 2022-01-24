@@ -21,7 +21,7 @@ public class Scheduler {
 
     public static void loop(Supplier<Boolean> condition, Callable<Boolean> callable) {
         while (condition.get())
-            if (Try.of(callable::call).getUnchecked())
+            if (Try.to(callable::call).getUnchecked())
                 break;
     }
 
