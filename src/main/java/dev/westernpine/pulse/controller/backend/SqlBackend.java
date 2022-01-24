@@ -48,14 +48,7 @@ public class SqlBackend implements ControllersBackend {
     public Map<String, String> load() {
         Map<String, String> controllerMap = new HashMap<>();
         sql.query(rs -> {
-            try {
-                while (rs.next()) {
-                    controllerMap.put(rs.getString("guildId"), rs.getString("controller"));
-                }
-            } catch (Exception e) {
-                if (sql.isDebugging())
-                    e.printStackTrace();
-            }
+            while (rs.next()) controllerMap.put(rs.getString("guildId"), rs.getString("controller"));
         }, "SELECT * FROM `%s`;".formatted(this.tableName));
         return controllerMap;
     }

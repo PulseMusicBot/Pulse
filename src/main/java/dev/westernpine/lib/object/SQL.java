@@ -1,10 +1,15 @@
 package dev.westernpine.lib.object;
 
-import java.sql.*;
+import dev.westernpine.bettertry.Try;
+import dev.westernpine.bettertry.functions.TryConsumer;
+import dev.westernpine.bettertry.functions.TryFunction;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class SQL {
 
@@ -34,11 +39,7 @@ public class SQL {
     public boolean canConnect() {
         if (connection.isOpen())
             return true;
-        try (Connection con = connection.open()) {
-            return !con.isClosed();
-        } catch (SQLException e) {
-            return false;
-        }
+        return Try.to(() -> connection.open()).map(con -> !con.isClosed()).orElse(false);
     }
 
     public Set<String> getTables() {
@@ -48,6 +49,9 @@ public class SQL {
             try (ResultSet rs = sql.executeQuery()) {
                 while (rs.next())
                     tables.add(rs.getString("tables_in_" + getConnection().getDatabase()));
+            } catch (Exception e) {
+                if (debugging)
+                    e.printStackTrace();
             }
         } catch (Exception e) {
             if (debugging)
@@ -58,86 +62,65 @@ public class SQL {
         return tables;
     }
 
-    public <T> T update(Function<Integer, T> affected, String statement, Object... values) {
-        boolean wasOpen = connection.isOpen();
-        T toReturn = null;
-        try (PreparedStatement sql = connection.open().prepareStatement(statement)) {
-            for (int i = 0; i < values.length; i++)
-                sql.setObject(i + 1, values[i]);
-            int a = sql.executeUpdate();
-            if (affected != null)
-                toReturn = affected.apply(a);
-        } catch (Exception e) {
-            if (debugging)
-                e.printStackTrace();
-        }
+    private void closeConnection(boolean wasOpen) {
         if (!wasOpen)
-            connection.close();
-        return toReturn;
+            Try.to(connection::close);
     }
 
-    public void update(Consumer<Integer> affected, String statement, Object... values) {
+    public Try<Integer> update(String statement, Object... values) {
         boolean wasOpen = connection.isOpen();
-        try (PreparedStatement sql = connection.open().prepareStatement(statement)) {
-            for (int i = 0; i < values.length; i++)
-                sql.setObject(i + 1, values[i]);
-            int a = sql.executeUpdate();
-            if (affected != null)
-                affected.accept(a);
-        } catch (Exception e) {
-            if (debugging)
-                e.printStackTrace();
-        }
-        if (!wasOpen)
-            connection.close();
+        return Try.to(() -> connection.open())
+                .onFailure(throwable -> closeConnection(wasOpen))
+                .flatMap(con -> Try.to(() -> con.prepareStatement(statement))
+                        .onFailure(throwable -> closeConnection(wasOpen))
+                        .flatMap(sql -> Try.to(() -> {
+                                    for (int i = 0; i < values.length; i++)
+                                        sql.setObject(i + 1, values[i]);
+                                    return sql.executeUpdate();
+                                })
+                                .onFailure(throwable -> {
+                                    Try.to(sql::close);
+                                    closeConnection(wasOpen);
+                                })
+                                .onSuccess(affected -> {
+                                    Try.to(sql::close);
+                                    closeConnection(wasOpen);
+                                })));
     }
 
-    public void update(String statement, Object... values) {
-        boolean wasOpen = connection.isOpen();
-        try (PreparedStatement sql = connection.open().prepareStatement(statement)) {
-            for (int i = 0; i < values.length; i++)
-                sql.setObject(i + 1, values[i]);
-            sql.executeUpdate();
-        } catch (Exception e) {
-            if (debugging)
-                e.printStackTrace();
-        }
-        if (!wasOpen)
-            connection.close();
+    public void query(TryConsumer<ResultSet> resultHandler, String statement, Object... values) {
+        query(rs -> {
+            resultHandler.accept(rs);
+            return null;
+        }, statement, values);
     }
 
-    public <T> T query(Function<ResultSet, T> resultSet, String statement, Object... values) {
+    public <T> Try<T> query(TryFunction<ResultSet, T> resultHandler, String statement, Object... values) {
         boolean wasOpen = connection.isOpen();
-        T toReturn = null;
-        try (PreparedStatement sql = connection.open().prepareStatement(statement)) {
-            for (int i = 0; i < values.length; i++)
-                sql.setObject(i + 1, values[i]);
-            try (ResultSet rs = sql.executeQuery()) {
-                toReturn = resultSet.apply(rs);
-            }
-        } catch (Exception e) {
-            if (debugging)
-                e.printStackTrace();
-        }
-        if (!wasOpen)
-            connection.close();
-        return toReturn;
-    }
-
-    public void query(Consumer<ResultSet> resultSet, String statement, Object... values) {
-        boolean wasOpen = connection.isOpen();
-        try (PreparedStatement sql = connection.open().prepareStatement(statement)) {
-            for (int i = 0; i < values.length; i++)
-                sql.setObject(i + 1, values[i]);
-            try (ResultSet rs = sql.executeQuery()) {
-                resultSet.accept(rs);
-            }
-        } catch (Exception e) {
-            if (debugging)
-                e.printStackTrace();
-        }
-        if (!wasOpen)
-            connection.close();
+        return Try.to(() -> connection.open())
+                .onFailure(throwable -> closeConnection(wasOpen))
+                .flatMap(con -> Try.to(() -> con.prepareStatement(statement))
+                        .onFailure(throwable -> closeConnection(wasOpen))
+                        .flatMap(sql -> Try.to(() -> {
+                                    for (int i = 0; i < values.length; i++)
+                                        sql.setObject(i + 1, values[i]);
+                                    return sql.executeQuery();
+                                })
+                                .onFailure(throwable -> {
+                                    Try.to(sql::close);
+                                    closeConnection(wasOpen);
+                                })
+                                .flatMap(rs -> Try.to(() -> resultHandler.apply(rs))
+                                        .onFailure(throwable -> {
+                                            Try.to(rs::close);
+                                            Try.to(sql::close);
+                                            closeConnection(wasOpen);
+                                        })
+                                        .onSuccess(t -> {
+                                            Try.to(rs::close);
+                                            Try.to(sql::close);
+                                            closeConnection(wasOpen);
+                                        }))));
     }
 
 

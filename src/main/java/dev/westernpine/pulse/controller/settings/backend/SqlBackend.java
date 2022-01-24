@@ -6,6 +6,7 @@ import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.properties.SqlProperties;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 
 import static dev.westernpine.pulse.logging.Logger.logger;
 
@@ -44,30 +45,12 @@ public class SqlBackend implements SettingsBackend {
 
     @Override
     public boolean exists(String guildId) {
-        return sql.query(rs -> {
-            try {
-                return rs.next();
-            } catch (Exception e) {
-                if (sql.isDebugging())
-                    e.printStackTrace();
-            }
-            return false;
-        }, "SELECT * FROM `%s` WHERE guildId=?;".formatted(this.tableName), guildId);
+        return sql.query(ResultSet::next, "SELECT * FROM `%s` WHERE guildId=?;".formatted(this.tableName), guildId).orElse(false);
     }
 
     @Override
     public String load(String guildId) {
-        return sql.query(rs -> {
-            try {
-                if (rs.next()) {
-                    return rs.getString("settings");
-                }
-            } catch (Exception e) {
-                if (sql.isDebugging())
-                    e.printStackTrace();
-            }
-            return null;
-        }, "SELECT * FROM `%s` WHERE guildId=?;".formatted(this.tableName), guildId);
+        return sql.query(rs -> rs.next() ? rs.getString("settings") : null, "SELECT * FROM `%s` WHERE guildId=?;".formatted(this.tableName), guildId).orElse(null);
     }
 
     @Override
