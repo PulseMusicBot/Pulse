@@ -50,7 +50,7 @@ public class InitializeListener implements Listener {
             if (!file.exists() && !file.mkdirs()) throw new IOException("Unable to create logs folder.");
             file = new File(file.getPath(), Pulse.simpleDateFormatter.format(new Date()) + ".log");
             LogManager.initialize(
-                    record -> "[%s] %s: %s%s".formatted(Pulse.dateFormatter.format(new Date()), record.getLevel(), Pulse.getState().isLoggable() ? "" + Pulse.getState().getName() + " >>" : "", record.getMessage()),
+                    record -> "[%s] %s: %s%s".formatted(Pulse.dateFormatter.format(new Date()), record.getLevel(), Pulse.getState().isLoggable() ? "" + Pulse.getState().getName() + " >> " : "", record.getMessage()),
                     Pulse.systemProperties.get(SystemProperties.IDENTITY),
                     file,
                     Pulse.loggingSqlProperties.toSql(),
@@ -70,9 +70,6 @@ public class InitializeListener implements Listener {
             logger.fine(" - Logging to SQL: " + LogManager.isSqlLogging());
             if (LogManager.isSqlLogging())
                 logger.fine(" - Logged Sql Levels: " + String.join(", ", LogManager.getSqlLevels().stream().map(Level::toString).toList()));
-
-            logger.info("Initializing backend controllers.");
-            ControllerFactory.initializeBackend();
         } catch (Throwable e) {
             e.printStackTrace();
             System.out.println("Unable to initialize the application.");

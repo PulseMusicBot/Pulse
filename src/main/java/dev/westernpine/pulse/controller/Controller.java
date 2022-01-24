@@ -93,7 +93,7 @@ public class Controller {
             this.lastTrack = lastTrack;
             this.startTrack(track, false);
             this.setPaused(paused);
-            this.getPlayingTrack().setPosition(position);
+            this.setPosition(position);
         }
     }
 
@@ -298,6 +298,11 @@ public class Controller {
     public void clearQueues() {
         this.previousQueue.clear();
         this.queue.clear();
+    }
+
+    public void setPosition(long position) {
+        if(this.getPlayingTrack() != null && this.getPlayingTrack().isSeekable() && !this.getPlayingTrack().getInfo().isStream)
+            this.getPlayingTrack().setPosition(position);
     }
 
     public SortedPlaylist getPreviousQueue() {

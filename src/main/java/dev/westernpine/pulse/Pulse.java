@@ -39,7 +39,6 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - Modify SQL class to use Try...
      - Add in more controller functionality.
      - Deeper playlist/queue functionality
      - Player listeners.
@@ -87,8 +86,7 @@ public class Pulse {
         eventManager.registerListeners(new AudioPlayerListener());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (!state.isActive())
-                return;
+            if (!state.isActive()) return;
             state = State.SHUTDOWN;
             System.out.println(State.SHUTDOWN.getName() + " >> Initiating system shutdown.");
             Pulse.shutdownHooks.forEach(Runnable::run);
@@ -105,8 +103,7 @@ public class Pulse {
     }
 
     public static void setState(State state) {
-        if (Pulse.state.isActive() && !state.isActive())
-            state = State.SHUTDOWN;
+        if (Pulse.state.isActive() && !state.isActive()) state = State.SHUTDOWN;
         State old = Pulse.state;
         Pulse.state = state;
         eventManager.call(new StateChangeEvent(old, state));

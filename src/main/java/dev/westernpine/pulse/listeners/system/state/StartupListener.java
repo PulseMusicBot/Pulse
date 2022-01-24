@@ -169,6 +169,9 @@ public class StartupListener implements Listener {
             */
             Pulse.readyNotifier.get();
 
+            logger.info("Initializing backend controllers.");
+            ControllerFactory.initializeBackend();
+
             /*
             Set the state to running, and do final adjustments.
              */

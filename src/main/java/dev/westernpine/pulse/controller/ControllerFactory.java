@@ -113,7 +113,11 @@ public class ControllerFactory {
     }
 
     public static void initializeBackend() {
-        backend.load().forEach((guildId, controller) -> Try.to(() -> controllers.put(guildId, fromJson(controller))).onFailure(Throwable::printStackTrace));
+        backend.load().forEach((guildId, controller) ->
+                Try.to(() -> controllers.put(guildId, fromJson(controller)))
+                        .onFailure(Throwable::printStackTrace)
+                        .onFailure(throwable -> logger.warning("Unable to initialize guild controller %s from backend.".formatted(guildId)))
+                        .onSuccess(con -> logger.fine("Initialized guild controller %s from backend.".formatted(guildId))));
         backend.clear();
     }
 
@@ -184,7 +188,7 @@ public class ControllerFactory {
             connectedChannel = connectedChannel.isEmpty() ? null : connectedChannel;
             SortedPlaylist previousQueue = AudioFactory.fromPlaylistJson(controller.get("previousQueue").getAsString());
             SortedPlaylist queue = AudioFactory.fromPlaylistJson(controller.get("queue").getAsString());
-            Track track = controller.get("track").toString().isEmpty() ? null : AudioFactory.fromTrackJson(controller.get("track").getAsString());
+            Track track = controller.get("track").getAsString().isEmpty() ? null : AudioFactory.fromTrackJson(controller.get("track").getAsString());
             long position = controller.get("position").getAsLong();
             int volume = controller.get("volume").getAsInt();
             boolean paused = controller.get("paused").getAsBoolean();

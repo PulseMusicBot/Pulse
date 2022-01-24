@@ -67,6 +67,7 @@ public class LogManager extends Handler {
         logger.setUseParentHandlers(false);
         instance = new LogManager();
         identity = identifier;
+        logger.setLevel(ALL);
         logger.addHandler(instance);
         if (consoleLogLevels != null && !consoleLogLevels.isEmpty()) {
             consoleLogging = true;
@@ -84,7 +85,7 @@ public class LogManager extends Handler {
             sqlLevels = sqlLogLevels;
             logs = new LinkedList<>();
             sql.getConnection().open();
-            sql.update("CREATE TABLE IF NOT EXISTS `%s` (`datetime` DATETIME NOT NULL DEFAULT now(), `identity` VARCHAR(255) NOT NULL, `severity` VARCHAR(10) NOT NULL, `log` LONGTEXT NOT NULL);".formatted(tableName));
+            sql.update("CREATE TABLE IF NOT EXISTS `%s` (`id` int(255) NOT NULL AUTO_INCREMENT, `datetime` DATETIME NOT NULL DEFAULT now(), `identity` VARCHAR(255) NOT NULL, `severity` VARCHAR(10) NOT NULL, `log` LONGTEXT NOT NULL, PRIMARY KEY (`id`));".formatted(tableName));
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -135,7 +136,7 @@ public class LogManager extends Handler {
     private static boolean compileAndUpdate(LinkedList<LogRecord> logs) throws SQLException {
         if (!sqlLogging || sql == null || Try.to(() -> sql.getConnection().getConnection().isClosed()).orElse(true) || logs == null || logs.isEmpty())
             return false;
-        String statement = "INSERT INTO `%s` VALUES(now(),?,?,?);".formatted(tableName);
+        String statement = "INSERT INTO `%s` VALUES(0,now(),?,?,?);".formatted(tableName);
         logs.forEach(log -> sql.update(statement, identity, log.getLevel().toString(), log.getMessage()));
         return true;
     }
