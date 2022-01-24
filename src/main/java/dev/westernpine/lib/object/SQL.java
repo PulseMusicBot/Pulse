@@ -70,22 +70,20 @@ public class SQL {
     public Try<Integer> update(String statement, Object... values) {
         boolean wasOpen = connection.isOpen();
         return Try.to(() -> connection.open())
-                .onFailure(throwable -> closeConnection(wasOpen))
-                .flatMap(con -> Try.to(() -> con.prepareStatement(statement))
-                        .onFailure(throwable -> closeConnection(wasOpen))
-                        .flatMap(sql -> Try.to(() -> {
-                                    for (int i = 0; i < values.length; i++)
-                                        sql.setObject(i + 1, values[i]);
-                                    return sql.executeUpdate();
-                                })
-                                .onFailure(throwable -> {
-                                    Try.to(sql::close);
-                                    closeConnection(wasOpen);
-                                })
-                                .onSuccess(affected -> {
-                                    Try.to(sql::close);
-                                    closeConnection(wasOpen);
-                                })));
+                .onFailure(ignoredThrowable -> closeConnection(wasOpen))
+                .flatMap(connection ->
+                        Try.to(() -> connection.prepareStatement(statement))
+                                .onFailure(ignoredThrowable -> closeConnection(wasOpen))
+                                .flatMap(sql ->
+                                        Try.to(() -> {
+                                                    for (int i = 0; i < values.length; i++)
+                                                        sql.setObject(i + 1, values[i]);
+                                                    return sql.executeUpdate();
+                                                })
+                                                .then(() -> {
+                                                    Try.to(sql::close);
+                                                    closeConnection(wasOpen);
+                                                })));
     }
 
     public void query(TryConsumer<ResultSet> resultHandler, String statement, Object... values) {
@@ -98,29 +96,27 @@ public class SQL {
     public <T> Try<T> query(TryFunction<ResultSet, T> resultHandler, String statement, Object... values) {
         boolean wasOpen = connection.isOpen();
         return Try.to(() -> connection.open())
-                .onFailure(throwable -> closeConnection(wasOpen))
-                .flatMap(con -> Try.to(() -> con.prepareStatement(statement))
-                        .onFailure(throwable -> closeConnection(wasOpen))
-                        .flatMap(sql -> Try.to(() -> {
-                                    for (int i = 0; i < values.length; i++)
-                                        sql.setObject(i + 1, values[i]);
-                                    return sql.executeQuery();
-                                })
-                                .onFailure(throwable -> {
-                                    Try.to(sql::close);
-                                    closeConnection(wasOpen);
-                                })
-                                .flatMap(rs -> Try.to(() -> resultHandler.apply(rs))
-                                        .onFailure(throwable -> {
-                                            Try.to(rs::close);
-                                            Try.to(sql::close);
-                                            closeConnection(wasOpen);
-                                        })
-                                        .onSuccess(t -> {
-                                            Try.to(rs::close);
-                                            Try.to(sql::close);
-                                            closeConnection(wasOpen);
-                                        }))));
+                .onFailure(ignoredThrowable -> closeConnection(wasOpen))
+                .flatMap(connection ->
+                        Try.to(() -> connection.prepareStatement(statement))
+                                .onFailure(ignoredThrowable -> closeConnection(wasOpen))
+                                .flatMap(sql ->
+                                        Try.to(() -> {
+                                                    for (int i = 0; i < values.length; i++)
+                                                        sql.setObject(i + 1, values[i]);
+                                                    return sql.executeQuery();
+                                                })
+                                                .onFailure(ignoredThrowable -> {
+                                                    Try.to(sql::close);
+                                                    closeConnection(wasOpen);
+                                                })
+                                                .flatMap(rs ->
+                                                        Try.to(() -> resultHandler.apply(rs))
+                                                                .then(() -> {
+                                                                    Try.to(rs::close);
+                                                                    Try.to(sql::close);
+                                                                    closeConnection(wasOpen);
+                                                                }))));
     }
 
 
