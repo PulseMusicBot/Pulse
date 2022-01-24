@@ -11,7 +11,7 @@ public class RequesterFactory {
     }
 
     public static String toJson(Requester requester) {
-        if(requester == null)
+        if (requester == null)
             return "";
         JsonObject json = new JsonObject();
         json.addProperty("id", requester.id);
@@ -22,7 +22,7 @@ public class RequesterFactory {
     }
 
     public static Requester fromJson(String json) {
-        if(json.isEmpty())
+        if (json.isEmpty())
             return null;
         JsonObject requester = JsonParser.parseString(json).getAsJsonObject();
         String id = requester.get("id").getAsString();

@@ -10,18 +10,17 @@ public enum State {
     RUNNING("System Running", true, false),
     SHUTDOWN("System Shutdown", false, true);
 
-    public static State fromName(String string) {
-        return Arrays.stream(State.values()).filter(state -> state.name.equals(string)).findAny().orElse(null);
-    }
-
     private String name;
     private boolean active;
     private boolean loggable;
-
     State(String name, boolean active, boolean loggable) {
         this.name = name;
         this.active = active;
         this.loggable = loggable;
+    }
+
+    public static State fromName(String string) {
+        return Arrays.stream(State.values()).filter(state -> state.name.equals(string)).findAny().orElse(null);
     }
 
     public String getName() {

@@ -14,34 +14,34 @@ import java.util.List;
 import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class ConsoleListener implements Listener {
-	
-	private List<ConsoleCommandHandler> commands = new ArrayList<>();
-	
-	public ConsoleListener() {
-		commands.add(new StopCommand());
-		commands.add(new ControllersCommand());
-	}
-	
-	@EventHandler
-	public void onConsoleEvent(ConsoleEvent event) {
-		String message = event.getMessage();
 
-		logger.info("Console: " + message);
-		
-		if(message == null || message.isBlank())
-			return;
+    private List<ConsoleCommandHandler> commands = new ArrayList<>();
 
-		String[] split = message.split(" ");
-		String command = split[0];
-		String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[] {};
-		
-		for(ConsoleCommandHandler handler : commands) {
-			if(!handler.command().equalsIgnoreCase(command))
-				continue;
-			
-			if(handler.handle(command, args))
-				break;
-		}
-	}
+    public ConsoleListener() {
+        commands.add(new StopCommand());
+        commands.add(new ControllersCommand());
+    }
+
+    @EventHandler
+    public void onConsoleEvent(ConsoleEvent event) {
+        String message = event.getMessage();
+
+        logger.info("Console: " + message);
+
+        if (message == null || message.isBlank())
+            return;
+
+        String[] split = message.split(" ");
+        String command = split[0];
+        String[] args = split.length > 1 ? Arrays.copyOfRange(split, 1, split.length) : new String[]{};
+
+        for (ConsoleCommandHandler handler : commands) {
+            if (!handler.command().equalsIgnoreCase(command))
+                continue;
+
+            if (handler.handle(command, args))
+                break;
+        }
+    }
 
 }

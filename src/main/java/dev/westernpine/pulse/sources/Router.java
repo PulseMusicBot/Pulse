@@ -48,11 +48,11 @@ public enum Router {
         this.label = label;
     }
 
-    public abstract AbstractRoutePlanner getRouter(List<IpBlock> ipBlocks);
-
     public static Optional<Router> from(String identifier) {
         return Arrays.asList(Router.values()).stream().filter(router -> router.getLabel().equalsIgnoreCase(identifier) || router.toString().equalsIgnoreCase(identifier)).findAny();
     }
+
+    public abstract AbstractRoutePlanner getRouter(List<IpBlock> ipBlocks);
 
     public String getLabel() {
         return label;

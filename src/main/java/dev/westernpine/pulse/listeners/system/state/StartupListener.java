@@ -13,8 +13,8 @@ import dev.westernpine.bettertry.Try;
 import dev.westernpine.eventapi.objects.EventHandler;
 import dev.westernpine.eventapi.objects.Listener;
 import dev.westernpine.lib.object.Scheduler;
-import dev.westernpine.pulse.Pulse;
 import dev.westernpine.lib.object.State;
+import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.settings.SettingsFactory;
 import dev.westernpine.pulse.events.console.ConsoleEvent;
@@ -46,7 +46,7 @@ public class StartupListener implements Listener {
 
     @EventHandler
     public void onStartup(StateChangeEvent event) {
-        if(!event.getNewState().is(State.STARTUP))
+        if (!event.getNewState().is(State.STARTUP))
             return;
 
         try {

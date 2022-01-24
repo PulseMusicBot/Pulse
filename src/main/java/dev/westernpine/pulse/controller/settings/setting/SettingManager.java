@@ -1,6 +1,8 @@
 package dev.westernpine.pulse.controller.settings.setting;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class SettingManager {
 

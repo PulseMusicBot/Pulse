@@ -1,8 +1,8 @@
 package dev.westernpine.pulse.controller.backend;
 
 import dev.westernpine.lib.object.SQL;
-import dev.westernpine.pulse.Pulse;
 import dev.westernpine.lib.object.State;
+import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.properties.SqlProperties;
 
 import java.io.IOException;
@@ -49,11 +49,11 @@ public class SqlBackend implements ControllersBackend {
         Map<String, String> controllerMap = new HashMap<>();
         sql.query(rs -> {
             try {
-                while(rs.next()) {
+                while (rs.next()) {
                     controllerMap.put(rs.getString("guildId"), rs.getString("controller"));
                 }
             } catch (Exception e) {
-                if(sql.isDebugging())
+                if (sql.isDebugging())
                     e.printStackTrace();
             }
         }, "SELECT * FROM `%s`;".formatted(this.tableName));
@@ -72,7 +72,7 @@ public class SqlBackend implements ControllersBackend {
 
     @Override
     public void close() throws IOException {
-        if(!isClosed())
+        if (!isClosed())
             this.sql.getConnection().close();
     }
 }

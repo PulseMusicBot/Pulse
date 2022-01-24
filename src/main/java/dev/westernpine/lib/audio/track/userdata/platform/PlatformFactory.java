@@ -29,7 +29,7 @@ public class PlatformFactory {
     }
 
     public static String toJson(Platform platform) {
-        if(platform == null)
+        if (platform == null)
             return "";
         JsonObject json = new JsonObject();
         json.addProperty("platform", platform.getName());
@@ -37,7 +37,7 @@ public class PlatformFactory {
     }
 
     public static Platform fromJson(String json) {
-        if(json.isEmpty())
+        if (json.isEmpty())
             return null;
         JsonObject platform = JsonParser.parseString(json).getAsJsonObject();
         return get(platform.get("platform").getAsString());

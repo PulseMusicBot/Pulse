@@ -5,25 +5,25 @@ import dev.westernpine.eventapi.objects.Event;
 
 public class ConsoleEvent extends Event implements Cancellable {
 
-	private String message;
+    private String message;
 
-	private boolean cancelled;
-	
-	public ConsoleEvent(String message) {
-		this.message = message;
-	}
+    private boolean cancelled;
 
-	public String getMessage() {
-		return message;
-	}
+    public ConsoleEvent(String message) {
+        this.message = message;
+    }
 
-	@Override
-	public boolean isCancelled() {
-		return cancelled;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	@Override
-	public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
-	}
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
 }

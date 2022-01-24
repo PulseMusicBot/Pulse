@@ -89,8 +89,8 @@ public class PropertiesUtil {
      * @param defaults The default properties.
      * @param comments Any comments to save to the properties file.
      * @return A properties object represented by the properties file.
-	 * @throws FileNotFoundException if the specified file name doesn't exist.
-	 * @throws IOException           if there is a problem opening, writing to, or closing the IO stream of the file.
+     * @throws FileNotFoundException if the specified file name doesn't exist.
+     * @throws IOException           if there is a problem opening, writing to, or closing the IO stream of the file.
      */
     public static Properties loadSetSave(String fileName, Map<String, String> defaults, String... comments) throws Throwable {
         Properties properties = setDefaults(load(fileName), defaults);

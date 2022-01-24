@@ -40,6 +40,20 @@ public class LogManager extends Handler {
     private static Collection<Level> sqlLevels;
     private static LinkedList<LogRecord> logs;
 
+    private LogManager() {
+        if (sqlLogging) {
+            timer.cancel();
+            LinkedList<LogRecord> finalLogs = new LinkedList<>(logs);
+            logs = null;
+            Try.of(() -> compileAndUpdate(finalLogs));
+            sql.getConnection().close();
+        }
+        if (fileLogging) {
+            Try.of(() -> fileWriter.close());
+            fileWriter = null;
+        }
+    }
+
     public static void initialize(@Nonnull Function<LogRecord, String> logFormatter,
                                   @Nonnull String identifier,
                                   @Nullable File logFile,
@@ -124,20 +138,6 @@ public class LogManager extends Handler {
         String statement = "INSERT INTO `%s` VALUES(now(),?,?,?);".formatted(tableName);
         logs.forEach(log -> sql.update(statement, identity, log.getLevel().toString(), log.getMessage()));
         return true;
-    }
-
-    private LogManager() {
-        if (sqlLogging) {
-            timer.cancel();
-            LinkedList<LogRecord> finalLogs = new LinkedList<>(logs);
-            logs = null;
-            Try.of(() -> compileAndUpdate(finalLogs));
-            sql.getConnection().close();
-        }
-        if (fileLogging) {
-            Try.of(() -> fileWriter.close());
-            fileWriter = null;
-        }
     }
 
     @Override

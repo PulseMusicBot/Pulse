@@ -15,7 +15,7 @@ public class RequestFactory {
     }
 
     public static String toJson(Request request) {
-        if(request == null)
+        if (request == null)
             return "";
         JsonObject json = new JsonObject();
         json.addProperty("request", request.getRequest());
@@ -23,7 +23,7 @@ public class RequestFactory {
     }
 
     public static Request fromJson(String json) {
-        if(json.isEmpty())
+        if (json.isEmpty())
             return null;
         JsonObject request = JsonParser.parseString(json).getAsJsonObject();
         return from(request.get("request").getAsString());

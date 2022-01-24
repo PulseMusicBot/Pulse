@@ -23,10 +23,10 @@ public class AudioSender implements AudioSendHandler {
     public boolean canProvide() {
         int volume = controller.getVolume();
         Number adjusted = volume * 0.25D;
-        if(controller.getSettings().get(Setting.VOICE_DETECTION).toBoolean())
-            if(Instant.now().minusSeconds(2).isBefore(controller.getAudioReceiver().getLastAudioDetected()))
+        if (controller.getSettings().get(Setting.VOICE_DETECTION).toBoolean())
+            if (Instant.now().minusSeconds(2).isBefore(controller.getAudioReceiver().getLastAudioDetected()))
                 volume = adjusted.intValue() > 0 ? adjusted.intValue() : (volume != 1 ? 1 : 0);
-        if(volume != controller.getAudioPlayer().getVolume())
+        if (volume != controller.getAudioPlayer().getVolume())
             controller.getAudioPlayer().setVolume(volume);
         return (lastFrame = controller.getAudioPlayer().provide()) != null;
     }

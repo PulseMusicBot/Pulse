@@ -6,14 +6,14 @@ import java.io.Serializable;
 
 public class Value implements Serializable {
 
-    public static Value of(Object object) {
-        return new Value(object);
-    }
-
     private Object object;
 
     public Value(Object object) {
         this.object = object;
+    }
+
+    public static Value of(Object object) {
+        return new Value(object);
     }
 
     public boolean isEmpty() {

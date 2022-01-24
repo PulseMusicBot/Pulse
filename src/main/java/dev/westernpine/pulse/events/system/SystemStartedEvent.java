@@ -4,6 +4,7 @@ import dev.westernpine.eventapi.objects.Event;
 
 public class SystemStartedEvent extends Event {
 
-    public SystemStartedEvent() {}
+    public SystemStartedEvent() {
+    }
 
 }

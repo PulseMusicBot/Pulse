@@ -11,9 +11,11 @@ import dev.westernpine.lib.object.Scheduler;
 import dev.westernpine.lib.object.State;
 import dev.westernpine.pulse.events.system.StateChangeEvent;
 import dev.westernpine.pulse.listeners.console.ConsoleListener;
-import dev.westernpine.pulse.listeners.system.state.*;
 import dev.westernpine.pulse.listeners.system.player.AudioPlayerListener;
-import dev.westernpine.pulse.logging.LogManager;
+import dev.westernpine.pulse.listeners.system.state.InitializeListener;
+import dev.westernpine.pulse.listeners.system.state.RunningListener;
+import dev.westernpine.pulse.listeners.system.state.ShutdownListener;
+import dev.westernpine.pulse.listeners.system.state.StartupListener;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import dev.westernpine.pulse.properties.SqlProperties;
 import dev.westernpine.pulse.properties.SystemProperties;
@@ -26,11 +28,11 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-
-import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class Pulse {
 
@@ -62,42 +64,18 @@ public class Pulse {
     public static final EventManager eventManager;
 
     public static final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-
-    private static State state = State.OFFLINE;
-
     public static SystemProperties systemProperties;
-
     public static IdentityProperties identityProperties;
-
     public static SqlProperties loggingSqlProperties;
-
     public static CompletableFuture<Boolean> readyNotifier;
-
     public static Consumer<ReadyEvent> readyHandler;
-
     public static AudioPlayerManager audioPlayerManager;
-
     public static YoutubeSearchProvider youtubeSearchProvider;
-
     public static YoutubeAudioSourceManager youtubeAudioSourceManager;
-
     public static SoundCloudAudioSourceManager soundCloudAudioSourceManager;
-
     public static ShardManager shardManager;
-
     public static LinkedList<Runnable> shutdownHooks = new LinkedList<>();
-
-    public static State getState() {
-        return state;
-    }
-
-    public static void setState(State state) {
-        if(Pulse.state.isActive() && !state.isActive())
-            state = State.SHUTDOWN;
-        State old = Pulse.state;
-        Pulse.state = state;
-        eventManager.call(new StateChangeEvent(old, state));
-    }
+    private static State state = State.OFFLINE;
 
     static {
         eventManager = new EventManager();
@@ -121,6 +99,18 @@ public class Pulse {
         }));
 
         setState(State.INITIALIZATION);
+    }
+
+    public static State getState() {
+        return state;
+    }
+
+    public static void setState(State state) {
+        if (Pulse.state.isActive() && !state.isActive())
+            state = State.SHUTDOWN;
+        State old = Pulse.state;
+        Pulse.state = state;
+        eventManager.call(new StateChangeEvent(old, state));
     }
 
     public static void main(String[] args) {

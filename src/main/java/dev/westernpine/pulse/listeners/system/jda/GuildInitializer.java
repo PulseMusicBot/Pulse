@@ -2,7 +2,6 @@ package dev.westernpine.pulse.listeners.system.jda;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.pulse.component.command.CommandManager;
-import dev.westernpine.pulse.logging.Logger;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;

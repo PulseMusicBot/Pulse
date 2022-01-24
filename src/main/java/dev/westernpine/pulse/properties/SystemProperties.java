@@ -13,6 +13,7 @@ public class SystemProperties extends PropertiesFile {
     public SystemProperties() throws Throwable {
         super("system.properties", PropertyFile.getDeclaredProperties(SystemProperties.class));
     }
+
     @Override
     public PropertyFile reload() throws Throwable {
         super.reload();

@@ -3,15 +3,13 @@ package dev.westernpine.pulse.commands;
 import dev.westernpine.lib.interaction.ConsoleCommandHandler;
 import dev.westernpine.pulse.controller.ControllerFactory;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class ControllersCommand implements ConsoleCommandHandler {
 
     @Override
     public String[] usages() {
-        return new String[] {"controllers"};
+        return new String[]{"controllers"};
     }
 
     @Override

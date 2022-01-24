@@ -2,8 +2,8 @@ package dev.westernpine.pulse.listeners.system.state;
 
 import dev.westernpine.eventapi.objects.EventHandler;
 import dev.westernpine.eventapi.objects.Listener;
-import dev.westernpine.pulse.Pulse;
 import dev.westernpine.lib.object.State;
+import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.events.system.StateChangeEvent;
 import dev.westernpine.pulse.logging.LogManager;
@@ -13,7 +13,6 @@ import dev.westernpine.pulse.properties.SystemProperties;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 
@@ -24,7 +23,7 @@ public class InitializeListener implements Listener {
     // The STARTUP state is set in the main method.
     @EventHandler
     public void onInitialization(StateChangeEvent event) {
-        if(!event.getNewState().is(State.INITIALIZATION))
+        if (!event.getNewState().is(State.INITIALIZATION))
             return;
 
         try {

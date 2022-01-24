@@ -94,7 +94,7 @@ public class Setting {
     private String defaultValue;
     private String[] ids;
 
-    public Setting(UUID uuid, String emoji, String label, String description, String defaultValue, String...ids) {
+    public Setting(UUID uuid, String emoji, String label, String description, String defaultValue, String... ids) {
         this.uuid = uuid;
         this.emoji = emoji;
         this.label = label;

@@ -1,7 +1,6 @@
 package dev.westernpine.pulse.events.system.player;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.westernpine.eventapi.objects.Cancellable;
 import dev.westernpine.eventapi.objects.Event;

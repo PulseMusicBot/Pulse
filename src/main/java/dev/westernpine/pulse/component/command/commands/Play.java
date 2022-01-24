@@ -1,8 +1,8 @@
 package dev.westernpine.pulse.component.command.commands;
 
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.audio.AudioFactory;
+import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -53,7 +53,7 @@ public class Play implements SlashCommandComponentHandler {
 
     @Override
     public boolean handle(SlashCommandEvent event) {
-        if(!event.getName().equals(command()))
+        if (!event.getName().equals(command()))
             return false;
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true).connect(event.getMember());
         Try.of(() -> AudioFactory.toTrack(AudioFactory.query(event.getOption("query").getAsString()).get()))

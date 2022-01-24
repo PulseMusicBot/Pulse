@@ -3,11 +3,10 @@ package dev.westernpine.pulse.controller;
 import com.sedmelluq.discord.lavaplayer.filter.PcmFilterFactory;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.TrackMarker;
+import dev.westernpine.lib.audio.playlist.SortedPlaylist;
 import dev.westernpine.lib.audio.track.Track;
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.pulse.Pulse;
-import dev.westernpine.lib.audio.playlist.SortedPlaylist;
 import dev.westernpine.pulse.controller.handlers.audio.AudioReceiver;
 import dev.westernpine.pulse.controller.handlers.audio.AudioSender;
 import dev.westernpine.pulse.controller.handlers.player.PlayerListener;
@@ -19,7 +18,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -28,15 +26,10 @@ import java.util.function.Supplier;
 public class Controller {
 
     private final String guildId;
-
-    private String lastChannelId;
-
-    private boolean premium = false;
-
     protected long lifetime = 0;
-
     protected Status status = Status.CACHE;
-
+    private String lastChannelId;
+    private boolean premium = false;
     private Settings settings;
 
     private SortedPlaylist previousQueue;
@@ -92,7 +85,7 @@ public class Controller {
         this.status = status;
         this.lastChannelId = lastChannelId;
         //todo: initialize
-        if(this.getGuild().getGuildChannelById(connectedChannel) instanceof AudioChannel audioChannel) {
+        if (this.getGuild().getGuildChannelById(connectedChannel) instanceof AudioChannel audioChannel) {
             this.connect(audioChannel);
             this.setVolume(volume);
             this.alone = alone;
@@ -136,7 +129,7 @@ public class Controller {
     }
 
     public Controller updateLastChannelId(String lastChannelId, Supplier<Boolean> conditionSupplier) {
-        if(conditionSupplier.get())
+        if (conditionSupplier.get())
             return setLastChannelId(lastChannelId);
         return this;
     }
@@ -196,8 +189,7 @@ public class Controller {
     }
 
     /**
-     * @throws:
-     * IllegalArgumentException –
+     * @throws: IllegalArgumentException –
      * If the provided channel was null.
      * If the provided channel is not part of the Guild that the current audio connection is connected to.
      * UnsupportedOperationException – If audio is disabled due to an internal JDA error
@@ -210,8 +202,7 @@ public class Controller {
     }
 
     /**
-     * @throws:
-     * IllegalArgumentException –
+     * @throws: IllegalArgumentException –
      * If the provided channel was null.
      * If the provided channel is not part of the Guild that the current audio connection is connected to.
      * UnsupportedOperationException – If audio is disabled due to an internal JDA error
@@ -223,14 +214,14 @@ public class Controller {
         AudioManager audioManager = getAudioManager();
         audioManager.setSelfDeafened(true);
         audioManager.setSpeakingMode(SpeakingMode.SOUNDSHARE);
-        if(audioPlayer == null) {
+        if (audioPlayer == null) {
             audioPlayer = Pulse.audioPlayerManager.createPlayer();
             audioPlayer.setVolume(getSettings().get(Setting.DEFAULT_VOLUME).toInteger());
             audioPlayer.addListener(new PlayerListener(this));
         }
-        if(audioManager.getReceivingHandler() == null)
+        if (audioManager.getReceivingHandler() == null)
             audioManager.setReceivingHandler(this.audioReceiver = new AudioReceiver(this));
-        if(audioManager.getSendingHandler() == null)
+        if (audioManager.getSendingHandler() == null)
             audioManager.setSendingHandler(this.audioSender = new AudioSender(this));
         audioManager.openAudioConnection(audioChannel);
         return this;
@@ -290,17 +281,17 @@ public class Controller {
 
     public void setPaused(boolean paused) {
         boolean changeState = audioPlayer.isPaused() != paused;
-        if(!changeState)
+        if (!changeState)
             return;
         AudioTrack track = getPlayingTrack();
-        if(track != null) {
-            if(!track.isSeekable()) {
+        if (track != null) {
+            if (!track.isSeekable()) {
                 changeState = false;
             }
         } else {
             paused = false;
         }
-        if(changeState)
+        if (changeState)
             audioPlayer.setPaused(paused);
     }
 
@@ -338,7 +329,7 @@ public class Controller {
         audioManager.closeAudioConnection();
         audioManager.setSendingHandler(this.audioSender = null);
         audioManager.setReceivingHandler(this.audioReceiver = null);
-        if(this.audioPlayer != null) {
+        if (this.audioPlayer != null) {
             this.audioPlayer.destroy();
             this.audioPlayer = null;
         }

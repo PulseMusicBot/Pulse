@@ -3,10 +3,8 @@ package dev.westernpine.lib.audio.track;
 import com.sedmelluq.discord.lavaplayer.track.*;
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
 import dev.westernpine.lib.audio.AudioFactory;
-
-import java.util.Objects;
+import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
 
 public class Track extends DelegatedAudioTrack {
 
@@ -26,9 +24,9 @@ public class Track extends DelegatedAudioTrack {
 
     @Override
     public void process(LocalAudioTrackExecutor executor) throws Exception {
-        if(this.audioTrack == null)
+        if (this.audioTrack == null)
             this.audioTrack = getAudioTrack();
-        if(this.audioTrack == null)
+        if (this.audioTrack == null)
             throw new RuntimeException("Unable to resolve track: " + AudioFactory.toJson(this));
         this.processDelegate(this.audioTrack, executor);
     }
@@ -58,9 +56,9 @@ public class Track extends DelegatedAudioTrack {
     }
 
     public InternalAudioTrack getAudioTrack() {
-        if(this.getInfo().uri != null) {
+        if (this.getInfo().uri != null) {
             AudioItem audioItem = Try.of(() -> AudioFactory.query(this.getInfo().uri).get()).orElse(null);
-            if(audioItem != null && AudioFactory.toTrack(audioItem) instanceof InternalAudioTrack internalAudioTrack) {
+            if (audioItem != null && AudioFactory.toTrack(audioItem) instanceof InternalAudioTrack internalAudioTrack) {
                 this.audioTrack = internalAudioTrack;
             }
         }
@@ -77,7 +75,7 @@ public class Track extends DelegatedAudioTrack {
     @Override
     public boolean equals(Object object) {
         boolean isInt = object instanceof Integer;
-        if(!isInt && !(object instanceof AudioTrack) && !(object instanceof AudioTrackInfo))
+        if (!isInt && !(object instanceof AudioTrack) && !(object instanceof AudioTrackInfo))
             return false;
         int hash = isInt ? (int) object : AudioFactory.hashAudioObject(object);
         boolean originalHashEquals = hash == AudioFactory.hashAudioObject(originalAudioTrackInfo);

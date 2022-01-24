@@ -37,12 +37,12 @@ public class ControllerFactory {
         backend = new SqlBackend(Pulse.identityProperties.get(IdentityProperties.CONTROLLERS_SQL_BACKEND), "controllers");
         Pulse.scheduler.runLaterRepeating(() -> {
             Iterator<Map.Entry<String, Controller>> iterator = controllers.entrySet().iterator();
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 Map.Entry<String, Controller> entry = iterator.next();
                 String guildId = entry.getKey();
                 Controller controller = entry.getValue();
                 try {
-                    if(controller.getAudioManager().isConnected()) {
+                    if (controller.getAudioManager().isConnected()) {
                         Status status = controller.status;
                         boolean changeableStatus = status.isnt(Status.INACTIVE) && status.isnt(Status.ALONE) && status.isnt(Status.PAUSED);
                         boolean playing = controller.getPlayingTrack() != null;
@@ -51,29 +51,29 @@ public class ControllerFactory {
                         boolean activeWorthy = playing && !alone && !paused;
                         boolean tfs = controller.getSettings().get(Setting.TWENTRY_FOUR_SEVEN).toBoolean();
                         boolean endSession = false;
-                        if(tfs || (status.isnt(Status.ACTIVE) && (status.is(Status.CACHE) || activeWorthy)))
+                        if (tfs || (status.isnt(Status.ACTIVE) && (status.is(Status.CACHE) || activeWorthy)))
                             controller.resetStatus(Status.ACTIVE);
                         else {
                             Status newStatus = Status.CACHE;
-                            if(!playing) {
+                            if (!playing) {
                                 newStatus = Status.INACTIVE;
-                                if(changeableStatus)
+                                if (changeableStatus)
                                     controller.resetStatus(newStatus);
-                                endSession = controller.setLifetime(controller.lifetime+1, newStatus).lifetime >= MAX_LIFETIME;
+                                endSession = controller.setLifetime(controller.lifetime + 1, newStatus).lifetime >= MAX_LIFETIME;
                             }
-                            if(alone) {
+                            if (alone) {
                                 newStatus = Status.ALONE;
-                                if(changeableStatus)
+                                if (changeableStatus)
                                     controller.resetStatus(newStatus);
-                                endSession = controller.setLifetime(controller.lifetime+1, newStatus).lifetime >= MAX_LIFETIME;
+                                endSession = controller.setLifetime(controller.lifetime + 1, newStatus).lifetime >= MAX_LIFETIME;
                             }
-                            if(paused) {
+                            if (paused) {
                                 newStatus = Status.PAUSED;
-                                if(changeableStatus)
+                                if (changeableStatus)
                                     controller.resetStatus(newStatus);
-                                endSession = controller.setLifetime(controller.lifetime+1, newStatus).lifetime >= MAX_LIFETIME;
+                                endSession = controller.setLifetime(controller.lifetime + 1, newStatus).lifetime >= MAX_LIFETIME;
                             }
-                            if(endSession) {
+                            if (endSession) {
                                 controller.destroy(controller.status.getEndCase());
                                 controller.resetStatus(Status.CACHE);
 //                                continue; // This is technically the last statement in the loop... therefor unnecessary.
@@ -81,9 +81,9 @@ public class ControllerFactory {
                         }
                     } else {
                         // Manage the cache state of a controller, and remove it when it's cache state times out.
-                        if(controller.status == null || !controller.status.equals(Status.CACHE))
+                        if (controller.status == null || !controller.status.equals(Status.CACHE))
                             controller.resetStatus(Status.CACHE);
-                        else if(controller.setLifetime(controller.lifetime+1, Status.CACHE).lifetime >= MAX_LIFETIME)
+                        else if (controller.setLifetime(controller.lifetime + 1, Status.CACHE).lifetime >= MAX_LIFETIME)
                             iterator.remove();
                     }
                 } catch (Exception e) {
@@ -134,12 +134,12 @@ public class ControllerFactory {
     }
 
     public static void ifCached(String guildId, Consumer<Controller> controllerConsumer) {
-        if(isCached(guildId))
+        if (isCached(guildId))
             controllerConsumer.accept(get(guildId, false));
     }
 
     public static <T> Optional<T> ifCached(String guildId, Function<Controller, T> controllerFunction) {
-        if(isCached(guildId))
+        if (isCached(guildId))
             return Optional.of(controllerFunction.apply(get(guildId, false)));
         return Optional.empty();
     }
@@ -153,7 +153,7 @@ public class ControllerFactory {
         json.addProperty("status", controller.status.toString());
         boolean isConnected = controller.getAudioPlayer() != null;
         json.addProperty("isConnected", isConnected);
-        if(isConnected) {
+        if (isConnected) {
             json.addProperty("connectedChannel", connectedChannel == null ? "" : connectedChannel.getId());
             json.addProperty("previousQueue", AudioFactory.toJson(controller.getPreviousQueue()).toString());
             json.addProperty("queue", AudioFactory.toJson(controller.getQueue()).toString());
@@ -177,7 +177,7 @@ public class ControllerFactory {
         long lifetime = controller.get("lifetime").getAsLong();
         Status status = Status.valueOf(controller.get("status").getAsString());
         boolean isConnected = controller.get("isConnected").getAsBoolean();
-        if(!isConnected) {
+        if (!isConnected) {
             return new Controller(guildId, lifetime, status, lastChannelId);
         } else {
             String connectedChannel = controller.get("connectedChannel").getAsString();

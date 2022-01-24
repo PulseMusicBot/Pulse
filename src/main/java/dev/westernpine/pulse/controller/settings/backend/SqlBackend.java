@@ -1,8 +1,8 @@
 package dev.westernpine.pulse.controller.settings.backend;
 
 import dev.westernpine.lib.object.SQL;
-import dev.westernpine.pulse.Pulse;
 import dev.westernpine.lib.object.State;
+import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.properties.SqlProperties;
 
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class SqlBackend implements SettingsBackend {
             try {
                 return rs.next();
             } catch (Exception e) {
-                if(sql.isDebugging())
+                if (sql.isDebugging())
                     e.printStackTrace();
             }
             return false;
@@ -59,11 +59,11 @@ public class SqlBackend implements SettingsBackend {
     public String load(String guildId) {
         return sql.query(rs -> {
             try {
-                if(rs.next()) {
+                if (rs.next()) {
                     return rs.getString("settings");
                 }
             } catch (Exception e) {
-                if(sql.isDebugging())
+                if (sql.isDebugging())
                     e.printStackTrace();
             }
             return null;
@@ -82,7 +82,7 @@ public class SqlBackend implements SettingsBackend {
 
     @Override
     public void close() throws IOException {
-        if(!isClosed())
+        if (!isClosed())
             this.sql.getConnection().close();
     }
 }

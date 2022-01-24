@@ -9,9 +9,8 @@ import java.time.Instant;
 
 public class AudioReceiver implements AudioReceiveHandler {
 
-    private Instant lastAudioDetected = null;
-
     private final Controller controller;
+    private Instant lastAudioDetected = null;
 
     public AudioReceiver(Controller controller) {
         this.controller = controller;
@@ -24,7 +23,7 @@ public class AudioReceiver implements AudioReceiveHandler {
 
     @Override
     public void handleUserAudio(UserAudio userAudio) {
-        if(!userAudio.getUser().isBot()) //ignore all bot audio including self (So two music bot's can run at same time if users have other bot's muted, without audio being suppressed).
+        if (!userAudio.getUser().isBot()) //ignore all bot audio including self (So two music bot's can run at same time if users have other bot's muted, without audio being suppressed).
             this.lastAudioDetected = Instant.now();
     }
 

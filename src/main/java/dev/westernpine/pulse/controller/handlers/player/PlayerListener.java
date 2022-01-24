@@ -2,7 +2,6 @@ package dev.westernpine.pulse.controller.handlers.player;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
@@ -41,6 +40,7 @@ public class PlayerListener extends AudioEventAdapter {
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
         Pulse.eventManager.call(new TrackExceptionEvent(controller, this, player, track, exception));
     }
+
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace) {
         Pulse.eventManager.call(new TrackStuckEvent(controller, this, player, track, thresholdMs, stackTrace));
     }

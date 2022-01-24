@@ -15,11 +15,11 @@ public class Platform {
         AudioTrackInfo audioTrackInfo = track.getInfo();
         String query = audioTrackInfo.title + " - " + audioTrackInfo.author;
         AudioItem audioItem = Pulse.youtubeSearchProvider.loadSearchResult(query, info -> new YoutubeAudioTrack(info, Pulse.youtubeAudioSourceManager));
-        if(audioItem == AudioReference.NO_TRACK)
+        if (audioItem == AudioReference.NO_TRACK)
             return null;
-        if(audioItem instanceof AudioPlaylist playlist) {
+        if (audioItem instanceof AudioPlaylist playlist) {
             return playlist.getTracks().isEmpty() ? null : (InternalAudioTrack) playlist.getTracks().get(0);
-        } else if (audioItem instanceof  InternalAudioTrack audioTrack) {
+        } else if (audioItem instanceof InternalAudioTrack audioTrack) {
             return audioTrack;
         }
         return null;
@@ -29,11 +29,11 @@ public class Platform {
         AudioTrackInfo audioTrackInfo = track.getInfo();
         String query = "scsearch:" + audioTrackInfo.title + " - " + audioTrackInfo.author;
         AudioItem audioItem = Pulse.soundCloudAudioSourceManager.loadItem(Pulse.audioPlayerManager, new AudioReference(query, null));
-        if(audioItem == AudioReference.NO_TRACK)
+        if (audioItem == AudioReference.NO_TRACK)
             return null;
-        if(audioItem instanceof AudioPlaylist playlist) {
+        if (audioItem instanceof AudioPlaylist playlist) {
             return playlist.getTracks().isEmpty() ? null : (InternalAudioTrack) playlist.getTracks().get(0);
-        } else if (audioItem instanceof  InternalAudioTrack audioTrack) {
+        } else if (audioItem instanceof InternalAudioTrack audioTrack) {
             return audioTrack;
         }
         return null;

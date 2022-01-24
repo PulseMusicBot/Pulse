@@ -54,14 +54,14 @@ public class Settings {
     public Value get(Setting setting) {
         boolean exists = exists(setting);
         Value value = exists ? this.settings.get(setting.getUuid()) : Value.of(setting.getDefaultValue());
-        if(!exists)
+        if (!exists)
             this.settings.put(setting.getUuid(), value);
         return value;
     }
 
     public Settings update() {
         String json = SettingsFactory.toJson(this);
-        if(this.backend.exists(controller.getGuildId()))
+        if (this.backend.exists(controller.getGuildId()))
             this.backend.update(controller.getGuildId(), json);
         else
             this.backend.save(controller.getGuildId(), json);
@@ -71,8 +71,9 @@ public class Settings {
     public Settings set(Setting setting, Value value) {
         this.settings.put(setting.getUuid(), value);
         return update();
-    };
+    }
 
+    ;
 
 
 }
