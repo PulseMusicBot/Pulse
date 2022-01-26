@@ -3,8 +3,11 @@ package dev.westernpine.lib.audio.playlist;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.westernpine.lib.audio.AudioFactory;
+import dev.westernpine.lib.audio.track.Track;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlaylist {
@@ -55,6 +58,13 @@ public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlayl
         return this;
     }
 
+    public void setTracks(AudioTrack...tracks) {
+        this.clear();
+        this.addAll(Arrays.asList(tracks));
+        if(!this.contains(selectedTrack))
+            selectedTrack = null;
+    }
+
     /**
      * @return Track that is explicitly selected, may be null. This same instance occurs in the track list.
      */
@@ -71,6 +81,23 @@ public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlayl
         return this.isSearchResult;
     }
 
+    public int getSelectedTrackIndex() {
+        int index = -1;
+        if(selectedTrack != null) {
+            int i = 0;
+            for(AudioTrack track : getTracks()) {
+                if(track == selectedTrack) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        return index;
+    }
+
+    public void move(int index, int to) {
+        add(to > index ? to-1 : to, remove(index));
+    }
 
     @Override
     public int hashCode() {

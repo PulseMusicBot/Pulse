@@ -39,11 +39,7 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - Add in more controller functionality.
-     - Deeper playlist/queue functionality
      - Player listeners.
-     - Controller events?
-     - Loading of tracks and playlists...
      - More sources.
      - Commands
      - Management/Premium status

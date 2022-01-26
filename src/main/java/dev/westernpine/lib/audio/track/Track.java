@@ -5,6 +5,8 @@ import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.audio.AudioFactory;
 import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
+import dev.westernpine.lib.audio.track.userdata.platform.Platform;
+import dev.westernpine.lib.audio.track.userdata.platform.PlatformFactory;
 
 public class Track extends DelegatedAudioTrack {
 
@@ -64,7 +66,7 @@ public class Track extends DelegatedAudioTrack {
         }
         if (this.audioTrack != null)
             return this.audioTrack;
-        return UserDataFactory.from(this.getUserData()).preferredPlatform().getAudioTrackFactory().apply(this);
+        return this.audioTrack = UserDataFactory.from(this.getUserData()).preferredPlatform().getAudioTrackFactory().apply(this);
     }
 
     @Override

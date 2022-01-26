@@ -2,6 +2,8 @@ package dev.westernpine.lib.audio.track.userdata.platform;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.westernpine.pulse.Pulse;
+import dev.westernpine.pulse.properties.IdentityProperties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class PlatformFactory {
     }
 
     public static Platform defaultPlatform() {
-        return get("YouTube");
+        return Optional.ofNullable(get(Pulse.identityProperties.get(IdentityProperties.DEFAULT_PLATFORM))).orElse(Platform.YOUTUBE);
     }
 
     public static String toJson(Platform platform) {

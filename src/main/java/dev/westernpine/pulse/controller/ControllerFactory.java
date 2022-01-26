@@ -24,9 +24,6 @@ import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class ControllerFactory {
 
-    //TODO:
-    // maximum allowed enques.
-
     public static final long MAX_LIFETIME = 900; //15 minutes of cache time, post timeouts, when not in use at all.
 
     private static final Map<String, Controller> controllers = new HashMap<>();
@@ -172,7 +169,6 @@ public class ControllerFactory {
         return json.toString();
     }
 
-    //TODO: JsonInitialization
     public static Controller fromJson(String json) {
         JsonObject controller = JsonParser.parseString(json).getAsJsonObject();
         String guildId = controller.get("guildId").getAsString();
