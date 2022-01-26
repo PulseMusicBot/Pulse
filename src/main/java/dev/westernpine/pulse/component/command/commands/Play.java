@@ -3,6 +3,11 @@ package dev.westernpine.pulse.component.command.commands;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.audio.AudioFactory;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
+import dev.westernpine.lib.object.TriState;
+import dev.westernpine.lib.util.Formatter;
+import dev.westernpine.lib.util.jda.Embeds;
+import dev.westernpine.lib.util.jda.Messenger;
+import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -57,7 +62,8 @@ public class Play implements SlashCommandComponentHandler {
             return false;
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true).connect(event.getMember());
         Try.to(() -> AudioFactory.toTrack(AudioFactory.query(event.getOption("query").getAsString()).get()))
-                .onSuccess(track -> controller.startTrack(track, true))
+                .onSuccess(track -> controller.enque(track, TriState.FALSE))
+                .onSuccess(track -> event.reply(Messenger.buildMessage(Embeds.play("Now Playing", Formatter.formatInfo(track.getInfo()), track.getInfo().isStream ? -1 : track.getDuration(), Pulse.color(event.getGuild())))).queue())
                 .onFailure(Throwable::printStackTrace);
         return true;
     }

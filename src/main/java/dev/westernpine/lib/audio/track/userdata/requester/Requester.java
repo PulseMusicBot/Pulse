@@ -27,7 +27,7 @@ public class Requester {
         return avatarUrl;
     }
 
-    public String getMention() {
+    public String getAsMention() {
         return "<@" + id + ">";
     }
 
