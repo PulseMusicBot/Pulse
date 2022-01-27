@@ -18,14 +18,14 @@ public class AudioPlayerListener implements Listener {
     public void onFinishedPlaying(FinishedPlayingEvent event) {
         Controller controller = event.getController();
         controller.getLastChannel().ifPresent(channel ->
-                Messenger.sendMessage(channel, Embeds.small(":heavy_check_mark: Finished playing all requests!", Pulse.color(controller.getGuild())), 15));
+                Messenger.sendMessage(channel, Embeds.success("Finished playing!", "The end of the queue was reached."), 15));
     }
 
     @EventHandler
     public void onPreviousQueueReachedEnd(PreviousQueueReachedEndEvent event) {
         Controller controller = event.getController();
         controller.getLastChannel().ifPresent(channel ->
-                Messenger.sendMessage(channel, Embeds.small(":heavy_check_mark: Reached the start of the queue.", Pulse.color(controller.getGuild())), 15));
+                Messenger.sendMessage(channel, Embeds.success("Finished playing!", "The start of the queue was reached."), 15));
     }
 
     @EventHandler

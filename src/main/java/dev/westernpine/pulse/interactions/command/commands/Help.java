@@ -51,8 +51,6 @@ public class Help implements SlashCommandComponentHandler {
 
     @Override
     public boolean handle(SlashCommandEvent event) {
-        if (!event.getName().equals(command()))
-            return false;
         if (event.getOptions().isEmpty()) {
             String host = Pulse.identityProperties.get(IdentityProperties.HOST);
             event.replyEmbeds(Embeds.info("Bot Help", """
@@ -102,7 +100,7 @@ public class Help implements SlashCommandComponentHandler {
                             .setEphemeral(true)
                             .queue());
         }
-        return true;
+        return false;
     }
 
 }

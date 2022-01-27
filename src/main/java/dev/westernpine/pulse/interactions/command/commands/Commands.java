@@ -37,13 +37,11 @@ public class Commands implements SlashCommandComponentHandler {
 
     @Override
     public boolean handle(SlashCommandEvent event) {
-        if (!event.getName().equals(command()))
-            return false;
         EmbedBuilder embed = new EmbedBuilder().setTitle("All Commands");
         CommandManager.getSortedComponentHandlers().forEach((category, commands) -> embed.addField(category, String.join(", ", commands.stream().map(command -> "`" + command.id() + "`").toArray(String[]::new)), false));
         embed.setColor(Pulse.color());
         embed.setFooter("To learn more about a command, type \"/help command\"");
         event.replyEmbeds(embed.build()).setEphemeral(true).queue();
-        return true;
+        return false;
     }
 }

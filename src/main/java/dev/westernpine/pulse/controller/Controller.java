@@ -25,8 +25,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-import java.awt.*;
-import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -136,15 +134,15 @@ public class Controller {
                 int currentPrevious = currentVotesToPrevious();
                 if (currentNext >= needed && currentPrevious >= needed) {
                     getLastChannel().ifPresent(channel ->
-                            Messenger.sendMessage(channel, Embeds.small(":cross_mark: **The votes for a track movement are tied, please recast your votes!**\nAll votes were cleared.", Color.RED), 15));
+                            Messenger.sendMessage(channel, Embeds.error("Votes to skip are tied!", "Please recast your votes, as all votes were cleared."), 15));
                     clearVotes();
                 } else if (currentNext >= needed) {
                     getLastChannel().ifPresent(channel ->
-                            Messenger.sendMessage(channel, Embeds.small(":arrow_right: **Moving to next track.**\nEnough remaining votes to move.", Pulse.color(getGuild())), 15));
+                            Messenger.sendMessage(channel, Embeds.info(":arrow_right: Moving to next track.", "Enough remaining votes to move.", Pulse.color(getGuild())), 15));
                     nextTrack();
                 } else if (currentPrevious >= needed) {
                     getLastChannel().ifPresent(channel ->
-                            Messenger.sendMessage(channel, Embeds.small(":arrow_left: **Moving to previous track.**\nEnough remaining votes to move.", Pulse.color(getGuild())), 15));
+                            Messenger.sendMessage(channel, Embeds.info(":arrow_right: Moving to previous track.", "Enough remaining votes to move.", Pulse.color(getGuild())), 15));
                     previousTrack();
                 }
             }
@@ -309,8 +307,8 @@ public class Controller {
         audioManager.setSpeakingMode(SpeakingMode.SOUNDSHARE);
         if (audioPlayer == null) {
             audioPlayer = Pulse.audioPlayerManager.createPlayer();
-            audioPlayer.setVolume(getSettings().get(Setting.DEFAULT_VOLUME).toInteger());
             audioPlayer.addListener(new PlayerListener(this));
+            setVolume(getSettings().get(Setting.DEFAULT_VOLUME).toInteger());
         }
         if (audioManager.getReceivingHandler() == null)
             audioManager.setReceivingHandler(this.audioReceiver = new AudioReceiver(this));

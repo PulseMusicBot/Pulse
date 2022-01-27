@@ -4,10 +4,7 @@ import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.audio.AudioFactory;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.object.TriState;
-import dev.westernpine.lib.util.Formatter;
 import dev.westernpine.lib.util.jda.Embeds;
-import dev.westernpine.lib.util.jda.Messenger;
-import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -15,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 public class Play implements SlashCommandComponentHandler {
     /**
@@ -58,13 +56,13 @@ public class Play implements SlashCommandComponentHandler {
 
     @Override
     public boolean handle(SlashCommandEvent event) {
-        if (!event.getName().equals(command()))
-            return false;
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true).connect(event.getMember());
-        Try.to(() -> AudioFactory.toTrack(AudioFactory.query(event.getOption("query").getAsString()).get()))
+        return Try.to(() -> AudioFactory.toTrack(AudioFactory.query(event.getOption("query").getAsString()).get()))
+                .onSuccess(track -> controller.setLastChannelId(event.getChannel().getId()))
                 .onSuccess(track -> controller.enque(track, TriState.FALSE))
-                .onSuccess(track -> event.reply(Messenger.buildMessage(Embeds.play("Now Playing", Formatter.formatInfo(track.getInfo()), track.getInfo().isStream ? -1 : track.getDuration(), Pulse.color(event.getGuild())))).queue())
-                .onFailure(Throwable::printStackTrace);
-        return true;
+                .onSuccess(track -> event.replyEmbeds(Embeds.success("Track enqued!", "Your track was added to the queue.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS)))
+                .onFailure(Throwable::printStackTrace)
+                .map(track -> true)
+                .orElse(false);
     }
 }

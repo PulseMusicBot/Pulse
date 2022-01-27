@@ -19,7 +19,7 @@ public class Embeds extends Messenger {
      */
     public static EmbedBuilder success(String title, String description) {
         return new EmbedBuilder()
-                .setTitle(EmojiParser.parseToUnicode(":heavy_check_mark: %s".formatted(title)))
+                .setTitle(EmojiParser.parseToUnicode(":white_check_mark: %s".formatted(title)))
                 .setDescription(EmojiParser.parseToUnicode(description))
                 .setColor(Colors.GREEN);
     }
@@ -33,7 +33,7 @@ public class Embeds extends Messenger {
      */
     public static EmbedBuilder error(String title, String description) {
         return new EmbedBuilder()
-                .setTitle(EmojiParser.parseToUnicode(":cross_mark: %s".formatted(title)))
+                .setTitle(EmojiParser.parseToUnicode(":x: %s".formatted(title)))
                 .setDescription(EmojiParser.parseToUnicode(description))
                 .setColor(Colors.RED);
     }

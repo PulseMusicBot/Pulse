@@ -39,10 +39,9 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - Player listeners.
-     - Implement aliases on commands? (yes, make new method in super "shouldHandle", use returned boolean for storing channel ID.)
-     - Refactor commands to make a commandBuilder that also handles specific executions.
-     - Commands
+     - Add documentation!
+     - detail logs
+     - Commands (With detailed logs)
      - More sources.
      - Management/Premium status (Reuse old)
      */
