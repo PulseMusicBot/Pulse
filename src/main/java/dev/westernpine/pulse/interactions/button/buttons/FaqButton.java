@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.component.button.buttons;
+package dev.westernpine.pulse.interactions.button.buttons;
 
 import dev.westernpine.lib.interaction.component.button.ButtonComponentHandler;
 import dev.westernpine.pulse.Pulse;

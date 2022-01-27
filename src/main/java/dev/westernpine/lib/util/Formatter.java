@@ -1,23 +1,18 @@
 package dev.westernpine.lib.util;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import dev.westernpine.lib.audio.track.userdata.requester.Requester;
-import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 public class Formatter {
 
     /**
      * Formats given audio track info into a readable, and stylized string.
+     *
      * @param audioTrackInfo Audio track info to format.
      * @return Formatted and stylized representation of the track info.
      */
@@ -27,6 +22,7 @@ public class Formatter {
 
     /**
      * Format the requester object as an identifiable user.
+     *
      * @param requester The requester to format.
      * @return A formatted representation of the requester.
      */
@@ -36,6 +32,7 @@ public class Formatter {
 
     /**
      * Format the user object as an identifiable user.
+     *
      * @param user The user to format.
      * @return A formatted representation of the user.
      */
@@ -45,6 +42,7 @@ public class Formatter {
 
     /**
      * Format the member object as an identifiable user.
+     *
      * @param member The member to format.
      * @return A formatted representation of the member.
      */
@@ -54,6 +52,7 @@ public class Formatter {
 
     /**
      * Format a role to a readable string.
+     *
      * @param role The role to format.
      * @return A formatted representation of a given role.
      */
@@ -67,6 +66,7 @@ public class Formatter {
 
     /**
      * Format a given duration and progress into a progress bar string of unicodes.
+     *
      * @param duration The overall duration.
      * @param position The current position.
      * @return A String representation of a progress bar.
@@ -75,7 +75,7 @@ public class Formatter {
         final int segments = 24;
         String[] markers = new String[segments];
         Arrays.fill(markers, "\u25ac");
-        Long knobPosition = duration==-1 ? segments-1 : position/(duration/segments);
+        Long knobPosition = duration == -1 ? segments - 1 : position / (duration / segments);
         markers[knobPosition.intValue()] = "\uD83D\uDD18";
         return String.join("", markers);
     }

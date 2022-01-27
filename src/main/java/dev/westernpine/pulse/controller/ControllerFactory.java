@@ -14,6 +14,7 @@ import dev.westernpine.pulse.controller.backend.SqlBackend;
 import dev.westernpine.pulse.controller.settings.setting.Setting;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import net.dv8tion.jda.api.entities.AudioChannel;
+import net.dv8tion.jda.api.entities.ISnowflake;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -39,9 +40,8 @@ public class ControllerFactory {
                 String guildId = entry.getKey();
                 Controller controller = entry.getValue();
                 try {
-                    if (controller.getAudioManager().isConnected()) {
+                    if (controller.isConnected()) {
                         Status status = controller.status;
-                        boolean changeableStatus = status.isnt(Status.INACTIVE) && status.isnt(Status.ALONE) && status.isnt(Status.PAUSED);
                         boolean playing = controller.getPlayingTrack() != null;
                         boolean alone = controller.getConnectedMembers().isEmpty();
                         boolean paused = controller.isPaused();
@@ -52,28 +52,16 @@ public class ControllerFactory {
                             controller.resetStatus(Status.ACTIVE);
                         else {
                             Status newStatus = Status.CACHE;
-                            if (!playing) {
-                                newStatus = Status.INACTIVE;
-                                if (changeableStatus)
-                                    controller.resetStatus(newStatus);
-                                endSession = controller.setLifetime(controller.lifetime + 1, newStatus).lifetime >= MAX_LIFETIME;
-                            }
-                            if (alone) {
-                                newStatus = Status.ALONE;
-                                if (changeableStatus)
-                                    controller.resetStatus(newStatus);
-                                endSession = controller.setLifetime(controller.lifetime + 1, newStatus).lifetime >= MAX_LIFETIME;
-                            }
-                            if (paused) {
-                                newStatus = Status.PAUSED;
-                                if (changeableStatus)
-                                    controller.resetStatus(newStatus);
-                                endSession = controller.setLifetime(controller.lifetime + 1, newStatus).lifetime >= MAX_LIFETIME;
-                            }
+                            if (!playing)
+                                endSession = controller.incrementLifetimeWithStatusIfCurrentIsChangeable(Status.INACTIVE);
+                            if (alone)
+                                endSession = controller.incrementLifetimeWithStatusIfCurrentIsChangeable(Status.ALONE);
+                            if (paused)
+                                endSession = controller.incrementLifetimeWithStatusIfCurrentIsChangeable(Status.PAUSED);
                             if (endSession) {
                                 controller.destroy(controller.status.getEndCase());
                                 controller.resetStatus(Status.CACHE);
-//                                continue; // This is technically the last statement in the loop... therefor unnecessary.
+//                                continue; // This is technically the last statement in the loop... therefor "continue" is unnecessary.
                             }
                         }
                     } else {
@@ -92,30 +80,31 @@ public class ControllerFactory {
             }
         }, 0L, 1000L);
         Pulse.shutdownHooks.addFirst(() -> {
-            Map<String, String> serialized = controllers
-                    .entrySet()
-                    .stream()
-                    .filter(entry -> entry.getValue().getAudioPlayer() != null)
-                    .map(entry -> Try.to(() -> EntryUtil.remapValue(entry, ControllerFactory::toJson)).orElse(null))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            controllers.values().forEach(controller -> Try.to(() -> controller.destroy(EndCase.BOT_RESTART)));
-            controllers.clear();
-            backend.save(serialized);
-            if (!backend.isClosed()) {
-                logger.info("Closing controller backend.");
-                Try.to(() -> backend.close()).onFailure(Throwable::printStackTrace);
+            if (backend.isAvailable()) {
+                Map<String, String> serialized = controllers
+                        .entrySet()
+                        .stream()
+                        .filter(entry -> entry.getValue().getAudioPlayer() != null)
+                        .map(entry -> Try.to(() -> EntryUtil.remapValue(entry, ControllerFactory::toJson)).orElse(null))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                controllers.values().forEach(controller -> Try.to(() -> controller.destroy(EndCase.BOT_RESTART)));
+                controllers.clear();
+                backend.save(serialized);
+                if (!backend.isClosed()) {
+                    logger.info("Closing controller backend.");
+                    Try.to(() -> backend.close()).onFailure(Throwable::printStackTrace);
+                }
             }
         });
-    }
-
-    public static void initializeBackend() {
-        backend.load().forEach((guildId, controller) ->
-                Try.to(() -> controllers.put(guildId, fromJson(controller)))
-                        .onFailure(Throwable::printStackTrace)
-                        .onFailure(throwable -> logger.warning("Unable to initialize guild controller %s from backend.".formatted(guildId)))
-                        .onSuccess(con -> logger.fine("Initialized guild controller %s from backend.".formatted(guildId))));
-        backend.clear();
+        if (backend.isAvailable()) {
+            backend.load().forEach((guildId, controller) ->
+                    Try.to(() -> controllers.put(guildId, fromJson(controller)))
+                            .onFailure(Throwable::printStackTrace)
+                            .onFailure(throwable -> logger.warning("Unable to initialize guild controller %s from backend.".formatted(guildId)))
+                            .onSuccess(con -> logger.fine("Initialized guild controller %s from backend.".formatted(guildId))));
+            backend.clear();
+        }
     }
 
     public static boolean isCached(String guildId) {
@@ -148,14 +137,14 @@ public class ControllerFactory {
     public static String toJson(Controller controller) {
         JsonObject json = new JsonObject();
         json.addProperty("guildId", controller.getGuildId());
-        AudioChannel connectedChannel = controller.getAudioManager().getConnectedChannel();
+        Optional<AudioChannel> connectedChannel = controller.getConnectedChannel();
         json.addProperty("lastChannelId", controller.getLastChannelId() == null ? "" : controller.getLastChannelId());
         json.addProperty("lifetime", controller.lifetime);
         json.addProperty("status", controller.status.toString());
         boolean isConnected = controller.getAudioPlayer() != null;
         json.addProperty("isConnected", isConnected);
         if (isConnected) {
-            json.addProperty("connectedChannel", connectedChannel == null ? "" : connectedChannel.getId());
+            json.addProperty("connectedChannel", connectedChannel.map(ISnowflake::getId).orElse(""));
             json.addProperty("previousQueue", AudioFactory.toJson(controller.getPreviousQueue()).toString());
             json.addProperty("queue", AudioFactory.toJson(controller.getQueue()).toString());
             json.addProperty("track", controller.getPlayingTrack() == null ? "" : AudioFactory.toJson(controller.getPlayingTrack()).toString());

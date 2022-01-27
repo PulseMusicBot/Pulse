@@ -4,6 +4,8 @@ import java.io.Closeable;
 
 public interface SettingsBackend extends Closeable {
 
+    public boolean isAvailable();
+
     public boolean isClosed();
 
     public boolean exists(String guildId);

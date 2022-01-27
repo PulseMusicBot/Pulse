@@ -1,8 +1,8 @@
-package dev.westernpine.pulse.component.command.commands;
+package dev.westernpine.pulse.interactions.command.commands;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.pulse.Pulse;
-import dev.westernpine.pulse.component.command.CommandManager;
+import dev.westernpine.pulse.interactions.command.CommandManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;

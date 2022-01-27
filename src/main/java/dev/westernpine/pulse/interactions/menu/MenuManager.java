@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.component.menu;
+package dev.westernpine.pulse.interactions.menu;
 
 import dev.westernpine.lib.interaction.component.menu.MenuComponentHandler;
 

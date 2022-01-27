@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.component.button.buttons;
+package dev.westernpine.pulse.interactions.button.buttons;
 
 import dev.westernpine.lib.interaction.component.button.ButtonComponentHandler;
 import dev.westernpine.pulse.Pulse;
@@ -7,21 +7,21 @@ import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.Component;
 
-public class WebsiteButton implements ButtonComponentHandler {
+public class SupportButton implements ButtonComponentHandler {
 
     @Override
     public String id() {
-        return "website";
+        return "support";
     }
 
     @Override
     public Component toComponent() {
-        return Button.link("https://%s".formatted(Pulse.identityProperties.get(IdentityProperties.HOST)), label());
+        return Button.link("https://%s/support".formatted(Pulse.identityProperties.get(IdentityProperties.HOST)), label());
     }
 
     @Override
     public String label() {
-        return "Website";
+        return "Support";
     }
 
     @Override

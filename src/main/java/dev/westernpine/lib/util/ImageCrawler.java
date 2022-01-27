@@ -46,7 +46,8 @@ public class ImageCrawler {
             if (imageUrl != null) {
                 return imageUrl;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         return imageUrl;
     }

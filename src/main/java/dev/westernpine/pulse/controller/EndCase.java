@@ -9,7 +9,7 @@ public enum EndCase {
     PAUSE_TIMEOUT("Paused for too long."),
     ALONE_TIMEOUT("Alone for too long."),
     BOT_RESTART("Bot restarting."),
-    FATAL_ERROR("A fatal error has occured. Please contact the bot developer."),
+    FATAL_ERROR("A fatal error has occurred. Please contact the bot developer."),
     CACHE_CLEANUP("Cache clean-up (Error)."),
     ADMIN_DISCONNECT("Disconnected by an Official Bot Administrator."),
     PREMIUM_EXPIRED("This server's premium status has expired!"),

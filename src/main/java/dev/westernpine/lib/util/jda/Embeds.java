@@ -19,8 +19,8 @@ public class Embeds extends Messenger {
      */
     public static EmbedBuilder success(String title, String description) {
         return new EmbedBuilder()
-                .setDescription(description)
-                .setTitle("%s %s".formatted(EmojiParser.parseToUnicode(":green_check:"), title))
+                .setTitle(EmojiParser.parseToUnicode(":heavy_check_mark: %s".formatted(title)))
+                .setDescription(EmojiParser.parseToUnicode(description))
                 .setColor(Colors.GREEN);
     }
 
@@ -33,8 +33,8 @@ public class Embeds extends Messenger {
      */
     public static EmbedBuilder error(String title, String description) {
         return new EmbedBuilder()
-                .setDescription(description)
-                .setTitle("%s %s".formatted(EmojiParser.parseToUnicode(":cross_mark:"), title))
+                .setTitle(EmojiParser.parseToUnicode(":cross_mark: %s".formatted(title)))
+                .setDescription(EmojiParser.parseToUnicode(description))
                 .setColor(Colors.RED);
     }
 
@@ -48,8 +48,8 @@ public class Embeds extends Messenger {
      */
     public static EmbedBuilder info(String title, String description, Color color) {
         return new EmbedBuilder()
-                .setTitle("%s".formatted(title))
-                .setDescription(description)
+                .setTitle(EmojiParser.parseToUnicode("%s".formatted(title)))
+                .setDescription(EmojiParser.parseToUnicode(description))
                 .setColor(color);
     }
 
@@ -64,8 +64,8 @@ public class Embeds extends Messenger {
      */
     public static EmbedBuilder play(String title, String description, long duration, Color color) {
         return new EmbedBuilder()
-                .setTitle("%s %s".formatted(EmojiParser.parseToUnicode(":musical_note:"), title))
-                .setDescription(description)
+                .setTitle(EmojiParser.parseToUnicode(":musical_note: %s".formatted(title)))
+                .setDescription(EmojiParser.parseToUnicode(description))
                 .setFooter("Duration: %s".formatted(duration > -1 ? new Timestamp(TimeUnit.MILLISECONDS, duration).toSmallFrameStamp() : "Live"), null)
                 .setColor(color);
     }
@@ -79,7 +79,7 @@ public class Embeds extends Messenger {
      */
     public static EmbedBuilder small(String description, Color color) {
         return new EmbedBuilder()
-                .setDescription(description)
+                .setDescription(EmojiParser.parseToUnicode(description))
                 .setColor(color);
     }
 

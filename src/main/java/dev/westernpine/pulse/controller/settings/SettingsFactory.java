@@ -25,7 +25,7 @@ public class SettingsFactory {
     static {
         backend = new SqlBackend(Pulse.identityProperties.get(IdentityProperties.SETTINGS_SQL_BACKEND), "settings");
         Pulse.shutdownHooks.addLast(() -> {
-            if (!backend.isClosed()) {
+            if (backend.isAvailable() && !backend.isClosed()) {
                 logger.info("Closing settings backend.");
                 Try.to(() -> backend.close()).onFailure(Throwable::printStackTrace);
             }
@@ -33,11 +33,12 @@ public class SettingsFactory {
     }
 
     public static Settings from(Controller controller) {
-        if (backend.exists(controller.getGuildId()))
+        if (backend.isAvailable() && backend.exists(controller.getGuildId()))
             return fromJson(controller, backend.load(controller.getGuildId()));
         else {
             Settings settings = new Settings(controller, backend).loadDefaults(SettingManager.getSettings());
-            backend.save(controller.getGuildId(), toJson(settings));
+            if (backend.isAvailable())
+                backend.save(controller.getGuildId(), toJson(settings));
             return settings;
         }
     }

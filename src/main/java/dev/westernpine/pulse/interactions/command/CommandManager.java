@@ -1,9 +1,9 @@
-package dev.westernpine.pulse.component.command;
+package dev.westernpine.pulse.interactions.command;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
-import dev.westernpine.pulse.component.command.commands.Commands;
-import dev.westernpine.pulse.component.command.commands.Help;
-import dev.westernpine.pulse.component.command.commands.Play;
+import dev.westernpine.pulse.interactions.command.commands.Commands;
+import dev.westernpine.pulse.interactions.command.commands.Help;
+import dev.westernpine.pulse.interactions.command.commands.Play;
 
 import java.util.*;
 import java.util.stream.Stream;

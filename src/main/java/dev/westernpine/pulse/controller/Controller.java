@@ -8,8 +8,9 @@ import dev.westernpine.lib.audio.playlist.SortedPlaylist;
 import dev.westernpine.lib.audio.track.Track;
 import dev.westernpine.lib.audio.track.userdata.UserData;
 import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
-import dev.westernpine.lib.audio.track.userdata.requester.RequesterFactory;
 import dev.westernpine.lib.object.TriState;
+import dev.westernpine.lib.util.jda.Embeds;
+import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.handlers.audio.AudioReceiver;
 import dev.westernpine.pulse.controller.handlers.audio.AudioSender;
@@ -24,7 +25,8 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-import javax.print.attribute.standard.Media;
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,35 +37,27 @@ public class Controller {
     private final String guildId;
     protected long lifetime = 0;
     protected Status status = Status.CACHE;
+    protected Set<String> votesToNext = new HashSet<>();
+    protected Set<String> votesToPrevious = new HashSet<>();
     private String lastChannelId;
     private boolean premium = false;
     private Settings settings;
-
     private SortedPlaylist previousQueue;
-
     private SortedPlaylist queue;
-
     private AudioPlayer audioPlayer;
-
     private AudioReceiver audioReceiver;
-
     private AudioSender audioSender;
-
-    private int volume = 7;
-
-    private boolean alone = false;
 
     /*
     Other controller properties.
      */
-
-    //False = Track, None = Off, True = Queue.
+    private int volume = 7;
+    private boolean alone = false;
+    /**
+     * False = Queue, None = Off, True = Track.
+     */
     private TriState repeating = TriState.NONE;
-
     private int lastTrack = 0;
-
-    protected Set<String> votesToNext = new HashSet<>();
-    protected Set<String> votesToPrevious = new HashSet<>();
 
     //TODO: update guild premium status on initialization. (requires management)
 
@@ -98,9 +92,73 @@ public class Controller {
             this.alone = alone;
             this.repeating = repeating;
             this.lastTrack = lastTrack;
-            this.startTrack(track, false);
             this.setPaused(paused);
-            this.setPosition(position);
+            if (track != null) {
+                this.startTrack(track, false);
+                this.setPosition(position);
+            }
+        }
+
+        //Finally, initialize properly.
+        manageState();
+    }
+
+    //Uses all connected members in the same channel.
+    public void manageAlonePausing() {
+        if (isConnected()) {
+            if (!isPaused()) {
+                if (getConnectedMembers().isEmpty() && !settings.get(Setting.TWENTRY_FOUR_SEVEN).toBoolean()) {
+                    setPaused(true);
+                    setAlone(true);
+                }
+            } else {
+                if (wasAlone() && !getConnectedMembers().isEmpty()) {
+                    setPaused(false);
+                    setAlone(false);
+                }
+            }
+        }
+    }
+
+    //Uses all connected members in a guild.
+    public void manageQueue() {
+        this.removeMemberRequestsExcept(getAllConnectedMembers().stream().map(Member::getId).toList());
+    }
+
+    //Uses all connected members in a guild.
+    public void manageVotes() {
+        setRemainingVotes(getAllConnectedMembers().stream().map(member -> member.getUser().getId()).toList());
+
+        if (getPlayingTrack() != null) {
+            int needed = neededVotes();
+            if (needed > 0) {
+                int currentNext = currentVotesToNext();
+                int currentPrevious = currentVotesToPrevious();
+                if (currentNext >= needed && currentPrevious >= needed) {
+                    getLastChannel().ifPresent(channel ->
+                            Messenger.sendMessage(channel, Embeds.small(":cross_mark: **The votes for a track movement are tied, please recast your votes!**\nAll votes were cleared.", Color.RED), 15));
+                    clearVotes();
+                } else if (currentNext >= needed) {
+                    getLastChannel().ifPresent(channel ->
+                            Messenger.sendMessage(channel, Embeds.small(":arrow_right: **Moving to next track.**\nEnough remaining votes to move.", Pulse.color(getGuild())), 15));
+                    nextTrack();
+                } else if (currentPrevious >= needed) {
+                    getLastChannel().ifPresent(channel ->
+                            Messenger.sendMessage(channel, Embeds.small(":arrow_left: **Moving to previous track.**\nEnough remaining votes to move.", Pulse.color(getGuild())), 15));
+                    previousTrack();
+                }
+            }
+        }
+    }
+
+    public void manageState() {
+        if (!isConnected() && this.audioPlayer != null)
+            destroy(EndCase.DISCONNECTED);
+        else {
+            manageAlonePausing();
+            if (settings.get(Setting.DISCONNECT_CLEANUP).toBoolean())
+                manageQueue();
+            manageVotes();
         }
     }
 
@@ -124,6 +182,10 @@ public class Controller {
 
     public Guild getGuild() {
         return Pulse.shardManager.getGuildById(guildId);
+    }
+
+    public Optional<TextChannel> getLastChannel() {
+        return Optional.ofNullable(lastChannelId).flatMap(channel -> Optional.ofNullable(getGuild().getTextChannelById(channel)));
     }
 
     public String getLastChannelId() {
@@ -152,6 +214,12 @@ public class Controller {
         this.lifetime = 0;
         this.status = status;
         return this;
+    }
+
+    public boolean incrementLifetimeWithStatusIfCurrentIsChangeable(Status newStatus) {
+        if (status.isnt(Status.INACTIVE) && status.isnt(Status.ALONE) && status.isnt(Status.PAUSED)) //Testing if current status is changeable/resetable.
+            resetStatus(newStatus);
+        return setLifetime(lifetime + 1, newStatus).lifetime >= ControllerFactory.MAX_LIFETIME;
     }
 
     public Controller setLifetime(long lifetime, Status status) {
@@ -188,7 +256,29 @@ public class Controller {
 
     public List<Member> getConnectedMembers() {
         AudioManager audioManager = getAudioManager();
-        return audioManager.isConnected() ? audioManager.getConnectedChannel().getMembers() : List.of();
+        List<Member> connectedMembers = new ArrayList<>(getConnectedChannel().map(IMemberContainer::getMembers).orElse(List.of()));
+        connectedMembers.removeIf(member -> member.getUser().isBot());
+        return connectedMembers;
+    }
+
+    public List<Member> getAllConnectedMembers() {
+        AudioManager audioManager = getAudioManager();
+        List<Member> connectedMembers = new ArrayList<>(getGuild().getChannels().stream()
+                .filter(guildChannel -> guildChannel instanceof AudioChannel)
+                .map(guildChannel -> (AudioChannel) guildChannel)
+                .map(IMemberContainer::getMembers)
+                .flatMap(Collection::stream)
+                .toList());
+        connectedMembers.removeIf(member -> member.getUser().isBot());
+        return connectedMembers;
+    }
+
+    public Optional<AudioChannel> getConnectedChannel() {
+        return Optional.ofNullable(getVoiceState(getSelfMember()).getChannel());
+    }
+
+    public boolean isConnected() {
+        return getConnectedChannel().isPresent();
     }
 
     /**
@@ -285,6 +375,7 @@ public class Controller {
     }
 
     public void destroy(EndCase endCase) {
+        stop();
         AudioManager audioManager = getAudioManager();
         audioManager.closeAudioConnection();
         audioManager.setSendingHandler(this.audioSender = null);
@@ -293,10 +384,12 @@ public class Controller {
             this.audioPlayer.destroy();
             this.audioPlayer = null;
         }
-        stop();
         this.setRepeating(TriState.NONE);
         this.lastTrack = 0;
         this.alone = false;
+        if (!endCase.getReason().isEmpty())
+            getLastChannel().ifPresent(channel ->
+                    Messenger.sendMessage(channel, Embeds.info(":outbox_tray: Disconnected.", endCase.getReason(), Pulse.color(getGuild())), 15));
     }
 
     /*
@@ -371,7 +464,7 @@ public class Controller {
     }
 
     public AudioTrack getPlayingTrack() {
-        return audioPlayer.getPlayingTrack();
+        return audioPlayer != null ? audioPlayer.getPlayingTrack() : null;
     }
 
     public void restartTrack() {
@@ -388,7 +481,7 @@ public class Controller {
     }
 
     /**
-     * @return False = Track, None = Off, True = Queue.
+     * @return False = Queue, None = Off, True = Track.
      */
     public TriState getRepeating() {
         return this.repeating;
@@ -493,10 +586,7 @@ public class Controller {
         for (int i = 1; i <= item - 1; i++)
             previousQueue.addLast(queue.removeFirst());
 
-        AudioTrack next = queue.pollFirst();
-        if (!startTrack(next, true))
-            return nextTrack();
-        return true;
+        return !startTrack(Objects.requireNonNull(queue.pollFirst()), true) || nextTrack();
     }
 
     /**
@@ -573,8 +663,8 @@ public class Controller {
     }
 
     public void move(int index, int items, int to) {
-        for(int i = 0; i < items; i++)
-            queue.move(index, to+i); //if we dont add i, then it will move items in reverse order, where the last added item will be at the requested to index.
+        for (int i = 0; i < items; i++)
+            queue.move(index, to + i); //if we dont add i, then it will move items in reverse order, where the last added item will be at the requested to index.
     }
 
     public boolean removeCurrent() {
@@ -583,30 +673,30 @@ public class Controller {
 
     public void removeMemberRequests(String userId) {
         Iterator<AudioTrack> it = previousQueue.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             UserData userData = UserDataFactory.from(it.next().getUserData());
-            if(userData.requester().getId().equals(userId))
-                    it.remove();
+            if (userData.requester().getId().equals(userId))
+                it.remove();
         }
         it = queue.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             UserData userData = UserDataFactory.from(it.next().getUserData());
-            if(userData.requester().getId().equals(userId))
+            if (userData.requester().getId().equals(userId))
                 it.remove();
         }
     }
 
     public void removeMemberRequestsExcept(List<String> userIds) {
         Iterator<AudioTrack> it = previousQueue.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             UserData userData = UserDataFactory.from(it.next().getUserData());
-            if(!userIds.contains(userData.requester().getId()))
+            if (!userIds.contains(userData.requester().getId()))
                 it.remove();
         }
         it = queue.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             UserData userData = UserDataFactory.from(it.next().getUserData());
-            if(!userIds.contains(userData.requester().getId()))
+            if (!userIds.contains(userData.requester().getId()))
                 it.remove();
         }
     }
@@ -617,7 +707,7 @@ public class Controller {
 
     public int neededVotes() {
         int connectedUsers = this.getConnectedMembers().size();
-        return connectedUsers > 1 ? (connectedUsers/2) : connectedUsers;
+        return connectedUsers > 1 ? (connectedUsers / 2) : connectedUsers;
     }
 
     public int currentVotesToPrevious() {

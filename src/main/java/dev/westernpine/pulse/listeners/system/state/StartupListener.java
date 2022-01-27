@@ -23,6 +23,7 @@ import dev.westernpine.pulse.listeners.system.jda.GuildInitializer;
 import dev.westernpine.pulse.listeners.system.jda.InteractionListener;
 import dev.westernpine.pulse.listeners.system.jda.MessageDeletionRequestListener;
 import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
+import dev.westernpine.pulse.listeners.system.jda.controller.GuildVoiceListener;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import dev.westernpine.pulse.sources.Router;
 import net.dv8tion.jda.api.JDA;
@@ -69,21 +70,11 @@ public class StartupListener implements Listener {
                 }
             });
 
-
             /*
             Set up console listening system via events.
              */
             logger.info("Initializing console listener.");
             Pulse.scheduler.runAsync(() -> Scheduler.loop(() -> true, () -> Try.to(() -> Scheduler.loop(() -> !Try.to(Pulse.input::ready).getUnchecked(), () -> Try.to(() -> Thread.sleep(100)).map(nv -> false).getUnchecked())).map(nv -> Try.to(Pulse.input::readLine).map(ConsoleEvent::new).onSuccess(consoleEvent -> Try.to(() -> Pulse.eventManager.call(consoleEvent)).onFailure(Throwable::printStackTrace).onFailure(throwable -> logger.warning("Exception caught in command handler."))).map(so -> false).orElse(true)).orElse(true)));
-
-
-
-            /*
-            Load up systems with backends to ensure proper connectivity before proceeding with initialization.
-             */
-            logger.info("Loading system backends.");
-            Try.to(() -> Class.forName(SettingsFactory.class.getName())).getUnchecked();
-            Try.to(() -> Class.forName(ControllerFactory.class.getName())).getUnchecked();
 
             /*
 			Initialize the ready notifier format completion.
@@ -160,6 +151,7 @@ public class StartupListener implements Listener {
                     .setActivity(Activity.playing("Starting up..."))
                     .addEventListeners(new ReadyListener())
                     .addEventListeners(new GuildInitializer())
+                    .addEventListeners(new GuildVoiceListener())
                     .addEventListeners(new InteractionListener())
                     .addEventListeners(new MessageDeletionRequestListener())
                     .build();
@@ -169,8 +161,13 @@ public class StartupListener implements Listener {
             */
             Pulse.readyNotifier.get();
 
-            logger.info("Initializing backend controllers.");
-            ControllerFactory.initializeBackend();
+            /*
+            Backend systems are optional, as pulse can still operate with them offline.
+            However, controller resumptions require ControllerFactory to be initialized.
+             */
+            logger.info("Loading system backends.");
+            Try.to(() -> Class.forName(SettingsFactory.class.getName())).getUnchecked();
+            Try.to(() -> Class.forName(ControllerFactory.class.getName())).getUnchecked();
 
             /*
             Set the state to running, and do final adjustments.

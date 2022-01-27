@@ -7,66 +7,20 @@ import java.util.stream.Collectors;
 
 public class Timestamp {
 
-    public static enum Stamp {
-        HMS("^([0-9]{1,}):(([0-6]{1}[0]{1})|([0-5]{1}[0-9]{1})):(([0-6]{1}[0]{1})|([0-5]{1}[0-9]{1}))$") {
-            @Override
-            public Timestamp toTimestamp(String timestamp) {
-                if (this.matches(timestamp)) {
-                    String[] split = timestamp.split(":");
-                    long hours = Long.parseLong(split[0])*60*60;
-                    long minutes = Long.parseLong(split[1])*60;
-                    long seconds = Long.parseLong(split[2]);
-                    return new Timestamp(TimeUnit.SECONDS, hours+minutes+seconds);
-                }
-                return null;
-            }
-        },
-        MS("^([0-9]{1,}):(([0-6]{1}[0]{1})|([0-5]{1}[0-9]{1}))$") {
-            @Override
-            public Timestamp toTimestamp(String timestamp) {
-                if (this.matches(timestamp)) {
-                    String[] split = timestamp.split(":");
-                    long minutes = Long.parseLong(split[0])*60;
-                    long seconds = Long.parseLong(split[1]);
-                    return new Timestamp(TimeUnit.SECONDS, minutes+seconds);
-                }
-                return null;
-            }
-        },
-        ;
+    private TimeUnit timeUnit;
+    private long duration;
 
-        public static final String wildcardStringPattern = String.join("|", Arrays.asList(Stamp.values())
-                .stream()
-                .map(stamp -> stamp.getStringPattern())
-                .collect(Collectors.toList()));
-
-        public static boolean isStamp(String timestamp) {
-            return Pattern.matches(wildcardStringPattern, timestamp);
-        }
-
-        public static Stamp getMatching(String timestamp) {
-            for(Stamp stamp : Stamp.values())
-                if(stamp.matches(timestamp))
-                    return stamp;
-            return null;
-        }
-
-        private String stringPattern;
-
-        Stamp(String stringPattern) {
-            this.stringPattern = stringPattern;
-        }
-
-        public String getStringPattern() {
-            return stringPattern;
-        }
-
-        public boolean matches(String timestamp) {
-            return Pattern.matches(wildcardStringPattern, timestamp) && Pattern.matches(stringPattern, timestamp);
-        }
-
-        public abstract Timestamp toTimestamp(String timestamp);
+    Timestamp() {
     }
+
+    public Timestamp(TimeUnit timeUnit, long duration) {
+        this.timeUnit = timeUnit;
+        this.duration = duration;
+    }
+
+    /*
+     * Instance
+     */
 
     public static boolean isTimestamp(String timestamp) {
         if (timestamp.contains(":")) {
@@ -82,27 +36,11 @@ public class Timestamp {
 
     public static Timestamp from(TimeUnit defaultUnit, String timestamp) {
         Stamp stamp = Stamp.getMatching(timestamp);
-        if(stamp != null)
+        if (stamp != null)
             return stamp.toTimestamp(timestamp);
-        if(timestamp.matches("[0-9]+"))
+        if (timestamp.matches("[0-9]+"))
             return new Timestamp(defaultUnit, Long.parseLong(timestamp));
         return null;
-    }
-
-    /*
-     * Instance
-     */
-
-    private TimeUnit timeUnit;
-
-    private long duration;
-
-    Timestamp() {
-    }
-
-    public Timestamp(TimeUnit timeUnit, long duration) {
-        this.timeUnit = timeUnit;
-        this.duration = duration;
     }
 
     public TimeUnit getTimeUnit() {
@@ -134,6 +72,66 @@ public class Timestamp {
             return String.format("%02d:%02d", minutes, seconds);
         else
             return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    public static enum Stamp {
+        HMS("^([0-9]{1,}):(([0-6]{1}[0]{1})|([0-5]{1}[0-9]{1})):(([0-6]{1}[0]{1})|([0-5]{1}[0-9]{1}))$") {
+            @Override
+            public Timestamp toTimestamp(String timestamp) {
+                if (this.matches(timestamp)) {
+                    String[] split = timestamp.split(":");
+                    long hours = Long.parseLong(split[0]) * 60 * 60;
+                    long minutes = Long.parseLong(split[1]) * 60;
+                    long seconds = Long.parseLong(split[2]);
+                    return new Timestamp(TimeUnit.SECONDS, hours + minutes + seconds);
+                }
+                return null;
+            }
+        },
+        MS("^([0-9]{1,}):(([0-6]{1}[0]{1})|([0-5]{1}[0-9]{1}))$") {
+            @Override
+            public Timestamp toTimestamp(String timestamp) {
+                if (this.matches(timestamp)) {
+                    String[] split = timestamp.split(":");
+                    long minutes = Long.parseLong(split[0]) * 60;
+                    long seconds = Long.parseLong(split[1]);
+                    return new Timestamp(TimeUnit.SECONDS, minutes + seconds);
+                }
+                return null;
+            }
+        },
+        ;
+
+        public static final String wildcardStringPattern = String.join("|", Arrays.asList(Stamp.values())
+                .stream()
+                .map(stamp -> stamp.getStringPattern())
+                .collect(Collectors.toList()));
+        private String stringPattern;
+
+        Stamp(String stringPattern) {
+            this.stringPattern = stringPattern;
+        }
+
+        public static boolean isStamp(String timestamp) {
+            return Pattern.matches(wildcardStringPattern, timestamp);
+        }
+
+        public static Stamp getMatching(String timestamp) {
+            for (Stamp stamp : Stamp.values())
+                if (stamp.matches(timestamp))
+                    return stamp;
+            return null;
+        }
+
+        public String getStringPattern() {
+            return stringPattern;
+        }
+
+        public boolean matches(String timestamp) {
+            return Pattern.matches(wildcardStringPattern, timestamp) && Pattern.matches(stringPattern, timestamp);
+        }
+
+        public abstract Timestamp toTimestamp(String timestamp);
     }
 
 }

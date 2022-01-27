@@ -189,7 +189,6 @@ public class SQL {
             try {
                 connection = DriverManager.getConnection(toString(), username, password);
             } catch (Exception e) {
-                e.printStackTrace();
             }
 
             return connection;

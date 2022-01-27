@@ -1,10 +1,10 @@
-package dev.westernpine.pulse.component.command.commands;
+package dev.westernpine.pulse.interactions.command.commands;
 
-import com.vdurmont.emoji.EmojiParser;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
+import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.pulse.Pulse;
-import dev.westernpine.pulse.component.button.ButtonManager;
-import dev.westernpine.pulse.component.command.CommandManager;
+import dev.westernpine.pulse.interactions.button.ButtonManager;
+import dev.westernpine.pulse.interactions.command.CommandManager;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -55,27 +55,17 @@ public class Help implements SlashCommandComponentHandler {
             return false;
         if (event.getOptions().isEmpty()) {
             String host = Pulse.identityProperties.get(IdentityProperties.HOST);
-            event.replyEmbeds(new EmbedBuilder()
-                            .setColor(Pulse.color())
-                            .setTitle("Bot Help")
-                            .setDescription("""
-                                    %s Visit the **Docs** to learn more or get started.
+            event.replyEmbeds(Embeds.info("Bot Help", """
+                                    :question: Visit the **Docs** to learn more or get started.
                                                                         
-                                    %s Check out the **FAQ** for common questions.
+                                    :point_right: Check out the **FAQ** for common questions.
                                                                         
-                                    %s You can change how Pulse works by using `/settings`.
+                                    :gear: You can change how Pulse works by using `/settings`.
                                                                         
-                                    %s To view all commands, use `/commands`.
+                                    :scroll: To view all commands, use `/commands`.
                                                                         
-                                    %s You can also view more information of a command by issuing `/help [command]`.
-                                    """.formatted(
-                                    EmojiParser.parseToUnicode(":question:"),
-                                    EmojiParser.parseToUnicode(":point_right:"),
-                                    EmojiParser.parseToUnicode(":gear:"),
-                                    EmojiParser.parseToUnicode(":scroll:"),
-                                    EmojiParser.parseToUnicode(":exclamation:"),
-                                    EmojiParser.parseToUnicode(":link:")
-                            ))
+                                    :exclamation: You can also view more information of a command by issuing `/help [command]`.
+                                    """, Pulse.color())
                             .addField("Version:", "`%s`".formatted(Pulse.version), true)
                             .setFooter("Have questions, or want to explore more projects? Click the support link!", event.getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .build())

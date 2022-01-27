@@ -4,7 +4,6 @@ import dev.westernpine.eventapi.objects.EventHandler;
 import dev.westernpine.eventapi.objects.Listener;
 import dev.westernpine.lib.object.State;
 import dev.westernpine.pulse.Pulse;
-import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.events.system.StateChangeEvent;
 import dev.westernpine.pulse.logging.LogManager;
 import dev.westernpine.pulse.properties.IdentityProperties;

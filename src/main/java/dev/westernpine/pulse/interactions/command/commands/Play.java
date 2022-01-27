@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.component.command.commands;
+package dev.westernpine.pulse.interactions.command.commands;
 
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.audio.AudioFactory;

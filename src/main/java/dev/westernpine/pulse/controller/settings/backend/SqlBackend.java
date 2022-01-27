@@ -1,8 +1,6 @@
 package dev.westernpine.pulse.controller.settings.backend;
 
 import dev.westernpine.lib.object.SQL;
-import dev.westernpine.lib.object.State;
-import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.properties.SqlProperties;
 
 import java.io.IOException;
@@ -19,15 +17,11 @@ public class SqlBackend implements SettingsBackend {
     public SqlBackend(String sqlIdentity, String tableName) {
         try {
             this.sql = new SqlProperties(sqlIdentity).toSql();
-            this.sql.setDebugging(true);
             this.tableName = tableName;
             this.sql.update("CREATE TABLE IF NOT EXISTS `%s` (`guildId` VARCHAR(255) NOT NULL, `settings` LONGTEXT NOT NULL, PRIMARY KEY(guildId));".formatted(this.tableName));
         } catch (Throwable e) {
-            e.printStackTrace();
-            logger.severe("Unable to initialize the settings backend.");
-            Pulse.setState(State.SHUTDOWN);
+            logger.warning("Unable to initialize the settings backend.");
         }
-        this.tableName = tableName;
     }
 
     public SQL getSql() {
@@ -36,6 +30,11 @@ public class SqlBackend implements SettingsBackend {
 
     public String getTableName() {
         return this.tableName;
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return sql.canConnect();
     }
 
     @Override

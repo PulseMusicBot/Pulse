@@ -5,6 +5,8 @@ import java.util.Map;
 
 public interface ControllersBackend extends Closeable {
 
+    public boolean isAvailable();
+
     public boolean isClosed();
 
     public Map<String, String> load();

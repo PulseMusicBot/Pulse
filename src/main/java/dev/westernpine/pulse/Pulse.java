@@ -39,11 +39,12 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - Implement aliases on commands? (yes, make new method in super "shouldHandle", use returned boolean for storing channel ID.)
      - Player listeners.
-     - More sources.
+     - Implement aliases on commands? (yes, make new method in super "shouldHandle", use returned boolean for storing channel ID.)
+     - Refactor commands to make a commandBuilder that also handles specific executions.
      - Commands
-     - Management/Premium status
+     - More sources.
+     - Management/Premium status (Reuse old)
      */
 
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
