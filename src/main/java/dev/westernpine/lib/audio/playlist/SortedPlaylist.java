@@ -3,6 +3,7 @@ package dev.westernpine.lib.audio.playlist;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.westernpine.lib.audio.AudioFactory;
+import dev.westernpine.lib.audio.track.userdata.UserData;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,6 +41,11 @@ public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlayl
         this.isSearchResult = audioPlaylist.isSearchResult();
     }
 
+    public SortedPlaylist applyUserData(UserData userData) {
+        forEach(audioTrack -> audioTrack.setUserData(userData));
+        return this;
+    }
+
     /**
      * @return Name of the playlist
      */
@@ -56,11 +62,12 @@ public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlayl
         return this;
     }
 
-    public void setTracks(AudioTrack... tracks) {
+    public SortedPlaylist setTracks(AudioTrack... tracks) {
         this.clear();
         this.addAll(Arrays.asList(tracks));
         if (!this.contains(selectedTrack))
             selectedTrack = null;
+        return this;
     }
 
     /**

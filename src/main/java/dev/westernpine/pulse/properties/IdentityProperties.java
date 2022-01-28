@@ -14,9 +14,6 @@ public class IdentityProperties extends PropertiesFile {
     public static final Property PREMIUM = new Property("premium", "false");
 
     @PropertyField
-    public static final Property DEFAULT_PLATFORM = new Property("platform", "YouTube");
-
-    @PropertyField
     public static final Property HOST = new Property("host", "pulsebot.gg");
 
     @PropertyField

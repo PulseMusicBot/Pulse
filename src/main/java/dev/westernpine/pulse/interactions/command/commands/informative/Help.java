@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.interactions.command.commands;
+package dev.westernpine.pulse.interactions.command.commands.informative;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Embeds;

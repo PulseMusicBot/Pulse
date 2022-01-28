@@ -308,7 +308,7 @@ public class Controller {
         if (audioPlayer == null) {
             audioPlayer = Pulse.audioPlayerManager.createPlayer();
             audioPlayer.addListener(new PlayerListener(this));
-            setVolume(getSettings().get(Setting.DEFAULT_VOLUME).toInteger());
+            audioPlayer.setVolume(this.volume = getSettings().get(Setting.DEFAULT_VOLUME).toInteger());
         }
         if (audioManager.getReceivingHandler() == null)
             audioManager.setReceivingHandler(this.audioReceiver = new AudioReceiver(this));
@@ -508,18 +508,17 @@ public class Controller {
      * NONE -> First
      * FALSE -> Last
      */
-    public void enque(AudioItem audioItem, TriState asap) {
+    public void enqueue(AudioItem audioItem, TriState asap) {
         SortedPlaylist playlist = AudioFactory.toPlaylist(audioItem);
-        List<AudioTrack> tracks = playlist.getTracks();
 
-        if (tracks.isEmpty())
+        if (playlist.getTracks().isEmpty())
             return;
 
-        if (tracks.size() > 1 && playlist.getSelectedTrackIndex() > 0)
+        if (playlist.getTracks().size() > 1 && playlist.getSelectedTrackIndex() > 0)
             playlist.setTracks(playlist.getSelectedTrack());
 
         if (settings.get(Setting.SHUFFLE_PLAYLISTS).toBoolean())
-            Collections.shuffle(tracks);
+            Collections.shuffle(playlist.getTracks());
 
         int queueSize = queue.size();
         if (asap.isTrue()) {             // Start playing now! (finish track, add in other items to previous queue, play selected, add other items in future queue)

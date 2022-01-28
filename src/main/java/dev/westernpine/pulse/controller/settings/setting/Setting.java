@@ -22,11 +22,19 @@ public class Setting {
             TriState.NONE.toString(),
             "images");
 
+    public static final Setting DEFAULT_PLATFORM = SettingFactory.from(
+            UUID.fromString("359d1ffd-4ca2-47ed-be9d-e3f36980e747"),
+            ":station:",
+            "Default Search Platform",
+            "The default platform to search on.",
+            "YouTube",
+            "platform");
+
     public static final Setting SHUFFLE_PLAYLISTS = SettingFactory.from(
             UUID.fromString("c1f44a6a-b4d9-4053-8b91-ddf6a0b38985"),
             ":twisted_rightwards_arrows:",
             "Shuffle Playlists",
-            "Shuffle playlists when they are enqued.",
+            "Shuffle playlists when they are enqueued.",
             "false",
             "shuffle");
 

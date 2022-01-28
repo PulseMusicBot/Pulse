@@ -11,6 +11,7 @@ public class SettingManager {
     static {
         settings.add(Setting.DEFAULT_VOLUME);
         settings.add(Setting.IMAGE_SIZE);
+        settings.add(Setting.DEFAULT_PLATFORM);
         settings.add(Setting.SHUFFLE_PLAYLISTS);
         settings.add(Setting.DJ_MODE);
         settings.add(Setting.DJ_ROLE);

@@ -1,9 +1,11 @@
 package dev.westernpine.pulse.interactions.command;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
-import dev.westernpine.pulse.interactions.command.commands.Commands;
-import dev.westernpine.pulse.interactions.command.commands.Help;
-import dev.westernpine.pulse.interactions.command.commands.Play;
+import dev.westernpine.pulse.interactions.command.commands.informative.Commands;
+import dev.westernpine.pulse.interactions.command.commands.informative.Help;
+import dev.westernpine.pulse.interactions.command.commands.player.Play;
+import dev.westernpine.pulse.interactions.command.commands.player.PlayFirst;
+import dev.westernpine.pulse.interactions.command.commands.player.PlayNow;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -16,7 +18,10 @@ public class CommandManager {
     static {
         Stream.of(new Help(),
                         new Commands(),
-                        new Play())
+                        new Play(),
+                        new PlayFirst(),
+                        new PlayNow()
+                )
                 .sorted()
                 .forEachOrdered(slashCommandComponentHandlers::add);
 
