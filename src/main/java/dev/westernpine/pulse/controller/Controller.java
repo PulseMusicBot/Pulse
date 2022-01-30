@@ -19,6 +19,7 @@ import dev.westernpine.pulse.controller.settings.Settings;
 import dev.westernpine.pulse.controller.settings.SettingsFactory;
 import dev.westernpine.pulse.controller.settings.setting.Setting;
 import dev.westernpine.pulse.events.system.player.FinishedPlayingEvent;
+import dev.westernpine.pulse.events.system.player.PlayerDestroyedEvent;
 import dev.westernpine.pulse.events.system.player.PreviousQueueReachedEndEvent;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.*;
@@ -385,9 +386,7 @@ public class Controller {
         this.setRepeating(TriState.NONE);
         this.lastTrack = 0;
         this.alone = false;
-        if (!endCase.getReason().isEmpty())
-            getLastChannel().ifPresent(channel ->
-                    Messenger.sendMessage(channel, Embeds.info(":outbox_tray: Disconnected.", endCase.getReason(), Pulse.color(getGuild())), 15));
+        Pulse.eventManager.call(new PlayerDestroyedEvent(this, endCase));
     }
 
     /*

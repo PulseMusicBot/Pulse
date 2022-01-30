@@ -3,7 +3,7 @@ package dev.westernpine.pulse.controller;
 public enum EndCase {
 
     COULDNT_START("Unable to start the session."),
-    BY_COMMAND("By request."),
+    BY_COMMAND(""),
     DISCONNECTED("Connection lost."),
     INACTIVITY_TIMEOUT("Inactive for too long."),
     PAUSE_TIMEOUT("Paused for too long."),

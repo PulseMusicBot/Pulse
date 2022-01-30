@@ -41,7 +41,7 @@ public class Pulse {
      Up Next:
      - Add nullable and nonnullable annotations
      - Add documentation!
-     - detail logs
+     - detail logs - requests, joining, leaving
      - Commands (With detailed logs)
      - More sources.
      - Management/Premium status (Reuse old)

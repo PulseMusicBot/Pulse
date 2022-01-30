@@ -9,10 +9,20 @@ import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.Controller;
+import dev.westernpine.pulse.controller.EndCase;
 import dev.westernpine.pulse.controller.settings.setting.Setting;
 import dev.westernpine.pulse.events.system.player.*;
 
 public class AudioPlayerListener implements Listener {
+
+    @EventHandler
+    public void onPlayerDestroyed(PlayerDestroyedEvent event) {
+        Controller controller = event.getController();
+        EndCase endCase = event.getEndCase();
+        if (!endCase.getReason().isEmpty())
+            controller.getLastChannel().ifPresent(channel ->
+                    Messenger.sendMessage(channel, Embeds.info(":outbox_tray: Disconnected.", endCase.getReason(), Pulse.color(controller.getGuild())), 15));
+    }
 
     @EventHandler
     public void onFinishedPlaying(FinishedPlayingEvent event) {

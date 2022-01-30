@@ -16,6 +16,7 @@ import dev.westernpine.lib.object.Scheduler;
 import dev.westernpine.lib.object.State;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.ControllerFactory;
+import dev.westernpine.pulse.controller.EndCase;
 import dev.westernpine.pulse.controller.settings.SettingsFactory;
 import dev.westernpine.pulse.events.console.ConsoleEvent;
 import dev.westernpine.pulse.events.system.StateChangeEvent;
@@ -39,6 +40,9 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static dev.westernpine.pulse.logging.Logger.logger;
@@ -65,6 +69,8 @@ public class StartupListener implements Listener {
                 logger.info("Closing console inputs.");
                 Try.to(Pulse.input::close).onFailure(Throwable::printStackTrace);
                 if (Objects.nonNull(Pulse.shardManager)) {
+                    logger.info("Shutting down controllers.");
+                    ControllerFactory.getControllers().values().forEach(controller -> controller.destroy(EndCase.BOT_RESTART));
                     logger.info("Shutting down shard manager.");
                     Pulse.shardManager.shutdown();
                 }
