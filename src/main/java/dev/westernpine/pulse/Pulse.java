@@ -39,6 +39,7 @@ public class Pulse {
     /*
     TODO:
      Up Next:
+     - Fix SortedPlaylist(AudioPlaylist) constructor not tracking proper selected track index. (PlayFirst check)
      - Add nullable and nonnullable annotations
      - Add documentation!
      - detail logs - requests, joining, leaving

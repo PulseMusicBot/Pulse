@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import static dev.westernpine.pulse.logging.Logger.logger;
+
 public class PlayFirst implements SlashCommandComponentHandler {
 
     public static final TriState asap = TriState.NONE;
@@ -122,10 +124,7 @@ public class PlayFirst implements SlashCommandComponentHandler {
 
         controller.setLastChannelId(event.getChannel().getId());
         controller.enqueue(playlist, asap);
-        event.replyEmbeds(Embeds.success(
-                        playlist.size() == 1 ? "1 Track Enqueued!" : "%d Tracks Enqueued!".formatted(playlist.size()),
-                        "")
-                .build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+        Messenger.replyTo(event, Embeds.success(playlist.getSelectedTrackIndex() > 0 ? "1 Track Enqueued!" : "%d Tracks Enqueued!".formatted(playlist.size()), ""), 15);
         return true;
     }
 }

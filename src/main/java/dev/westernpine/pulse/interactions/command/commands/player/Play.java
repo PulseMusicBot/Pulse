@@ -150,10 +150,7 @@ public class Play implements SlashCommandComponentHandler {
 
             controller.setLastChannelId(event.getChannel().getId());
             controller.enqueue(playlist, asap);
-            event.replyEmbeds(Embeds.success(
-                            playlist.size() == 1 ? "1 Track Enqueued!" : "%d Tracks Enqueued!".formatted(playlist.size()),
-                            "")
-                    .build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+            Messenger.replyTo(event, Embeds.success(playlist.size() == 1 ? "1 Track Enqueued!" : "%d Tracks Enqueued!".formatted(playlist.size()), ""), 15);
         }
         return true;
     }

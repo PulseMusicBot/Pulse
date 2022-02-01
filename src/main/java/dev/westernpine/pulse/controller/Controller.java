@@ -359,12 +359,14 @@ public class Controller {
     }
 
     public void cancelTrack(boolean resetLastTrackId, boolean resetLastTrackIdIfNull) {
-        audioPlayer.setPaused(false);
-        audioPlayer.stopTrack();
-        if (resetLastTrackId)
-            setLastTrack(0);
-        else
-            setLastTrack(getPlayingTrack(), resetLastTrackId);
+        if(audioPlayer != null) {
+            audioPlayer.setPaused(false);
+            audioPlayer.stopTrack();
+            if (resetLastTrackId)
+                setLastTrack(0);
+            else
+                setLastTrack(getPlayingTrack(), resetLastTrackId);
+        }
     }
 
     public void stop() {
@@ -402,7 +404,7 @@ public class Controller {
     }
 
     public boolean isPaused() {
-        return audioPlayer.isPaused();
+        return audioPlayer != null && audioPlayer.isPaused();
     }
 
     public void setPaused(boolean paused) {
@@ -528,7 +530,7 @@ public class Controller {
             // then go to next track.
             finishPlaying(false, true);
             int selectedTrackIndex = playlist.getSelectedTrackIndex();
-            if (selectedTrackIndex > -1) {
+            if (selectedTrackIndex > 0) {
                 for (int i = 0; i < selectedTrackIndex; i++)
                     previousQueue.addLast(playlist.remove(0));
             }
@@ -538,7 +540,7 @@ public class Controller {
             // If there is a selected track, limit the playlist to just the single track.
             // then add playlist to queue
             // then start if availible.
-            if (playlist.getSelectedTrackIndex() > -1)  //add in single song only
+            if (playlist.getSelectedTrackIndex() > 0)  //add in single song only
                 playlist.setTracks(playlist.getSelectedTrack());
             queue.addAll(0, playlist);
             if (getPlayingTrack() == null && queueSize == 0)
