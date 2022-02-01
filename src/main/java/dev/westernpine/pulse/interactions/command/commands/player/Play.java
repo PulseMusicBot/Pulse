@@ -13,6 +13,7 @@ import dev.westernpine.lib.audio.track.userdata.requester.RequesterFactory;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.jda.Embeds;
+import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.settings.setting.Setting;
@@ -76,35 +77,35 @@ public class Play implements SlashCommandComponentHandler {
         if (event.getOption("query") == null) {
 
             if (connectedChannel.isEmpty()) {
-                event.replyEmbeds(Embeds.error("Unable to resume playing.", "I'm not connected.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+                Messenger.replyTo(event, Embeds.error("Unable to resume playing.", "I'm not connected."), 15);
                 return false;
             }
 
             if (!controller.getVoiceState(event.getMember()).inAudioChannel() || !controller.getVoiceState(event.getMember()).getChannel().getId().equals(connectedChannel.get().getId())) {
-                event.replyEmbeds(Embeds.error("Unable to resume playing.", "You must be in my channel.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+                Messenger.replyTo(event, Embeds.error("Unable to resume playing.", "You must be in my channel."), 15);
                 return false;
             }
 
             if (controller.getPlayingTrack() == null) {
-                event.replyEmbeds(Embeds.error("Unable to resume playing.", "I'm not playing anything.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+                Messenger.replyTo(event, Embeds.error("Unable to resume playing.", "I'm not playing anything."), 15);
                 return false;
             }
 
             if (!controller.isPaused()) {
-                event.replyEmbeds(Embeds.error("Unable to resume playing.", "I'm not paused.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+                Messenger.replyTo(event, Embeds.error("Unable to resume playing.", "I'm not paused."), 15);
                 return false;
             }
 
             controller.setLastChannelId(event.getChannel().getId());
             controller.setPaused(false);
-            event.replyEmbeds(Embeds.success("Resumed playing.", "").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+            Messenger.replyTo(event, Embeds.success("Resumed playing.", ""), 15);
 
         } else {
 
             String query = event.getOption("query").getAsString();
 
             if (!controller.getVoiceState(event.getMember()).inAudioChannel()) {
-                event.replyEmbeds(Embeds.error("Unable play request.", "You must be in a channel.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+                Messenger.replyTo(event, Embeds.error("Unable play request.", "You must be in a channel."), 15);
                 return false;
             }
 
@@ -112,7 +113,7 @@ public class Play implements SlashCommandComponentHandler {
                     && !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())
                     && !controller.getConnectedMembers().isEmpty()
                     && controller.getPlayingTrack() != null) {
-                event.replyEmbeds(Embeds.error("Unable play request.", "I'm currently playing for others.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+                Messenger.replyTo(event, Embeds.error("Unable play request.", "I'm currently playing for others."), 15);
                 return false;
             }
 
@@ -128,12 +129,12 @@ public class Play implements SlashCommandComponentHandler {
                         .orElse(null);
 
             if (playlist == null || playlist.isEmpty()) {
-                event.replyEmbeds(Embeds.error("Unable play request.", "No playable results were found.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+                Messenger.replyTo(event, Embeds.error("Unable play request.", "No playable results were found."), 15);
                 return false;
             }
 
             if (!Try.to(() -> controller.connect(event.getMember())).isSuccessful()) {
-                event.replyEmbeds(Embeds.error("Unable play request.", "I cannot join your channel.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+                Messenger.replyTo(event, Embeds.error("Unable play request.", "I cannot join your channel."), 15);
                 return false;
             }
 

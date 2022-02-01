@@ -2,14 +2,24 @@ package dev.westernpine.lib.object;
 
 import dev.westernpine.bettertry.Try;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
 public class Scheduler {
+
+    private static final Queue<Future<?>> tasks = new ConcurrentLinkedQueue<>();
+
+    static {
+        Thread taskManager = new Thread(() -> {
+            while (true) {
+                Try.to(() -> Thread.sleep(1000));
+                tasks.removeIf(Future::isDone);
+            }
+        });
+        taskManager.setDaemon(true);
+        taskManager.start();
+    }
 
     private Timer timer;
     private ExecutorService executor;
@@ -17,6 +27,37 @@ public class Scheduler {
     public Scheduler() {
         timer = new Timer();
         executor = Executors.newCachedThreadPool();
+    }
+
+    public static void awaitTasksCompletion(long timeout, TimeUnit unit) {
+        while (!tasks.isEmpty()) {
+            Try.to(() -> Thread.sleep(1000));
+            tasks.parallelStream().forEach(task -> Try.to(() -> task.get(timeout, unit)));
+            tasks.removeIf(Future::isDone);
+        }
+    }
+
+    public static Future<?> addRequiredCompletion(Future<?> task) {
+        tasks.add(task);
+        return task;
+    }
+
+    public static CompletableFuture<? super Void> after(long amount, TimeUnit unit) {
+        CompletableFuture<? super Void> future = new CompletableFuture<>();
+        CompletableFuture.delayedExecutor(amount, unit).execute(() -> future.complete(null));
+        return future;
+    }
+
+    public static CompletableFuture<? super Void> when(Supplier<Boolean> condition, long checkInterval, TimeUnit unit) {
+        CompletableFuture<? super Void> future = new CompletableFuture<>();
+        CompletableFuture.delayedExecutor(checkInterval, unit).execute(() -> {
+            while (!condition.get()) {
+                if (!Try.to(() -> Thread.sleep(TimeUnit.MILLISECONDS.convert(checkInterval, unit))).onFailure(future::completeExceptionally).isSuccessful())
+                    return;
+            }
+            future.complete(null);
+        });
+        return future;
     }
 
     public static void loop(Supplier<Boolean> condition, Callable<Boolean> callable) {

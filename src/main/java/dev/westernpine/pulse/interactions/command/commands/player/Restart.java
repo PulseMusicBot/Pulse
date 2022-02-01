@@ -8,20 +8,19 @@ import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.LinkedList;
 import java.util.Optional;
 
-public class Pause implements SlashCommandComponentHandler {
+public class Restart implements SlashCommandComponentHandler {
 
     /**
      * @return How the command should be used.
      */
     @Override
     public String[] usages() {
-        return new String[]{"pause"};
+        return new String[]{"restart"};
     }
 
     /**
@@ -29,7 +28,7 @@ public class Pause implements SlashCommandComponentHandler {
      */
     @Override
     public String command() {
-        return "pause";
+        return "restart";
     }
 
     /**
@@ -37,7 +36,7 @@ public class Pause implements SlashCommandComponentHandler {
      */
     @Override
     public String description() {
-        return "Pauses the player.";
+        return "Restarts the playing track.";
     }
 
     /**
@@ -51,7 +50,6 @@ public class Pause implements SlashCommandComponentHandler {
     @Override
     public LinkedList<OptionData> options() {
         LinkedList<OptionData> options = new LinkedList<>();
-        options.add(new OptionData(OptionType.STRING, "query", "Something you would like to search for or enqueue."));
         return options;
     }
 
@@ -60,13 +58,14 @@ public class Pause implements SlashCommandComponentHandler {
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true);
         Optional<AudioChannel> connectedChannel = controller.getConnectedChannel();
 
+
         if (connectedChannel.isEmpty()) {
-            Messenger.replyTo(event, Embeds.error("Unable to pause.", "I'm not connected."), 15);
+            Messenger.replyTo(event, Embeds.error("Unable to restart.", "I'm not connected."), 15);
             return false;
         }
 
         if (!controller.getVoiceState(event.getMember()).inAudioChannel()) {
-            Messenger.replyTo(event, Embeds.error("Unable to pause.", "You must be in a channel."), 15);
+            Messenger.replyTo(event, Embeds.error("Unable to restart.", "You must be in a channel."), 15);
             return false;
         }
 
@@ -74,28 +73,23 @@ public class Pause implements SlashCommandComponentHandler {
         AudioTrack audioTrack = controller.getPlayingTrack();
 
         if (audioTrack == null) {
-            Messenger.replyTo(event, Embeds.error("Unable to pause.", "I'm not playing anything."), 15);
+            Messenger.replyTo(event, Embeds.error("Unable to restart.", "I'm not playing anything."), 15);
             return false;
         }
 
         if (!audioTrack.isSeekable() || audioTrack.getInfo().isStream) {
-            Messenger.replyTo(event, Embeds.error("Unable to pause.", "This track is not seekable."), 15);
+            Messenger.replyTo(event, Embeds.error("Unable to restart.", "This track is not seekable."), 15);
             return false;
         }
 
         if (!connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())) {
-            Messenger.replyTo(event, Embeds.error("Unable to pause.", "We must be in the same channel."), 15);
-            return false;
-        }
-
-        if (controller.isPaused()) {
-            Messenger.replyTo(event, Embeds.error("Unable to pause.", "I'm already paused."), 15);
+            Messenger.replyTo(event, Embeds.error("Unable to restart.", "We must be in the same channel."), 15);
             return false;
         }
 
         controller.setLastChannelId(event.getChannel().getId());
-        controller.setPaused(true);
-        Messenger.replyTo(event, Embeds.success("Paused.", ""), 15);
+        controller.restartTrack();
+        Messenger.replyTo(event, Embeds.success("Restarted.", ""), 15);
         return true;
     }
 }

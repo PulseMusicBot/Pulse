@@ -6,6 +6,7 @@ import dev.westernpine.pulse.interactions.command.commands.informative.Help;
 import dev.westernpine.pulse.interactions.command.commands.player.*;
 
 import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 public class CommandManager {
@@ -23,11 +24,12 @@ public class CommandManager {
                         new PlayFirst(),
                         new PlayNow(),
                         new FF(),
-                        new RW()
+                        new RW(),
+                        new Restart()
                 )
                 .sorted()
                 .forEachOrdered(slashCommandComponentHandlers::add);
-
+        Executors.newScheduledThreadPool(1);
         //Sort commands into their respective categories.
         Map<String, LinkedList<SlashCommandComponentHandler>> categorized = new HashMap<>();
         CommandManager.getComponentHandlers().stream().forEachOrdered(command -> {

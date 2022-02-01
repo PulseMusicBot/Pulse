@@ -36,18 +36,24 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class StartupListener implements Listener {
+
+    public static final Collection<Object> eventListeners = List.of(
+            new ReadyListener(),
+            new GuildInitializer(),
+            new GuildVoiceListener(),
+            new InteractionListener(),
+            new MessageDeletionRequestListener());
 
     @EventHandler
     public void onStartup(StateChangeEvent event) {
@@ -64,23 +70,27 @@ public class StartupListener implements Listener {
             Shutdown hooks...
              */
             Pulse.shutdownHooks.add(() -> {
-                logger.info("Terminating scheduler.");
-                Pulse.scheduler.shutdownNow();
-                logger.info("Closing console inputs.");
-                Try.to(Pulse.input::close).onFailure(Throwable::printStackTrace);
                 if (Objects.nonNull(Pulse.shardManager)) {
-                    logger.info("Shutting down controllers.");
+                    System.out.println(State.SHUTDOWN.getName() + " >> Setting shutdown presence.");
+                    Pulse.shardManager.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.playing("shutting down..."));
+                    System.out.println(State.SHUTDOWN.getName() + " >> Shutting down controllers.");
                     ControllerFactory.getControllers().values().forEach(controller -> controller.destroy(EndCase.BOT_RESTART));
-                    logger.info("Shutting down shard manager.");
+                    System.out.println(State.SHUTDOWN.getName() + " >> Removing shard manager listeners.");
+                    Pulse.shardManager.removeEventListener(eventListeners.toArray(Object[]::new));
+                    System.out.println(State.SHUTDOWN.getName() + " >> Awaiting all required tasks to be completed.");
+                    Scheduler.awaitTasksCompletion(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+                    System.out.println(State.SHUTDOWN.getName() + " >> Shutting down shard manager.");
                     Pulse.shardManager.shutdown();
                 }
+                System.out.println(State.SHUTDOWN.getName() + " >> Terminating scheduler.");
+                Pulse.scheduler.shutdownNow();
             });
 
             /*
             Set up console listening system via events.
              */
             logger.info("Initializing console listener.");
-            Pulse.scheduler.runAsync(() -> Scheduler.loop(() -> true, () -> Try.to(() -> Scheduler.loop(() -> !Try.to(Pulse.input::ready).getUnchecked(), () -> Try.to(() -> Thread.sleep(100)).map(nv -> false).getUnchecked())).map(nv -> Try.to(Pulse.input::readLine).map(ConsoleEvent::new).onSuccess(consoleEvent -> Try.to(() -> Pulse.eventManager.call(consoleEvent)).onFailure(Throwable::printStackTrace).onFailure(throwable -> logger.warning("Exception caught in command handler."))).map(so -> false).orElse(true)).orElse(true)));
+            Pulse.scheduler.runAsync(() -> Scheduler.loop(() -> true, () -> Try.to(Pulse.input::readLine).map(ConsoleEvent::new).onSuccess(Pulse.eventManager::call).onFailure(Throwable::printStackTrace).map(consoleEvent -> false).orElse(false)));
 
             /*
 			Initialize the ready notifier format completion.
@@ -155,11 +165,8 @@ public class StartupListener implements Listener {
                     .setEnableShutdownHook(false)
                     .setStatus(OnlineStatus.DO_NOT_DISTURB)
                     .setActivity(Activity.playing("Starting up..."))
-                    .addEventListeners(new ReadyListener())
-                    .addEventListeners(new GuildInitializer())
-                    .addEventListeners(new GuildVoiceListener())
-                    .addEventListeners(new InteractionListener())
-                    .addEventListeners(new MessageDeletionRequestListener())
+                    .addEventListeners()
+                    .addEventListeners(eventListeners)
                     .build();
 
             /*

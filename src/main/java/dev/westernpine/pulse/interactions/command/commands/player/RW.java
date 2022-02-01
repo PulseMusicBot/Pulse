@@ -5,6 +5,7 @@ import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.object.Timestamp;
 import dev.westernpine.lib.util.jda.Embeds;
+import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.entities.AudioChannel;
@@ -62,34 +63,31 @@ public class RW implements SlashCommandComponentHandler {
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true);
         Optional<AudioChannel> connectedChannel = controller.getConnectedChannel();
 
-        if(connectedChannel.isEmpty()) {
-            event.replyEmbeds(Embeds.error("Unable to fast-forward.", "I'm not connected.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+        if (connectedChannel.isEmpty()) {
+            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "I'm not connected."), 15);
             return false;
         }
 
         if (!controller.getVoiceState(event.getMember()).inAudioChannel()) {
-            event.replyEmbeds(Embeds.error("Unable to fast-forward.", "You must be in a channel.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "You must be in a channel."), 15);
             return false;
         }
 
         //playing checks
         AudioTrack audioTrack = controller.getPlayingTrack();
 
-        if(audioTrack == null) {
-            event.replyEmbeds(Embeds.error("Unable to fast-forward.", "I'm not playing anything.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+        if (audioTrack == null) {
+            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "I'm not playing anything."), 15);
             return false;
         }
 
-        if(!audioTrack.isSeekable() || audioTrack.getInfo().isStream) {
-            event.replyEmbeds(Embeds.error("Unable to fast-forward.", "This track is not seekable.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+        if (!audioTrack.isSeekable() || audioTrack.getInfo().isStream) {
+            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "This track is not seekable."), 15);
             return false;
         }
 
-        if (connectedChannel.isPresent()
-                && !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())
-                && !controller.getConnectedMembers().isEmpty()
-                && controller.getPlayingTrack() != null) {
-            event.replyEmbeds(Embeds.error("Unable to fast-forward.", "I'm currently playing for others.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+        if (!connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())) {
+            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "We must be in the same channel."), 15);
             return false;
         }
 
@@ -97,8 +95,8 @@ public class RW implements SlashCommandComponentHandler {
 
         if (event.getOption("amount") != null) {
             String specified = Try.to(() -> event.getOption("amount").getAsString()).orElse("");
-            if(!Timestamp.isTimestamp(specified)) {
-                event.replyEmbeds(Embeds.error("Unable to fast-forward.", "The provided time is not valid. (Seconds, or Timestamp format [hh:mm:ss])").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+            if (!Timestamp.isTimestamp(specified)) {
+                Messenger.replyTo(event, Embeds.error("Unable to rewind.", "The provided time is not valid. (Seconds, or Timestamp format)"), 15);
                 return false;
             }
             pos = Timestamp.from(specified).convert(TimeUnit.MILLISECONDS);
@@ -107,14 +105,14 @@ public class RW implements SlashCommandComponentHandler {
         long amount = TimeUnit.SECONDS.convert(pos.getDuration(), pos.getTimeUnit());
         pos.setDuration(controller.getPosition() - pos.getDuration());
 
-        if(pos.getDuration() < 0L) {
-            event.replyEmbeds(Embeds.error("Unable to fast-forward.", "The result of the rewind is outside the length of the track.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+        if (pos.getDuration() < 0L) {
+            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "The result of the rewind is outside the length of the track."), 15);
             return false;
         }
 
         controller.setLastChannelId(event.getChannel().getId());
         controller.setPosition(pos.getDuration());
-        event.replyEmbeds(Embeds.success("Rewinding `%d` seconds.".formatted(amount), "").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+        Messenger.replyTo(event, Embeds.success("Rewinding `%d` seconds.".formatted(amount), ""), 15);
         return true;
     }
 }

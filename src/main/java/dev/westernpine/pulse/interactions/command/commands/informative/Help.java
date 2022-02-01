@@ -64,7 +64,6 @@ public class Help implements SlashCommandComponentHandler {
                                                                         
                                     :exclamation: You can also view more information of a command by issuing `/help [command]`.
                                     """, Pulse.color())
-                            .addField("Version:", "`%s`".formatted(Pulse.version), true)
                             .setFooter("Have questions, or want to explore more projects? Click the support link!", event.getJDA().getSelfUser().getEffectiveAvatarUrl())
                             .build())
                     .setEphemeral(true)

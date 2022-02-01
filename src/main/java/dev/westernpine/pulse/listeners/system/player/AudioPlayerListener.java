@@ -20,22 +20,19 @@ public class AudioPlayerListener implements Listener {
         Controller controller = event.getController();
         EndCase endCase = event.getEndCase();
         if (!endCase.getReason().isEmpty())
-            controller.getLastChannel().ifPresent(channel ->
-                    Messenger.sendMessage(channel, Embeds.info(":outbox_tray: Disconnected.", endCase.getReason(), Pulse.color(controller.getGuild())), 15));
+            controller.getLastChannel().ifPresent(channel -> Messenger.sendMessage(channel, Embeds.info(":outbox_tray: Disconnected.", endCase.getReason(), Pulse.color(controller.getGuild())), 15));
     }
 
     @EventHandler
     public void onFinishedPlaying(FinishedPlayingEvent event) {
         Controller controller = event.getController();
-        controller.getLastChannel().ifPresent(channel ->
-                Messenger.sendMessage(channel, Embeds.success("Finished playing!", "The end of the queue was reached."), 15));
+        controller.getLastChannel().ifPresent(channel -> Messenger.sendMessage(channel, Embeds.success("Finished playing!", "The end of the queue was reached."), 15));
     }
 
     @EventHandler
     public void onPreviousQueueReachedEnd(PreviousQueueReachedEndEvent event) {
         Controller controller = event.getController();
-        controller.getLastChannel().ifPresent(channel ->
-                Messenger.sendMessage(channel, Embeds.success("Finished playing!", "The start of the queue was reached."), 15));
+        controller.getLastChannel().ifPresent(channel -> Messenger.sendMessage(channel, Embeds.success("Finished playing!", "The start of the queue was reached."), 15));
     }
 
     @EventHandler

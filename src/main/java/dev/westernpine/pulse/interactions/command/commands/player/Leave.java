@@ -1,8 +1,8 @@
 package dev.westernpine.pulse.interactions.command.commands.player;
 
-import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Embeds;
+import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.EndCase;
@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public class Leave implements SlashCommandComponentHandler {
 
@@ -59,13 +58,13 @@ public class Leave implements SlashCommandComponentHandler {
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true);
         Optional<AudioChannel> connectedChannel = controller.getConnectedChannel();
 
-        if(connectedChannel.isEmpty()) {
-            event.replyEmbeds(Embeds.error("Unable to leave.", "I'm not connected.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+        if (connectedChannel.isEmpty()) {
+            Messenger.replyTo(event, Embeds.error("Unable to leave.", "I'm not connected."), 15);
             return false;
         }
 
         if (!controller.getVoiceState(event.getMember()).inAudioChannel()) {
-            event.replyEmbeds(Embeds.error("Unable to leave.", "You must be in a channel.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+            Messenger.replyTo(event, Embeds.error("Unable to leave.", "You must be in a channel."), 15);
             return false;
         }
 
@@ -73,13 +72,13 @@ public class Leave implements SlashCommandComponentHandler {
                 && !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())
                 && !controller.getConnectedMembers().isEmpty()
                 && controller.getPlayingTrack() != null) {
-            event.replyEmbeds(Embeds.error("Unable to leave.", "I'm currently playing for others.").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+            Messenger.replyTo(event, Embeds.error("Unable to leave.", "I'm currently playing for others."), 15);
             return false;
         }
 
         controller.setLastChannelId(event.getChannel().getId());
         controller.destroy(EndCase.BY_COMMAND);
-        event.replyEmbeds(Embeds.success("Disconnected.", "").build()).queue(interactionHook -> interactionHook.deleteOriginal().queueAfter(15, TimeUnit.SECONDS));
+        Messenger.replyTo(event, Embeds.success("Disconnected.", ""), 15);
         return true;
     }
 }
