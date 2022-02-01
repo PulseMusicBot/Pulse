@@ -95,6 +95,7 @@ public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlayl
                     index = i;
                     break;
                 }
+                i++;
             }
         }
         return index;
