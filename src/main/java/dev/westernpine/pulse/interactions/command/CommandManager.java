@@ -19,13 +19,16 @@ public class CommandManager {
                         new Commands(),
                         new Join(),
                         new Leave(),
+                        new Stop(),
                         new Pause(),
                         new Play(),
                         new PlayFirst(),
                         new PlayNow(),
                         new FF(),
                         new RW(),
-                        new Restart()
+                        new Restart(),
+                        new Volume(),
+                        new Seek()
                 )
                 .sorted()
                 .forEachOrdered(slashCommandComponentHandlers::add);

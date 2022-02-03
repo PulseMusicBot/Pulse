@@ -23,7 +23,7 @@ public class AudioPlayerListener implements Listener {
     public void onPlayerDestroyed(PlayerDestroyedEvent event) {
         Controller controller = event.getController();
         EndCase endCase = event.getEndCase();
-        if (!endCase.getReason().isEmpty())
+        if (event.wasConnected() && !endCase.getReason().isEmpty())
             controller.getLastChannel().ifPresent(channel -> Messenger.sendMessage(channel, Embeds.info(":outbox_tray: Disconnected.", endCase.getReason(), Pulse.color(controller.getGuild())), 15));
     }
 
@@ -68,7 +68,7 @@ public class AudioPlayerListener implements Listener {
             controller.getLastChannel().ifPresent(channel -> {
                 EmbedBuilder embedBuilder = Embeds.play("Now playing...", Formatter.formatInfo(event.getAudioTrack().getInfo()), event.getAudioTrack().getDuration(), Pulse.color(controller.getGuild()));
                 TriState imageSize = controller.getSettings().get(Setting.IMAGE_SIZE).toTriState();
-                if(!imageSize.isFalse()) {
+                if (!imageSize.isFalse()) {
                     String imageUrl = ImageCrawler.findURL(audioTrack.getInfo().uri);
                     embedBuilder = imageSize.isNone() ? embedBuilder.setThumbnail(imageUrl) : embedBuilder.setImage(imageUrl);
                 }

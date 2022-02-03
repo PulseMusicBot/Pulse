@@ -8,10 +8,12 @@ public class PlayerDestroyedEvent extends Event {
 
     private Controller controller;
     private EndCase endCase;
+    private boolean connected;
 
-    public PlayerDestroyedEvent(Controller controller, EndCase endCase) {
+    public PlayerDestroyedEvent(Controller controller, EndCase endCase, boolean connected) {
         this.controller = controller;
         this.endCase = endCase;
+        this.connected = connected;
     }
 
     public Controller getController() {
@@ -20,5 +22,9 @@ public class PlayerDestroyedEvent extends Event {
 
     public EndCase getEndCase() {
         return endCase;
+    }
+
+    public boolean wasConnected() {
+        return connected;
     }
 }

@@ -64,8 +64,8 @@ public class Restart implements SlashCommandComponentHandler {
             return false;
         }
 
-        if (!controller.getVoiceState(event.getMember()).inAudioChannel()) {
-            Messenger.replyTo(event, Embeds.error("Unable to restart.", "You must be in a channel."), 15);
+        if (!controller.getVoiceState(event.getMember()).inAudioChannel() || !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())) {
+            Messenger.replyTo(event, Embeds.error("Unable to set volume.", "We must be in the same channel."), 15);
             return false;
         }
 
@@ -79,11 +79,6 @@ public class Restart implements SlashCommandComponentHandler {
 
         if (!audioTrack.isSeekable() || audioTrack.getInfo().isStream) {
             Messenger.replyTo(event, Embeds.error("Unable to restart.", "This track is not seekable."), 15);
-            return false;
-        }
-
-        if (!connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())) {
-            Messenger.replyTo(event, Embeds.error("Unable to restart.", "We must be in the same channel."), 15);
             return false;
         }
 

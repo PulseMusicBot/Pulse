@@ -359,7 +359,7 @@ public class Controller {
     }
 
     public void cancelTrack(boolean resetLastTrackId, boolean resetLastTrackIdIfNull) {
-        if(audioPlayer != null) {
+        if (audioPlayer != null) {
             audioPlayer.setPaused(false);
             audioPlayer.stopTrack();
             if (resetLastTrackId)
@@ -376,6 +376,7 @@ public class Controller {
     }
 
     public void destroy(EndCase endCase) {
+        boolean connected = isConnected() || endCase == EndCase.DISCONNECTED;
         stop();
         AudioManager audioManager = getAudioManager();
         audioManager.closeAudioConnection();
@@ -388,7 +389,7 @@ public class Controller {
         this.setRepeating(TriState.NONE);
         this.lastTrack = 0;
         this.alone = false;
-        Pulse.eventManager.call(new PlayerDestroyedEvent(this, endCase));
+        Pulse.eventManager.call(new PlayerDestroyedEvent(this, endCase, connected));
     }
 
     /*

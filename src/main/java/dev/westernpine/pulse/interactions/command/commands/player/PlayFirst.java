@@ -24,9 +24,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
-import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class PlayFirst implements SlashCommandComponentHandler {
 

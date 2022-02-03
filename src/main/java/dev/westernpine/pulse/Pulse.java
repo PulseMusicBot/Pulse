@@ -39,7 +39,6 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - Add nullable and nonnullable annotations
      - Add documentation!
      - detail logs - requests, joining, leaving
      - Commands (With detailed logs)

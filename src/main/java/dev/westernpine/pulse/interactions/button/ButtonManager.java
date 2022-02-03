@@ -1,7 +1,7 @@
 package dev.westernpine.pulse.interactions.button;
 
 import dev.westernpine.lib.interaction.component.button.ButtonComponentHandler;
-import dev.westernpine.pulse.interactions.button.buttons.*;
+import dev.westernpine.pulse.interactions.button.buttons.links.*;
 
 import java.util.LinkedList;
 import java.util.Optional;

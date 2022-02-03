@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.object.Timestamp;
+import dev.westernpine.lib.util.Numbers;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.controller.Controller;
@@ -54,7 +55,7 @@ public class RW implements SlashCommandComponentHandler {
     @Override
     public LinkedList<OptionData> options() {
         LinkedList<OptionData> options = new LinkedList<>();
-        options.add(new OptionData(OptionType.STRING, "amount", "The amount in seconds, or timestamp format to fast forward a track by."));
+        options.add(new OptionData(OptionType.STRING, "amount", "The time to rewind the track by in either seconds or timestamp format."));
         return options;
     }
 
@@ -68,8 +69,8 @@ public class RW implements SlashCommandComponentHandler {
             return false;
         }
 
-        if (!controller.getVoiceState(event.getMember()).inAudioChannel()) {
-            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "You must be in a channel."), 15);
+        if (!controller.getVoiceState(event.getMember()).inAudioChannel() || !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())) {
+            Messenger.replyTo(event, Embeds.error("Unable to set volume.", "We must be in the same channel."), 15);
             return false;
         }
 
@@ -83,11 +84,6 @@ public class RW implements SlashCommandComponentHandler {
 
         if (!audioTrack.isSeekable() || audioTrack.getInfo().isStream) {
             Messenger.replyTo(event, Embeds.error("Unable to rewind.", "This track is not seekable."), 15);
-            return false;
-        }
-
-        if (!connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())) {
-            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "We must be in the same channel."), 15);
             return false;
         }
 
@@ -105,8 +101,8 @@ public class RW implements SlashCommandComponentHandler {
         long amount = TimeUnit.SECONDS.convert(pos.getDuration(), pos.getTimeUnit());
         pos.setDuration(controller.getPosition() - pos.getDuration());
 
-        if (pos.getDuration() < 0L) {
-            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "The result of the rewind is outside the length of the track."), 15);
+        if (!Numbers.isWithin(pos.getDuration(), 0L, audioTrack.getDuration())) {
+            Messenger.replyTo(event, Embeds.error("Unable to rewind.", "The result of the rewind is outside the scope of the track."), 15);
             return false;
         }
 
