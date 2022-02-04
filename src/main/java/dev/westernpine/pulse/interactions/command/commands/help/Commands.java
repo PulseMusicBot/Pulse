@@ -41,8 +41,8 @@ public class Commands implements SlashCommandComponentHandler {
         EmbedBuilder embed = new EmbedBuilder().setTitle("All Commands");
         CommandManager.getSortedComponentHandlers().forEach((category, commands) -> embed.addField(category, String.join(", ", commands.stream().map(command -> "`" + command.id() + "`").toArray(String[]::new)), false));
         embed.setColor(Pulse.color());
-        embed.setFooter("To learn more about a command, type \"/help command\"");
-        Messenger.replyTo(event, embed.build());
-        return false;
+        embed.setFooter("To learn more about a command, type \"/help [command]\"");
+        event.replyEmbeds(embed.build()).setEphemeral(true).queue();
+        return true;
     }
 }

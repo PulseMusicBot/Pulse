@@ -1,5 +1,6 @@
 package dev.westernpine.pulse.interactions.command.commands.help;
 
+import dev.westernpine.lib.interaction.CommandHandler;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.pulse.Pulse;
@@ -99,7 +100,7 @@ public class Help implements SlashCommandComponentHandler {
                             .setEphemeral(true)
                             .queue());
         }
-        return false;
+        return true;
     }
 
 }
