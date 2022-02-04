@@ -78,6 +78,7 @@ public class AudioPlayerListener implements Listener {
 
     @EventHandler
     public void onTrackEnd(TrackEndEvent event) {
+
         if (!event.getController().getAudioManager().isConnected())
             return;
 

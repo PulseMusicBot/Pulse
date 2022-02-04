@@ -69,7 +69,7 @@ public class Volume implements SlashCommandComponentHandler {
             }
 
             controller.setLastChannelId(event.getChannel().getId());
-            Messenger.replyTo(event, Embeds.small(":loud_sound: Volume: `%d`".formatted(controller.getVolume()), Pulse.color(event.getGuild())), 15);
+            Messenger.replyTo(event, Embeds.info(":loud_sound: Volume: `%d`".formatted(controller.getVolume()), "", Pulse.color(event.getGuild())), 15);
             return true;
 
         } else {
@@ -86,7 +86,7 @@ public class Volume implements SlashCommandComponentHandler {
 
             controller.setLastChannelId(event.getChannel().getId());
             controller.setVolume(Long.valueOf(Numbers.setWithin(event.getOption("level").getAsLong(), 0, 100)).intValue());
-            Messenger.replyTo(event, Embeds.small(":loud_sound: New Volume: `%d`".formatted(controller.getVolume()), Pulse.color(event.getGuild())), 15);
+            Messenger.replyTo(event, Embeds.success("Volume set to: `%d`".formatted(controller.getVolume()), ""), 15);
             return true;
 
         }

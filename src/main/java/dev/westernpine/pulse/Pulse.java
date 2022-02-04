@@ -41,7 +41,8 @@ public class Pulse {
      Up Next:
      - Add documentation!
      - detail logs - requests, joining, leaving
-     - Commands (With detailed logs)
+     - Commands (With detailed logs) - Settings, Debug, Info/NowPlaying, Queue, Save, Status, Lyrics?
+     - Authentication in commands.
      - More sources.
      - Management/Premium status (Reuse old)
      */
@@ -89,7 +90,7 @@ public class Pulse {
             Pulse.shutdownHooks.forEach(Runnable::run);
             System.out.println(State.SHUTDOWN.getName() + " >> System shutdown completed. Goodbye!");
             state = State.OFFLINE;
-            Try.to(() -> Thread.sleep(1000L)); //Allow JDA to finish everything it needs.
+            Try.to(() -> Thread.sleep(1000));
         }));
 
         setState(State.INITIALIZATION);

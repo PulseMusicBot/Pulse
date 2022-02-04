@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.interactions.command.commands.informative;
+package dev.westernpine.pulse.interactions.command.commands.help;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Messenger;
@@ -28,7 +28,7 @@ public class Commands implements SlashCommandComponentHandler {
 
     @Override
     public String category() {
-        return "Utility";
+        return "Help";
     }
 
     @Override

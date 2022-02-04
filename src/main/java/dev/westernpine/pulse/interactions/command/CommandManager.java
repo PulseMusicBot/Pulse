@@ -1,9 +1,14 @@
 package dev.westernpine.pulse.interactions.command;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
-import dev.westernpine.pulse.interactions.command.commands.informative.Commands;
-import dev.westernpine.pulse.interactions.command.commands.informative.Help;
+import dev.westernpine.pulse.interactions.command.commands.help.Commands;
+import dev.westernpine.pulse.interactions.command.commands.help.Help;
+import dev.westernpine.pulse.interactions.command.commands.informative.NowPlaying;
+import dev.westernpine.pulse.interactions.command.commands.informative.Queue;
+import dev.westernpine.pulse.interactions.command.commands.informative.Save;
+import dev.westernpine.pulse.interactions.command.commands.informative.Status;
 import dev.westernpine.pulse.interactions.command.commands.player.*;
+import dev.westernpine.pulse.interactions.command.commands.queue.*;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -15,8 +20,12 @@ public class CommandManager {
     private static final LinkedHashMap<String, LinkedList<SlashCommandComponentHandler>> sortedSlashCommandComponentHandlers = new LinkedHashMap<>();
 
     static {
-        Stream.of(new Help(),
+        Stream.of(
+                        //Help
+                        new Help(),
                         new Commands(),
+
+                        //Player
                         new Join(),
                         new Leave(),
                         new Stop(),
@@ -28,7 +37,25 @@ public class CommandManager {
                         new RW(),
                         new Restart(),
                         new Volume(),
-                        new Seek()
+                        new Seek(),
+
+                        //Queue
+                        new Clear(),
+                        new Flip(),
+                        new ForceNext(),
+                        new ForceBack(),
+                        new Next(),
+                        new Back(),
+                        new Move(),
+                        new Remove(),
+                        new Repeat(),
+                        new SkipTo(),
+
+                        //Informative
+                        new NowPlaying(),
+                        new Save(),
+                        new Status(),
+                        new Queue()
                 )
                 .sorted()
                 .forEachOrdered(slashCommandComponentHandlers::add);

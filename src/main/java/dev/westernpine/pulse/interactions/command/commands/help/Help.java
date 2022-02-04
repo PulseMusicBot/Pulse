@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.interactions.command.commands.informative;
+package dev.westernpine.pulse.interactions.command.commands.help;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Embeds;
@@ -18,7 +18,7 @@ import java.util.Objects;
 
 public class Help implements SlashCommandComponentHandler {
 
-    static String[] usages = new String[]{"help", "help [command]"};
+    static String[] usages = new String[]{"help [command]"};
 
     static OptionData OPTION_COMMAND = new OptionData(OptionType.STRING, "command", "Any command you would like to learn more about.");
 
@@ -39,7 +39,7 @@ public class Help implements SlashCommandComponentHandler {
 
     @Override
     public String category() {
-        return "Utility";
+        return "Help";
     }
 
     @Override

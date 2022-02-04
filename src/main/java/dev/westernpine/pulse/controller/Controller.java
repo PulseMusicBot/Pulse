@@ -580,12 +580,17 @@ public class Controller {
 
     //Custom implementation because if next tracks cant resolve, then errors would occur if playlists on loop.
     public boolean skipTo(int item) {
+        AudioTrack audioTrack = getPlayingTrack();
+
         finishPlaying(false, true);
 
         for (int i = 1; i <= item - 1; i++)
             previousQueue.addLast(queue.removeFirst());
 
-        return !startTrack(Objects.requireNonNull(queue.pollFirst()), true) || nextTrack();
+        AudioTrack next = queue.pollFirst();
+        if (next == null || !startTrack(next, true))
+            return nextTrack();
+        return true;
     }
 
     /**
