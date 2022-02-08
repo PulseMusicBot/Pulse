@@ -17,10 +17,13 @@ import dev.westernpine.pulse.controller.settings.setting.Setting;
 import dev.westernpine.pulse.events.system.player.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 
+import static dev.westernpine.pulse.logging.Logger.logger;
+
 public class AudioPlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerDestroyed(PlayerDestroyedEvent event) {
+        logger.info("Disconnected from guild %s.".formatted(event.getController().getGuildId()));
         Controller controller = event.getController();
         EndCase endCase = event.getEndCase();
         if (event.wasConnected() && !endCase.getReason().isEmpty())

@@ -39,12 +39,10 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - Add documentation!
-     - detail logs - requests, joining, leaving
-     - Commands (With detailed logs) - Settings, Debug, Info/NowPlaying, Queue, Save, Status, Lyrics?
      - Authentication in commands.
      - More sources.
      - Management/Premium status (Reuse old)
+     - Add documentation!
      */
 
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");

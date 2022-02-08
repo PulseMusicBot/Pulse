@@ -31,6 +31,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static dev.westernpine.pulse.logging.Logger.logger;
+
 public class Controller {
 
     private final String guildId;
@@ -303,6 +305,7 @@ public class Controller {
      * If the currently logged in account does not have the Permission VOICE_MOVE_OTHERS and the user limit has been exceeded!
      */
     public Controller connect(AudioChannel audioChannel) throws IllegalArgumentException, InsufficientPermissionException {
+        logger.info("Connected to channel %s in guild %s.".formatted(audioChannel.getId(), audioChannel.getGuild().getId()));
         AudioManager audioManager = getAudioManager();
         audioManager.setSelfDeafened(false);
         audioManager.setSpeakingMode(SpeakingMode.SOUNDSHARE);

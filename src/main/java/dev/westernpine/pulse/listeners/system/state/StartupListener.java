@@ -2,7 +2,13 @@ package dev.westernpine.pulse.listeners.system.state;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeSearchProvider;
 import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
@@ -145,7 +151,18 @@ public class StartupListener implements Listener {
             Pulse.soundCloudAudioSourceManager = SoundCloudAudioSourceManager.createDefault();
             Pulse.audioPlayerManager.registerSourceManager(Pulse.youtubeAudioSourceManager);
             Pulse.audioPlayerManager.registerSourceManager(Pulse.soundCloudAudioSourceManager);
-            //TODO: More sources!
+            Pulse.audioPlayerManager.registerSourceManager(new HttpAudioSourceManager());
+            Pulse.audioPlayerManager.registerSourceManager(new VimeoAudioSourceManager());
+            Pulse.audioPlayerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
+            Pulse.audioPlayerManager.registerSourceManager(new BandcampAudioSourceManager());
+            Pulse.audioPlayerManager.registerSourceManager(new GetyarnAudioSourceManager());
+            /*TODO: More sources!
+                - Spotify
+                - Deezer
+                - Apple Music
+                - iHeartRadio
+                -
+             */
 
             /*
             Load up the shard manager.

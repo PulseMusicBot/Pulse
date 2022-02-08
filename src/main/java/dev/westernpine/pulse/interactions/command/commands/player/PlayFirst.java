@@ -25,6 +25,8 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import java.util.LinkedList;
 import java.util.Optional;
 
+import static dev.westernpine.pulse.logging.Logger.logger;
+
 public class PlayFirst implements SlashCommandComponentHandler {
 
     public static final TriState asap = TriState.NONE;
@@ -109,13 +111,13 @@ public class PlayFirst implements SlashCommandComponentHandler {
             return false;
         }
 
-
         if (playlist.isSearchResult())
             playlist.setTracks(playlist.getTracks().get(0));
 
-
         Request request = RequestFactory.from(event.getOption("query").getAsString());
         Requester requester = RequesterFactory.from(event.getUser());
+
+        logger.info("%s requested: %s".formatted(requester.getId(), request.getRequest()));
 
         playlist.applyUserData(UserDataFactory.from(request, requester, platform));
 
