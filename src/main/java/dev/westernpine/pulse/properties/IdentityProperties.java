@@ -31,6 +31,9 @@ public class IdentityProperties extends PropertiesFile {
     @PropertyField
     public static final Property CONTROLLERS_SQL_BACKEND = new Property("controllersbackend", "controllersbackend");
 
+    @PropertyField
+    public static final Property ADMINS = new Property("admins", "559027677017669661");
+
     public IdentityProperties(String identity) throws Throwable {
         super(identity + ".properties", PropertyFile.getDeclaredProperties(IdentityProperties.class));
     }

@@ -5,6 +5,7 @@ import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
+import dev.westernpine.pulse.authentication.Authenticator;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.entities.AudioChannel;
@@ -71,29 +72,41 @@ public class Repeat implements SlashCommandComponentHandler {
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true);
         Optional<AudioChannel> connectedChannel = controller.getConnectedChannel();
 
-        if (connectedChannel.isEmpty()) {
-            Messenger.replyTo(event, Embeds.error("Unable to check/set repeat.", "I'm not connected."), 15);
-            return false;
-        }
-
-        if (!controller.getVoiceState(event.getMember()).inAudioChannel() || !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())) {
-            Messenger.replyTo(event, Embeds.error("Unable to check/set repeat.", "We must be in the same channel."), 15);
-            return false;
-        }
-
         OptionMapping repeatOption = event.getOption("repeat-type");
 
         if (repeatOption == null) {
+
+            if (connectedChannel.isEmpty()) {
+                Messenger.replyTo(event, Embeds.error("Unable to check repeat.", "I'm not connected."), 15);
+                return false;
+            }
+
             TriState repeatType = controller.getRepeating();
             Messenger.replyTo(event, Embeds.info(":repeat: Repeating: `%s`".formatted(getChoiceKey(repeatType)), "", Pulse.color(event.getGuild())), 15);
             return true;
-        }
+        } else {
 
-        TriState repeatType = TriState.valueOf(repeatOption.getAsString());
-        String choice = getChoiceKey(repeatType);
-        controller.setLastChannelId(event.getChannel().getId());
-        controller.setRepeating(repeatType);
-        Messenger.replyTo(event, Embeds.info(":repeat: Repeating set to: `%s`".formatted(choice), "", Pulse.color(event.getGuild())), 15);
-        return true;
+            if(!Authenticator.isDj(event.getMember(), controller)) {
+                Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a DJ to use this command."), 15);
+                return false;
+            }
+
+            if (connectedChannel.isEmpty()) {
+                Messenger.replyTo(event, Embeds.error("Unable to set repeat.", "I'm not connected."), 15);
+                return false;
+            }
+
+            if (!controller.getVoiceState(event.getMember()).inAudioChannel() || !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())) {
+                Messenger.replyTo(event, Embeds.error("Unable to set repeat.", "We must be in the same channel."), 15);
+                return false;
+            }
+
+            TriState repeatType = TriState.valueOf(repeatOption.getAsString());
+            String choice = getChoiceKey(repeatType);
+            controller.setLastChannelId(event.getChannel().getId());
+            controller.setRepeating(repeatType);
+            Messenger.replyTo(event, Embeds.info(":repeat: Repeating set to: `%s`".formatted(choice), "", Pulse.color(event.getGuild())), 15);
+            return true;
+        }
     }
 }

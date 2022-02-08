@@ -7,6 +7,7 @@ import dev.westernpine.lib.audio.track.userdata.requester.RequesterFactory;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
+import dev.westernpine.pulse.authentication.Authenticator;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.settings.setting.Setting;

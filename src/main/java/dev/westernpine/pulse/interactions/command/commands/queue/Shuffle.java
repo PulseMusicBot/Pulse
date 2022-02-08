@@ -4,6 +4,7 @@ import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHa
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
+import dev.westernpine.pulse.authentication.Authenticator;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.entities.AudioChannel;
@@ -57,6 +58,11 @@ public class Shuffle implements SlashCommandComponentHandler {
     public boolean handle(SlashCommandEvent event) {
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true);
         Optional<AudioChannel> connectedChannel = controller.getConnectedChannel();
+
+        if(!Authenticator.isDj(event.getMember(), controller)) {
+            Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a DJ to use this command."), 15);
+            return false;
+        }
 
         if (connectedChannel.isEmpty()) {
             Messenger.replyTo(event, Embeds.error("Unable to shuffle.", "I'm not connected."), 15);

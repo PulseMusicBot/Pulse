@@ -3,6 +3,7 @@ package dev.westernpine.pulse.interactions.command.commands.player;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
+import dev.westernpine.pulse.authentication.Authenticator;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.EndCase;
@@ -71,7 +72,8 @@ public class Leave implements SlashCommandComponentHandler {
         if (connectedChannel.isPresent()
                 && !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())
                 && !controller.getConnectedMembers().isEmpty()
-                && controller.getPlayingTrack() != null) {
+                && controller.getPlayingTrack() != null
+                && !Authenticator.isDj(event.getMember(), controller)) {
             Messenger.replyTo(event, Embeds.error("Unable to leave.", "I'm currently playing for others."), 15);
             return false;
         }

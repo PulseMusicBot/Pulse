@@ -5,6 +5,7 @@ import dev.westernpine.lib.util.Numbers;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
+import dev.westernpine.pulse.authentication.Authenticator;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.entities.AudioChannel;
@@ -73,6 +74,11 @@ public class Volume implements SlashCommandComponentHandler {
             return true;
 
         } else {
+
+            if(!Authenticator.isDj(event.getMember(), controller)) {
+                Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a DJ to use this command."), 15);
+                return false;
+            }
 
             if (connectedChannel.isEmpty()) {
                 Messenger.replyTo(event, Embeds.error("Unable to set volume.", "I'm not connected."), 15);

@@ -39,7 +39,8 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - Authentication in commands.
+     - Settings command.
+     - Player command.
      - More sources.
      - Management/Premium status (Reuse old)
      - Add documentation!

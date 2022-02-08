@@ -14,6 +14,7 @@ import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHa
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
+import dev.westernpine.pulse.authentication.Authenticator;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.settings.setting.Setting;
@@ -77,6 +78,11 @@ public class Play implements SlashCommandComponentHandler {
 
         if (event.getOption("query") == null) {
 
+            if(!Authenticator.isDj(event.getMember(), controller)) {
+                Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a DJ to use this command."), 15);
+                return false;
+            }
+
             if (connectedChannel.isEmpty()) {
                 Messenger.replyTo(event, Embeds.error("Unable to resume playing.", "I'm not connected."), 15);
                 return false;
@@ -113,7 +119,8 @@ public class Play implements SlashCommandComponentHandler {
             if (connectedChannel.isPresent()
                     && !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())
                     && !controller.getConnectedMembers().isEmpty()
-                    && controller.getPlayingTrack() != null) {
+                    && controller.getPlayingTrack() != null
+                    && !Authenticator.isDj(event.getMember(), controller)) {
                 Messenger.replyTo(event, Embeds.error("Unable play request.", "I'm currently playing for others."), 15);
                 return false;
             }
