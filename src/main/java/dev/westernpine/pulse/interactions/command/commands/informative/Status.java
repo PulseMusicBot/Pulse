@@ -1,17 +1,11 @@
 package dev.westernpine.pulse.interactions.command.commands.informative;
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
-import dev.westernpine.lib.object.Timestamp;
-import dev.westernpine.lib.object.TriState;
-import dev.westernpine.lib.util.Formatter;
-import dev.westernpine.lib.util.ImageCrawler;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
-import dev.westernpine.pulse.controller.settings.setting.Setting;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -19,7 +13,6 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public class Status implements SlashCommandComponentHandler {
 
@@ -73,7 +66,7 @@ public class Status implements SlashCommandComponentHandler {
 
         //The actual playing message.
         EmbedBuilder embedBuilder = Embeds.info(":satellite: Discord Status", "", Pulse.color(event.getGuild()))
-        .addField("Voice & Events", "`" + gatewayPing + " ms`", true)
+                .addField("Voice & Events", "`" + gatewayPing + " ms`", true)
                 .addField("Messaging & Properties", "`" + restPing + " ms`", true)
                 .addField("Experiencing Problems?", "[Changing the discord server or voice channel region](https://support.discord.com/hc/en-us/articles/1500007645701-Voice-Regions-on-Discord-FAQ) typically fixes any glitchy audio, as some regions can be overloaded. "
                         + "You can also check the [Discord Status](https://status.discord.com/) page, "

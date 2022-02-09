@@ -5,7 +5,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
@@ -15,6 +14,12 @@ import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv4Block;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
+import com.sedmelluq.lavaplayer.extensions.thirdpartysources.applemusic.AppleMusicAudioSourceManager;
+import com.sedmelluq.lavaplayer.extensions.thirdpartysources.deezer.DeezerAudioSourceManager;
+import com.sedmelluq.lavaplayer.extensions.thirdpartysources.napster.NapsterAudioSourceManager;
+import com.sedmelluq.lavaplayer.extensions.thirdpartysources.spotify.SpotifyAudioSourceManager;
+import com.sedmelluq.lavaplayer.extensions.thirdpartysources.tidal.TidalAudioSourceManager;
+import com.sedmelluq.lavaplayer.extensions.thirdpartysources.yamusic.YandexMusicAudioSourceManager;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.eventapi.objects.EventHandler;
 import dev.westernpine.eventapi.objects.Listener;
@@ -33,6 +38,7 @@ import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
 import dev.westernpine.pulse.listeners.system.jda.controller.GuildVoiceListener;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import dev.westernpine.pulse.sources.Router;
+import dev.westernpine.pulse.sources.iHeart.iHeartAudioSourceManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -148,6 +154,7 @@ public class StartupListener implements Listener {
                             .setup();
                 }
             }
+            Pulse.audioPlayerManager.registerSourceManager(new iHeartAudioSourceManager(Pulse.audioPlayerManager));
             Pulse.soundCloudAudioSourceManager = SoundCloudAudioSourceManager.createDefault();
             Pulse.audioPlayerManager.registerSourceManager(Pulse.youtubeAudioSourceManager);
             Pulse.audioPlayerManager.registerSourceManager(Pulse.soundCloudAudioSourceManager);
@@ -156,13 +163,12 @@ public class StartupListener implements Listener {
             Pulse.audioPlayerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
             Pulse.audioPlayerManager.registerSourceManager(new BandcampAudioSourceManager());
             Pulse.audioPlayerManager.registerSourceManager(new GetyarnAudioSourceManager());
-            /*TODO: More sources!
-                - Spotify
-                - Deezer
-                - Apple Music
-                - iHeartRadio
-                -
-             */
+            Pulse.audioPlayerManager.registerSourceManager(new AppleMusicAudioSourceManager(Pulse.audioPlayerManager));
+            Pulse.audioPlayerManager.registerSourceManager(new DeezerAudioSourceManager(Pulse.audioPlayerManager));
+            Pulse.audioPlayerManager.registerSourceManager(new NapsterAudioSourceManager(Pulse.audioPlayerManager));
+            Pulse.audioPlayerManager.registerSourceManager(new SpotifyAudioSourceManager(Pulse.audioPlayerManager));
+            Pulse.audioPlayerManager.registerSourceManager(new TidalAudioSourceManager(Pulse.audioPlayerManager));
+            Pulse.audioPlayerManager.registerSourceManager(new YandexMusicAudioSourceManager(Pulse.audioPlayerManager));
 
             /*
             Load up the shard manager.

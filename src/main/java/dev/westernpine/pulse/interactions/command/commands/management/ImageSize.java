@@ -3,7 +3,6 @@ package dev.westernpine.pulse.interactions.command.commands.management;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.object.Value;
-import dev.westernpine.lib.util.Numbers;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
@@ -23,17 +22,15 @@ import java.util.Map;
 public class ImageSize implements SlashCommandComponentHandler {
 
     private static final Map<String, TriState> choices = Map.of("small", TriState.NONE, "large", TriState.TRUE, "none", TriState.FALSE);
-
-    private static String getChoiceKey(TriState value) {
-        return choices.entrySet().stream().filter(choice -> choice.getValue().equals(value)).map(Map.Entry::getKey).findAny().get();
-    }
-
     private static final Setting setting = Setting.IMAGE_SIZE;
-
     private static final OptionData data = new OptionData(OptionType.STRING, "size", "The default search platform.");
 
     static {
         choices.forEach((key, value) -> data.addChoice(key, value.toString()));
+    }
+
+    private static String getChoiceKey(TriState value) {
+        return choices.entrySet().stream().filter(choice -> choice.getValue().equals(value)).map(Map.Entry::getKey).findAny().get();
     }
 
     /**
@@ -81,7 +78,7 @@ public class ImageSize implements SlashCommandComponentHandler {
         Settings settings = controller.getSettings();
         OptionMapping option = event.getOption(data.getName());
 
-        if(!Authenticator.isManager(event.getMember())) {
+        if (!Authenticator.isManager(event.getMember())) {
             Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a server manager use this command."), 15);
             return false;
         }

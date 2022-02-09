@@ -25,6 +25,20 @@ public class Platform {
         return null;
     });
 
+    public static final Platform YOUTUBE_MUSIC = new Platform("YouTube-Music", "ytmsearch:", () -> Pulse.youtubeAudioSourceManager, track -> {
+        AudioTrackInfo audioTrackInfo = track.getInfo();
+        String query = audioTrackInfo.title + " - " + audioTrackInfo.author;
+        AudioItem audioItem = Pulse.youtubeSearchProvider.loadSearchResult(query, info -> new YoutubeAudioTrack(info, Pulse.youtubeAudioSourceManager));
+        if (audioItem == AudioReference.NO_TRACK)
+            return null;
+        if (audioItem instanceof AudioPlaylist playlist) {
+            return playlist.getTracks().isEmpty() ? null : (InternalAudioTrack) playlist.getTracks().get(0);
+        } else if (audioItem instanceof InternalAudioTrack audioTrack) {
+            return audioTrack;
+        }
+        return null;
+    });
+
     public static final Platform SOUNDCLOUD = new Platform("SoundCloud", "scsearch:", () -> Pulse.soundCloudAudioSourceManager, track -> {
         AudioTrackInfo audioTrackInfo = track.getInfo();
         String query = "scsearch:" + audioTrackInfo.title + " - " + audioTrackInfo.author;

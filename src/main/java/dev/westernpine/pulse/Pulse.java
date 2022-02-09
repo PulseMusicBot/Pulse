@@ -39,9 +39,7 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - More sources.
      - Management/Premium status (Reuse old)
-     - Add documentation!
      */
 
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");

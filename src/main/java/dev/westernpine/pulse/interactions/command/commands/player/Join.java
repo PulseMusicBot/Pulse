@@ -95,7 +95,7 @@ public class Join implements SlashCommandComponentHandler {
 
         String query = controller.getSettings().get(Setting.JOIN_MUSIC).toString();
 
-        if(!query.isEmpty()) {
+        if (!query.isEmpty()) {
             Platform platform = PlatformFactory.get(controller.getSettings().get(Setting.DEFAULT_PLATFORM).toString());
 
             SortedPlaylist playlist = Try.to(() -> AudioFactory.query(query).get())

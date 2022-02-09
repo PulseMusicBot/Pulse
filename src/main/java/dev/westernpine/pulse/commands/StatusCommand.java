@@ -2,7 +2,6 @@ package dev.westernpine.pulse.commands;
 
 import dev.westernpine.lib.interaction.ConsoleCommandHandler;
 import dev.westernpine.pulse.Pulse;
-import dev.westernpine.pulse.controller.ControllerFactory;
 
 import static dev.westernpine.pulse.logging.Logger.logger;
 

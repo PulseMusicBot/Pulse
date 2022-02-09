@@ -65,7 +65,7 @@ public class FF implements SlashCommandComponentHandler {
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true);
         Optional<AudioChannel> connectedChannel = controller.getConnectedChannel();
 
-        if(!Authenticator.isDj(event.getMember(), controller)) {
+        if (!Authenticator.isDj(event.getMember(), controller)) {
             Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a DJ to use this command."), 15);
             return false;
         }

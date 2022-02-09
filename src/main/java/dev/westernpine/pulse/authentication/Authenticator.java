@@ -39,7 +39,7 @@ public class Authenticator {
     }
 
     public static boolean hasRole(Member member, String roleId) {
-        if(roleId.equals(member.getGuild().getId()))
+        if (roleId.equals(member.getGuild().getId()))
             return true;
         for (Role role : member.getRoles()) {
             if (role.getId().equals(roleId)) {
@@ -58,13 +58,13 @@ public class Authenticator {
     }
 
     public static boolean isDj(Member member, Controller controller) {
-        if(isBotAdmin(member.getUser()))
+        if (isBotAdmin(member.getUser()))
             return true;
 
-        if(isAdmin(member))
+        if (isAdmin(member))
             return true;
 
-        if(!controller.getSettings().get(Setting.DJ_MODE).toBoolean())
+        if (!controller.getSettings().get(Setting.DJ_MODE).toBoolean())
             return true;
 
         String djRole = controller.getSettings().get(Setting.DJ_ROLE).toString();

@@ -75,7 +75,7 @@ public class Volume implements SlashCommandComponentHandler {
 
         } else {
 
-            if(!Authenticator.isDj(event.getMember(), controller)) {
+            if (!Authenticator.isDj(event.getMember(), controller)) {
                 Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a DJ to use this command."), 15);
                 return false;
             }

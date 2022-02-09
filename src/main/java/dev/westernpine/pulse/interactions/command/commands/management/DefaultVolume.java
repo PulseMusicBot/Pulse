@@ -11,14 +11,12 @@ import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.settings.Settings;
 import dev.westernpine.pulse.controller.settings.setting.Setting;
-import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.LinkedList;
-import java.util.Optional;
 
 public class DefaultVolume implements SlashCommandComponentHandler {
 
@@ -71,7 +69,7 @@ public class DefaultVolume implements SlashCommandComponentHandler {
         Settings settings = controller.getSettings();
         OptionMapping option = event.getOption(data.getName());
 
-        if(!Authenticator.isManager(event.getMember())) {
+        if (!Authenticator.isManager(event.getMember())) {
             Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a server manager use this command."), 15);
             return false;
         }

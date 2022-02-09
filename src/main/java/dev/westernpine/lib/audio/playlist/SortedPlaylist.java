@@ -11,8 +11,8 @@ import java.util.LinkedList;
 
 public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlaylist {
 
-    private final String name;
-    private final boolean isSearchResult;
+    private String name;
+    private boolean isSearchResult;
     private AudioTrack selectedTrack;
 
     public SortedPlaylist(String name) {
@@ -55,6 +55,15 @@ public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlayl
     }
 
     /**
+     * Set the name of this playlist.
+     *
+     * @param name The new name for the playlist.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * @return List of tracks in the playlist
      */
     @Override
@@ -84,6 +93,10 @@ public class SortedPlaylist extends LinkedList<AudioTrack> implements AudioPlayl
     @Override
     public boolean isSearchResult() {
         return this.isSearchResult;
+    }
+
+    public void setSearchResult(boolean searchResult) {
+        isSearchResult = searchResult;
     }
 
     public int getSelectedTrackIndex() {

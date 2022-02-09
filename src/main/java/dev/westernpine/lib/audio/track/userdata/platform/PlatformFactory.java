@@ -13,6 +13,7 @@ public class PlatformFactory {
 
     static {
         platforms.put(Platform.YOUTUBE.getName(), Platform.YOUTUBE);
+        platforms.put(Platform.YOUTUBE_MUSIC.getName(), Platform.YOUTUBE_MUSIC);
         platforms.put(Platform.SOUNDCLOUD.getName(), Platform.SOUNDCLOUD);
     }
 

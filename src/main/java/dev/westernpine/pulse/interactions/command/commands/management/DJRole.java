@@ -70,7 +70,7 @@ public class DJRole implements SlashCommandComponentHandler {
         Settings settings = controller.getSettings();
         OptionMapping option = event.getOption(data.getName());
 
-        if(!Authenticator.isManager(event.getMember())) {
+        if (!Authenticator.isManager(event.getMember())) {
             Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a server manager use this command."), 15);
             return false;
         }
@@ -86,7 +86,7 @@ public class DJRole implements SlashCommandComponentHandler {
 
     public String getRoleMention(Guild guild, String roleId) {
         String defaultReturn = "`none`";
-        if(roleId.isEmpty())
+        if (roleId.isEmpty())
             return defaultReturn;
         Role role = guild.getRoleById(roleId);
         return role == null ? defaultReturn : role.getAsMention();

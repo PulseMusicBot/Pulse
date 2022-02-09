@@ -68,7 +68,7 @@ public class DisconnectCleanup implements SlashCommandComponentHandler {
         Settings settings = controller.getSettings();
         OptionMapping option = event.getOption(data.getName());
 
-        if(!Authenticator.isManager(event.getMember())) {
+        if (!Authenticator.isManager(event.getMember())) {
             Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a server manager use this command."), 15);
             return false;
         }

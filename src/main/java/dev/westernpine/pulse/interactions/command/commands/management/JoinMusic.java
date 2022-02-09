@@ -2,7 +2,6 @@ package dev.westernpine.pulse.interactions.command.commands.management;
 
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.object.Value;
-import dev.westernpine.lib.util.Numbers;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
@@ -69,7 +68,7 @@ public class JoinMusic implements SlashCommandComponentHandler {
         Settings settings = controller.getSettings();
         OptionMapping option = event.getOption(data.getName());
 
-        if(!Authenticator.isManager(event.getMember())) {
+        if (!Authenticator.isManager(event.getMember())) {
             Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a server manager use this command."), 15);
             return false;
         }

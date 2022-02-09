@@ -1,5 +1,6 @@
 package dev.westernpine.pulse.controller.settings.setting;
 
+import dev.westernpine.lib.audio.track.userdata.platform.PlatformFactory;
 import dev.westernpine.lib.object.TriState;
 
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class Setting {
             ":station:",
             "Default Search Platform",
             "The default platform to search on.",
-            "YouTube",
+            PlatformFactory.defaultPlatform().getName(),
             "platform");
 
     public static final Setting SHUFFLE_PLAYLISTS = SettingFactory.from(

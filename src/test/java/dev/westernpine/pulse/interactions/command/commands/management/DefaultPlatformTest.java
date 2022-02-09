@@ -3,11 +3,8 @@ package dev.westernpine.pulse.interactions.command.commands.management;
 import dev.westernpine.lib.audio.track.userdata.platform.Platform;
 import dev.westernpine.lib.audio.track.userdata.platform.PlatformFactory;
 import dev.westernpine.lib.util.Debug;
-import jdk.jfr.StackTrace;
 
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultPlatformTest {
 

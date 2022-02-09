@@ -21,15 +21,14 @@ import java.util.Optional;
 public class Repeat implements SlashCommandComponentHandler {
 
     private static final Map<String, TriState> choices = Map.of("off", TriState.NONE, "track", TriState.TRUE, "queue", TriState.FALSE);
-
-    private static String getChoiceKey(TriState value) {
-        return choices.entrySet().stream().filter(choice -> choice.getValue().equals(value)).map(Map.Entry::getKey).findAny().get();
-    }
-
     private static final OptionData data = new OptionData(OptionType.STRING, "repeat-type", "The repeat type to set the player to.");
 
     static {
         choices.forEach((key, value) -> data.addChoice(key, value.toString()));
+    }
+
+    private static String getChoiceKey(TriState value) {
+        return choices.entrySet().stream().filter(choice -> choice.getValue().equals(value)).map(Map.Entry::getKey).findAny().get();
     }
 
     /**
@@ -90,7 +89,7 @@ public class Repeat implements SlashCommandComponentHandler {
             return true;
         } else {
 
-            if(!Authenticator.isDj(event.getMember(), controller)) {
+            if (!Authenticator.isDj(event.getMember(), controller)) {
                 Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a DJ to use this command."), 15);
                 return false;
             }

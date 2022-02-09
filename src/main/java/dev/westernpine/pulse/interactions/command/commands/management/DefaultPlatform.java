@@ -1,9 +1,7 @@
 package dev.westernpine.pulse.interactions.command.commands.management;
 
-import dev.westernpine.lib.audio.track.userdata.platform.Platform;
 import dev.westernpine.lib.audio.track.userdata.platform.PlatformFactory;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
-import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.object.Value;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
@@ -18,8 +16,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class DefaultPlatform implements SlashCommandComponentHandler {
 
@@ -78,7 +76,7 @@ public class DefaultPlatform implements SlashCommandComponentHandler {
         Settings settings = controller.getSettings();
         OptionMapping option = event.getOption(data.getName());
 
-        if(!Authenticator.isManager(event.getMember())) {
+        if (!Authenticator.isManager(event.getMember())) {
             Messenger.replyTo(event, Embeds.error("Authentication failed.", "You must be a server manager use this command."), 15);
             return false;
         }
