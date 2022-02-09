@@ -123,10 +123,8 @@ public class PlayFirst implements SlashCommandComponentHandler {
 
         playlist.applyUserData(UserDataFactory.from(request, requester, platform));
 
-        int enqueued = controller.getQueue().size();
         controller.setLastChannelId(event.getChannel().getId());
-        controller.enqueue(playlist, asap);
-        enqueued = controller.getQueue().size() - enqueued;
+        int enqueued = controller.enqueue(playlist, asap);
         Messenger.replyTo(event, Embeds.success(enqueued == 1 ? "1 Track Enqueued!" : "%d Tracks Enqueued!".formatted(enqueued), ""), 15);
         return true;
     }

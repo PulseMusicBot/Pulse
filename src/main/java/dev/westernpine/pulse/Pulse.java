@@ -39,9 +39,6 @@ public class Pulse {
     /*
     TODO:
      Up Next:
-     - Fix: enquing a search sometimes says enqued 0 tracks.
-     - Settings command.
-     - Player command.
      - More sources.
      - Management/Premium status (Reuse old)
      - Add documentation!

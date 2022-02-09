@@ -513,11 +513,11 @@ public class Controller {
      * NONE -> First
      * FALSE -> Last
      */
-    public void enqueue(AudioItem audioItem, TriState asap) {
+    public int enqueue(AudioItem audioItem, TriState asap) {
         SortedPlaylist playlist = AudioFactory.toPlaylist(audioItem);
 
         if (playlist.getTracks().isEmpty())
-            return;
+            return 0;
 
         if (playlist.getTracks().size() > 1 && playlist.getSelectedTrackIndex() > 0)
             playlist.setTracks(playlist.getSelectedTrack());
@@ -540,6 +540,7 @@ public class Controller {
             }
             queue.addAll(0, playlist);
             nextTrack();
+            return playlist.size();
         } else if (asap.isNone()) {     // Start as next track. ()
             // If there is a selected track, limit the playlist to just the single track.
             // then add playlist to queue
@@ -549,12 +550,15 @@ public class Controller {
             queue.addAll(0, playlist);
             if (getPlayingTrack() == null && queueSize == 0)
                 nextTrack();
+            return playlist.size();
         } else if (asap.isFalse()) {    // Start after queue is done.
             // Just add all tracks to end of queue.
             queue.addAll(playlist);
             if (getPlayingTrack() == null && queueSize == 0)
                 nextTrack();
+            return playlist.size();
         }
+        return -1;
     }
 
     public boolean overridePlaying(AudioTrack audioTrack) {
