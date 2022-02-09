@@ -16,7 +16,7 @@ public class WebsiteButton implements ButtonComponentHandler {
 
     @Override
     public Component toComponent() {
-        return Button.link("https://%s".formatted(Pulse.identityProperties.get(IdentityProperties.HOST)), label());
+        return Button.link(Pulse.identityProperties.get(IdentityProperties.WEBSITE), label());
     }
 
     @Override

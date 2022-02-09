@@ -16,7 +16,7 @@ public class SupportButton implements ButtonComponentHandler {
 
     @Override
     public Component toComponent() {
-        return Button.link("https://%s/support".formatted(Pulse.identityProperties.get(IdentityProperties.HOST)), label());
+        return Button.link(Pulse.identityProperties.get(IdentityProperties.SUPPORT), label());
     }
 
     @Override

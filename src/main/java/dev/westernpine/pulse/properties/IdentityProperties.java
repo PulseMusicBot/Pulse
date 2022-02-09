@@ -14,9 +14,6 @@ public class IdentityProperties extends PropertiesFile {
     public static final Property PREMIUM = new Property("premium", "false");
 
     @PropertyField
-    public static final Property HOST = new Property("host", "pulsebot.gg");
-
-    @PropertyField
     public static final Property COLOR = new Property("color", "#000000");
 
     @PropertyField
@@ -33,6 +30,18 @@ public class IdentityProperties extends PropertiesFile {
 
     @PropertyField
     public static final Property ADMINS = new Property("admins", "559027677017669661");
+
+    @PropertyField
+    public static final Property HOST = new Property("host", "pulsebot.gg");
+
+    @PropertyField
+    public static final Property WEBSITE = new Property("website", "https://pulsebot.gg");
+
+    @PropertyField
+    public static final Property INVITE = new Property("invite", "https://pulsebot.gg/invite");
+
+    @PropertyField
+    public static final Property SUPPORT = new Property("support", "https://pulsebot.gg/support");
 
     public IdentityProperties(String identity) throws Throwable {
         super(identity + ".properties", PropertyFile.getDeclaredProperties(IdentityProperties.class));

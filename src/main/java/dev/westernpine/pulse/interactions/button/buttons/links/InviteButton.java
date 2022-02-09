@@ -16,7 +16,7 @@ public class InviteButton implements ButtonComponentHandler {
 
     @Override
     public Component toComponent() {
-        return Button.link("https://%s/invite".formatted(Pulse.identityProperties.get(IdentityProperties.HOST)), label());
+        return Button.link(Pulse.identityProperties.get(IdentityProperties.INVITE), label());
     }
 
     @Override

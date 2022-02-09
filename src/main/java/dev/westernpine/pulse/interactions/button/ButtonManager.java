@@ -12,8 +12,7 @@ public class ButtonManager {
     private static final LinkedList<ButtonComponentHandler> buttonHandlers = new LinkedList<>();
 
     static {
-        Stream.of(new DocsButton(),
-                        new FaqButton(),
+        Stream.of(
                         new InviteButton(),
                         new SupportButton(),
                         new WebsiteButton())

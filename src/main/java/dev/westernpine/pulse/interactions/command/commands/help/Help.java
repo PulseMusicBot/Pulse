@@ -70,9 +70,7 @@ public class Help implements SlashCommandComponentHandler {
                     .addActionRow(
                             ButtonManager.get("invite").get().toComponent(),
                             ButtonManager.get("support").get().toComponent(),
-                            ButtonManager.get("website").get().toComponent(),
-                            ButtonManager.get("docs").get().toComponent(),
-                            ButtonManager.get("faq").get().toComponent()
+                            ButtonManager.get("website").get().toComponent()
                     )
                     .queue();
         } else {
