@@ -39,6 +39,8 @@ public class Authenticator {
     }
 
     public static boolean hasRole(Member member, String roleId) {
+        if(roleId.equals(member.getGuild().getId()))
+            return true;
         for (Role role : member.getRoles()) {
             if (role.getId().equals(roleId)) {
                 return true;
@@ -49,6 +51,10 @@ public class Authenticator {
 
     public static boolean isAdmin(Member member) {
         return hasPermission(member, Permission.ADMINISTRATOR);
+    }
+
+    public static boolean isManager(Member member) {
+        return isAdmin(member) || hasPermission(member, Permission.MANAGE_SERVER);
     }
 
     public static boolean isDj(Member member, Controller controller) {

@@ -46,7 +46,7 @@ public class ControllerFactory {
                         boolean alone = controller.getConnectedMembers().isEmpty();
                         boolean paused = controller.isPaused();
                         boolean activeWorthy = playing && !alone && !paused;
-                        boolean tfs = controller.getSettings().get(Setting.TWENTRY_FOUR_SEVEN).toBoolean();
+                        boolean tfs = controller.getSettings().get(Setting.TWENTY_FOUR_SEVEN).toBoolean();
                         boolean endSession = false;
                         if (tfs || (status.isnt(Status.ACTIVE) && (status.is(Status.CACHE) || activeWorthy)))
                             controller.resetStatus(Status.ACTIVE);

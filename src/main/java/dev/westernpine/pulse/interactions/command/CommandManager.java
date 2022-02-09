@@ -7,6 +7,7 @@ import dev.westernpine.pulse.interactions.command.commands.informative.NowPlayin
 import dev.westernpine.pulse.interactions.command.commands.informative.Queue;
 import dev.westernpine.pulse.interactions.command.commands.informative.Save;
 import dev.westernpine.pulse.interactions.command.commands.informative.Status;
+import dev.westernpine.pulse.interactions.command.commands.management.*;
 import dev.westernpine.pulse.interactions.command.commands.player.*;
 import dev.westernpine.pulse.interactions.command.commands.queue.*;
 
@@ -24,6 +25,25 @@ public class CommandManager {
                         //Help
                         new Help(),
                         new Commands(),
+
+                        //Informative
+                        new NowPlaying(),
+                        new Save(),
+                        new Status(),
+                        new Queue(),
+
+                        //Management
+                        new DefaultPlatform(),
+                        new DefaultVolume(),
+                        new DJMode(),
+                        new DJRole(),
+                        new ImageSize(),
+                        new ShufflePlaylists(),
+                        new VoiceDetection(),
+                        new TrackUpdates(),
+                        new DisconnectCleanup(),
+                        new TwentryFourSeven(),
+                        new JoinMusic(),
 
                         //Player
                         new Join(),
@@ -49,13 +69,7 @@ public class CommandManager {
                         new Move(),
                         new Remove(),
                         new Repeat(),
-                        new SkipTo(),
-
-                        //Informative
-                        new NowPlaying(),
-                        new Save(),
-                        new Status(),
-                        new Queue()
+                        new SkipTo()
                 )
                 .sorted()
                 .forEachOrdered(slashCommandComponentHandlers::add);

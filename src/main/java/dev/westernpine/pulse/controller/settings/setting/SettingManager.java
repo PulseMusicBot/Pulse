@@ -18,8 +18,8 @@ public class SettingManager {
         settings.add(Setting.VOICE_DETECTION);
         settings.add(Setting.TRACK_UPDATES);
         settings.add(Setting.DISCONNECT_CLEANUP);
-        settings.add(Setting.TWENTRY_FOUR_SEVEN);
-        settings.add(Setting.JOIN_PLAYLIST);
+        settings.add(Setting.TWENTY_FOUR_SEVEN);
+        settings.add(Setting.JOIN_MUSIC);
     }
 
     public static List<Setting> getSettings() {

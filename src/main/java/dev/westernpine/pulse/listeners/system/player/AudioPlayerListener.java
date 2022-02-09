@@ -61,7 +61,7 @@ public class AudioPlayerListener implements Listener {
         boolean trackUpdates = controller.getSettings().get(Setting.TRACK_UPDATES).toBoolean();
         boolean lastTrackNull = lastTrack == 0;
         boolean hashIsntLast = AudioFactory.hashAudioObject(audioTrack) != lastTrack;
-        boolean queueRepeating = controller.getRepeating().isFalse() || controller.getSettings().get(Setting.TWENTRY_FOUR_SEVEN).toBoolean();
+        boolean queueRepeating = controller.getRepeating().isFalse() || controller.getSettings().get(Setting.TWENTY_FOUR_SEVEN).toBoolean();
         boolean totalQueueIsntEmpty = controller.getTotalQueueSize() != 0;
 
         if (trackUpdates && (

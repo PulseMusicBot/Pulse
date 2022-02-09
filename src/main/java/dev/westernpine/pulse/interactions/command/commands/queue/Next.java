@@ -76,7 +76,7 @@ public class Next implements SlashCommandComponentHandler {
         AudioTrack audioTrack = controller.getPlayingTrack();
         if (audioTrack == null) {    //If current track is null
             //And future queue isn't empty, or controller is in repeating state and previous queue isnt empty... then automatically skip to next track.
-            if (!controller.getQueue().isEmpty() || ((controller.getRepeating().isFalse() || controller.getSettings().get(Setting.TWENTRY_FOUR_SEVEN).toBoolean()) && !controller.getPreviousQueue().isEmpty())) {
+            if (!controller.getQueue().isEmpty() || ((controller.getRepeating().isFalse() || controller.getSettings().get(Setting.TWENTY_FOUR_SEVEN).toBoolean()) && !controller.getPreviousQueue().isEmpty())) {
                 controller.setLastChannelId(event.getChannel().getId());
                 controller.nextTrack();
                 Messenger.replyTo(event, Embeds.success("Skipped to the next track.", ""), 15);

@@ -22,8 +22,14 @@ public class Repeat implements SlashCommandComponentHandler {
 
     private static final Map<String, TriState> choices = Map.of("off", TriState.NONE, "track", TriState.TRUE, "queue", TriState.FALSE);
 
-    private static String getChoiceKey(TriState triState) {
-        return choices.entrySet().stream().filter(choice -> choice.getValue().equals(triState)).map(Map.Entry::getKey).findAny().get();
+    private static String getChoiceKey(TriState value) {
+        return choices.entrySet().stream().filter(choice -> choice.getValue().equals(value)).map(Map.Entry::getKey).findAny().get();
+    }
+
+    private static final OptionData data = new OptionData(OptionType.STRING, "repeat-type", "The repeat type to set the player to.");
+
+    static {
+        choices.forEach((key, value) -> data.addChoice(key, value.toString()));
     }
 
     /**
@@ -31,7 +37,7 @@ public class Repeat implements SlashCommandComponentHandler {
      */
     @Override
     public String[] usages() {
-        return new String[]{"repeat [off/track/queue]"};
+        return new String[]{"repeat [repeat-type]"};
     }
 
     /**
@@ -61,9 +67,7 @@ public class Repeat implements SlashCommandComponentHandler {
     @Override
     public LinkedList<OptionData> options() {
         LinkedList<OptionData> options = new LinkedList<>();
-        OptionData repeatType = new OptionData(OptionType.STRING, "repeat-type", "The repeat type to set the player to.");
-        choices.forEach((key, value) -> repeatType.addChoice(key, value.toString()));
-        options.add(repeatType);
+        options.add(data);
         return options;
     }
 
@@ -72,9 +76,9 @@ public class Repeat implements SlashCommandComponentHandler {
         Controller controller = ControllerFactory.get(event.getGuild().getId(), true);
         Optional<AudioChannel> connectedChannel = controller.getConnectedChannel();
 
-        OptionMapping repeatOption = event.getOption("repeat-type");
+        OptionMapping option = event.getOption(data.getName());
 
-        if (repeatOption == null) {
+        if (option == null) {
 
             if (connectedChannel.isEmpty()) {
                 Messenger.replyTo(event, Embeds.error("Unable to check repeat.", "I'm not connected."), 15);
@@ -101,7 +105,7 @@ public class Repeat implements SlashCommandComponentHandler {
                 return false;
             }
 
-            TriState repeatType = TriState.valueOf(repeatOption.getAsString());
+            TriState repeatType = TriState.valueOf(option.getAsString());
             String choice = getChoiceKey(repeatType);
             controller.setLastChannelId(event.getChannel().getId());
             controller.setRepeating(repeatType);

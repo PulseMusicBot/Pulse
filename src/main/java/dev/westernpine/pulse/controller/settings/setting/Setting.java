@@ -12,15 +12,15 @@ public class Setting {
             "Default Volume",
             "The volume to set on join.",
             "7",
-            "volume");
+            "defaultvolume");
 
     public static final Setting IMAGE_SIZE = SettingFactory.from(
             UUID.fromString("96897d32-95a0-4944-a29a-006e22844e60"),
-            ":framed_picture:",
+            ":frame_with_picture:",
             "Thumbnails",
             "Thumbnail sizes.",
             TriState.NONE.toString(),
-            "images");
+            "imagesize");
 
     public static final Setting DEFAULT_PLATFORM = SettingFactory.from(
             UUID.fromString("359d1ffd-4ca2-47ed-be9d-e3f36980e747"),
@@ -36,7 +36,7 @@ public class Setting {
             "Shuffle Playlists",
             "Shuffle playlists when they are enqueued.",
             "false",
-            "shuffle");
+            "shuffleplaylists");
 
     public static final Setting DJ_MODE = SettingFactory.from(
             UUID.fromString("9ba8c3fd-728d-4b53-bf19-49d693d18463"),
@@ -60,7 +60,7 @@ public class Setting {
             "Voice Detection",
             "Suppress audio when others talk.",
             "false",
-            "detection");
+            "voicedetection");
 
     public static final Setting TRACK_UPDATES = SettingFactory.from(
             UUID.fromString("452698c1-8bf8-4a51-af8b-ac69a660ac8d"),
@@ -68,7 +68,7 @@ public class Setting {
             "Track Updates",
             "Send a track change notification.",
             "true",
-            "updates");
+            "trackupdates");
 
     public static final Setting DISCONNECT_CLEANUP = SettingFactory.from(
             UUID.fromString("923fba84-4512-444b-ab05-549e58e0e8fe"),
@@ -76,9 +76,9 @@ public class Setting {
             "Disconnect Cleanup",
             "Remove a member's requests when the leave.",
             "false",
-            "cleanup");
+            "disconnectcleanup");
 
-    public static final Setting TWENTRY_FOUR_SEVEN = SettingFactory.from(
+    public static final Setting TWENTY_FOUR_SEVEN = SettingFactory.from(
             UUID.fromString("091f984b-0576-43a8-bc59-c3e1185b6335"),
             ":watch:",
             "24/7",
@@ -86,13 +86,13 @@ public class Setting {
             "false",
             "247");
 
-    public static final Setting JOIN_PLAYLIST = SettingFactory.from(
+    public static final Setting JOIN_MUSIC = SettingFactory.from(
             UUID.fromString("9ba9f638-0f18-4ef3-9283-7cc6fe628b26"),
             ":inbox_tray:",
-            "Join Playlist",
-            "The playlist to use when joining without a request.",
+            "Join Music",
+            "The music to use when joining without a request.",
             "",
-            "joinplaylist");
+            "joinmusic");
 
     private UUID uuid;
     private String emoji;

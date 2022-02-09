@@ -108,7 +108,7 @@ public class Controller {
     public void manageAlonePausing() {
         if (isConnected()) {
             if (!isPaused()) {
-                if (getConnectedMembers().isEmpty() && !settings.get(Setting.TWENTRY_FOUR_SEVEN).toBoolean()) {
+                if (getConnectedMembers().isEmpty() && !settings.get(Setting.TWENTY_FOUR_SEVEN).toBoolean()) {
                     setPaused(true);
                     setAlone(true);
                 }
@@ -609,7 +609,7 @@ public class Controller {
     public boolean nextTrack(boolean removeTrack) {
         finishPlaying(removeTrack, true);
 
-        if (queue.isEmpty() && !previousQueue.isEmpty() && (repeating.isFalse() || settings.get(Setting.TWENTRY_FOUR_SEVEN).toBoolean())) {
+        if (queue.isEmpty() && !previousQueue.isEmpty() && (repeating.isFalse() || settings.get(Setting.TWENTY_FOUR_SEVEN).toBoolean())) {
             queue.addAll(previousQueue);
             previousQueue.clear();
         }
@@ -635,7 +635,7 @@ public class Controller {
     public boolean previousTrack(boolean removeTrack) {
         finishPlaying(removeTrack, false);
 
-        if (previousQueue.isEmpty() && !queue.isEmpty() && (repeating.isFalse() || settings.get(Setting.TWENTRY_FOUR_SEVEN).toBoolean())) {
+        if (previousQueue.isEmpty() && !queue.isEmpty() && (repeating.isFalse() || settings.get(Setting.TWENTY_FOUR_SEVEN).toBoolean())) {
             previousQueue.addAll(queue);
             queue.clear();
         }

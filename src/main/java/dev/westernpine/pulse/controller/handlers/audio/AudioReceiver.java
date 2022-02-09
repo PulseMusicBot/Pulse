@@ -10,7 +10,7 @@ import java.time.Instant;
 public class AudioReceiver implements AudioReceiveHandler {
 
     private final Controller controller;
-    private Instant lastAudioDetected = null;
+    private Instant lastAudioDetected = Instant.now();
 
     public AudioReceiver(Controller controller) {
         this.controller = controller;
