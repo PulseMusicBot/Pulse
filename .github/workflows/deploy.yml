@@ -35,6 +35,7 @@ jobs:
           user: root
           key: ${{ secrets.COM_RSA_SECRET }}
           script: |
+            #script /dev/null
             screen -XS pulse quit
           
       - name: Upload new build.
@@ -53,7 +54,7 @@ jobs:
           user: root
           key: ${{ secrets.COM_RSA_SECRET }}
           script: |
-            sudo su
+            #script /dev/null
             cd /home/pulse/pulse
             screen -S pulse
             java -jar Pulse.jar
