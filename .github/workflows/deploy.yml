@@ -23,13 +23,14 @@ jobs:
       - name: List target files.
         run: |
           cd target
+          ls
       - name: Create ssh file.
         uses: "finnp/create-file-action@1.0.0"
         env:
           FILE_NAME: "priv"
           FILE_DATA: ${{ secrets.COM_RSA_SECRET }}
       - name: Set ssh file permissions.
-        run: chmod 600 priv
+        run: sudo chmod 600 priv
       - name: Stop pulse.
         run: |
           ssh root@74.207.229.78 -i priv
