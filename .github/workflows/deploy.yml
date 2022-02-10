@@ -23,7 +23,6 @@ jobs:
       - name: List target files.
         run: |
          cd target
-         ls
       - name: Create ssh file.
         uses: "finnp/create-file-action@1.0.0"
           env:
