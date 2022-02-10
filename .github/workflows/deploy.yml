@@ -27,7 +27,33 @@ jobs:
         run: |
           cd target
           ls -a
-          cd .
       
-      - name: Deploy!
-        uses: WesternPine/Pulse-Deploy-SFTP@v1
+      - name: Create ssh file.
+        uses: "finnp/create-file-action@1.0.0"
+          env:
+            FILE_NAME: "priv"
+            FILE_DATA: ${{ secrets.COM_RSA_SECRET }}
+      
+      - name: Set ssh file permissions:
+        run: chmod 600 priv
+      
+      - name: Stop pulse.
+        run: |
+          ssh root@74.207.229.78 -i priv
+          screen -d pulse
+          stop
+          exit
+      
+      - name: Upload new build.
+        run: |
+          sftp root@74.207.229.78 -i priv
+          cd /home/pulse/pulse
+          put Pulse.jar
+          exit
+      
+      - name: Start pulse.
+        run: |
+          ssh root@74.207.229.78 -i priv
+          screen -R pulse
+          cd /home/pulse/pulse
+          java -jar Pulse.jar
