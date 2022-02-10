@@ -22,8 +22,8 @@ jobs:
         run: mvn clean install --file pom.xml
       - name: List target files.
         run: |
-          cd target
-          ls
+         cd target
+         ls
       - name: Create ssh file.
         uses: "finnp/create-file-action@1.0.0"
           env:
@@ -33,19 +33,19 @@ jobs:
         run: chmod 600 priv
       - name: Stop pulse.
         run: |
-          ssh root@74.207.229.78 -i priv
-          screen -d pulse
-          stop
-          exit
+         ssh root@74.207.229.78 -i priv
+         screen -d pulse
+         stop
+         exit
       - name: Upload new build.
         run: |
-          sftp root@74.207.229.78 -i priv
-          cd /home/pulse/pulse
-          put Pulse.jar
-          exit
+         sftp root@74.207.229.78 -i priv
+         cd /home/pulse/pulse
+         put Pulse.jar
+         exit
       - name: Start pulse.
         run: |
-          ssh root@74.207.229.78 -i priv
-          screen -R pulse
-          cd /home/pulse/pulse
-          java -jar Pulse.jar
+         ssh root@74.207.229.78 -i priv
+         screen -R pulse
+         cd /home/pulse/pulse
+         java -jar Pulse.jar
