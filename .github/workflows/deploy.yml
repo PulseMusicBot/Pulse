@@ -45,7 +45,7 @@ jobs:
           username: root
           ssh_private_key: ${{ secrets.COM_RSA_SECRET }}
           local_path: ./target/Pulse.jar
-          remote_path: /home/pulse/pulse/Pulse.jar
+          remote_path: /home/pulse/pulse
         
       - name: Start pulse.
         uses: cross-the-world/ssh-pipeline@v1.2.0
