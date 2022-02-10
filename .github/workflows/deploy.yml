@@ -28,3 +28,6 @@ jobs:
           cd target
           ls -a
           cd .
+      
+      - name: Deploy!
+        uses: WesternPine/Pulse-Deploy-SFTP@v1
