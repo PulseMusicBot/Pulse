@@ -55,4 +55,4 @@ jobs:
           key: ${{ secrets.COM_RSA_SECRET }}
           script: |
             #script /dev/null
-            screen -S pulse -dm cd /home/pulse/Pulse.jar; java -jar Pulse.jar
+            cd /home/pulse/Pulse.jar && screen -S pulse -dm ./start.sh
