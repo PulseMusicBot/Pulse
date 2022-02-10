@@ -53,6 +53,7 @@ jobs:
           user: root
           key: ${{ secrets.COM_RSA_SECRET }}
           script: |
+            sudo su
             cd /home/pulse/pulse
             screen -S pulse
             java -jar Pulse.jar
