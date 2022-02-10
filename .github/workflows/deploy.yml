@@ -34,9 +34,7 @@ jobs:
           host: 74.207.229.78
           user: root
           key: ${{ secrets.COM_RSA_SECRET }}
-          script: |
-            #script /dev/null
-            screen -XS pulse quit
+          script: screen -XS pulse quit
           
       - name: Upload new build.
         uses: wlixcc/SFTP-Deploy-Action@v1.2.1
@@ -53,6 +51,4 @@ jobs:
           host: 74.207.229.78
           user: root
           key: ${{ secrets.COM_RSA_SECRET }}
-          script: |
-            #script /dev/null
-            cd /home/pulse/Pulse.jar && screen -S pulse -dm ./start.sh
+          script: cd /home/pulse/Pulse.jar && screen -S pulse -dm ./start.sh
