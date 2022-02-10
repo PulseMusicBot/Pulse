@@ -56,5 +56,4 @@ jobs:
           script: |
             #script /dev/null
             cd /home/pulse/pulse
-            screen -S pulse
-            java -jar Pulse.jar
+            screen -S pulse -dm java -jar Pulse.jar
