@@ -30,4 +30,4 @@ jobs:
           cd .
       
       - name: Deploy!
-        uses: WesternPine/Pulse-Deploy-SFTP@v1
+        uses: WesternPine/Pulse-Deploy-SFTP@1
