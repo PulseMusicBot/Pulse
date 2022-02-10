@@ -16,36 +16,42 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
+          
       - name: Checkout code.
         uses: actions/checkout@v2
+        
       - name: Maven clean install
         run: mvn clean install --file pom.xml
+        
       - name: List target files.
         run: |
           cd target
           ls
-      - name: Create ssh file.
-        uses: "finnp/create-file-action@1.0.0"
-        env:
-          FILE_NAME: "priv"
-          FILE_DATA: ${{ secrets.COM_RSA_SECRET }}
-      - name: Set ssh file permissions.
-        run: sudo chmod 600 priv
+        
       - name: Stop pulse.
-        run: |
-          ssh root@74.207.229.78 -i priv
-          screen -d pulse
-          stop
-          exit
+        uses: cross-the-world/ssh-pipeline@v1.2.0
+        with:
+          host: 74.207.229.78
+          user: root
+          key: ${{ secrets.COM_RSA_SECRET }}
+          script: |
+            screen -XS pulse quit
+          
       - name: Upload new build.
-        run: |
-          sftp root@74.207.229.78 -i priv
-          cd /home/pulse/pulse
-          put Pulse.jar
-          exit
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.1
+        with:
+          server: 74.207.229.78
+          username: root
+          ssh_private_key: ${{ secrets.COM_RSA_SECRET }}
+          local_path: Pulse.jar
+          remote_path: /home/pulse/pulse/Pulse.jar
+        
       - name: Start pulse.
-        run: |
-          ssh root@74.207.229.78 -i priv
-          screen -R pulse
-          cd /home/pulse/pulse
-          java -jar Pulse.jar
+        uses: cross-the-world/ssh-pipeline@v1.2.0
+        with:
+          host: 74.207.229.78
+          user: root
+          key: ${{ secrets.COM_RSA_SECRET }}
+          script: |
+            cd /home/pulse/pulse
+            screen -S pulse -dm java -jar Pulse.jar
