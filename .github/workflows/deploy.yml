@@ -1,0 +1,30 @@
+name: Builder
+
+on:
+  push:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install JDK.
+        uses: actions/setup-java@v2.5.0
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+    
+      - name: Checkout code.
+        uses: actions/checkout@v2
+        
+      - name: Maven clean install
+        run: mvn clean install --file pom.xml
+      
+      - name: List target files.
+        run: |
+          cd target
+          ls -a
+          cd .
