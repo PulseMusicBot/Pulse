@@ -43,7 +43,7 @@ jobs:
           server: 74.207.229.78
           username: root
           ssh_private_key: ${{ secrets.COM_RSA_SECRET }}
-          local_path: target/Pulse.jar
+          local_path: ./target/Pulse.jar
           remote_path: /home/pulse/pulse/
         
       - name: Start pulse.
