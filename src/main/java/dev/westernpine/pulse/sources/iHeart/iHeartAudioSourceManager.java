@@ -68,12 +68,8 @@ public class iHeartAudioSourceManager extends ThirdPartyAudioSourceManager {
         String reference = audioReference.getIdentifier();
         Matcher channelMatcher = channelPattern.matcher(reference);
 
-        System.out.println("Reference: " + reference);
-
         if (!channelMatcher.matches())
             return null;
-
-        System.out.println("Reference passed!");
 
         try {
 

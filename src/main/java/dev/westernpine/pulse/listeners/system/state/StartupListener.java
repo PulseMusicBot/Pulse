@@ -134,8 +134,6 @@ public class StartupListener implements Listener {
             logger.info("Registering source managers and search providers.");
             Pulse.youtubeSearchProvider = new YoutubeSearchProvider();
             Pulse.youtubeAudioSourceManager = new YoutubeAudioSourceManager(true);
-            logger.info(Pulse.identityProperties.get(IdentityProperties.IPBLOCKS));
-            logger.info(Arrays.toString(Pulse.identityProperties.get(IdentityProperties.IPBLOCKS).split(", ")));
             String[] blocks = Pulse.identityProperties.get(IdentityProperties.IPBLOCKS).split(", ");
             if (blocks.length > 0) {
                 List<IpBlock> ipBlocks = Arrays.stream(blocks)
@@ -145,7 +143,7 @@ public class StartupListener implements Listener {
                         .toList();
                 if (!ipBlocks.isEmpty()) {
                     Router router = Router.ROTATING_NANO_SWITCH;
-                    logger.info("Implementing IP Rotating router %s with %d IP Blocks.".formatted(router.name(), ipBlocks.size()));
+                    logger.info("Implementing IP Rotating router %s with %d IP Block(s).".formatted(router.name(), ipBlocks.size()));
                     new YoutubeIpRotatorSetup(router.getRouter(ipBlocks))
                             .forSource(Pulse.youtubeAudioSourceManager)
                             .forConfiguration(Pulse.youtubeSearchProvider.getHttpConfiguration(), true)
