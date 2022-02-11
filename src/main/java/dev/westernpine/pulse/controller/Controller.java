@@ -637,7 +637,7 @@ public class Controller {
      * @return True if playing another track, false if finished.
      */
     public boolean previousTrack(boolean removeTrack) {
-        finishPlaying(removeTrack, false);
+        finishPlaying(removeTrack, true);
 
         if (previousQueue.isEmpty() && !queue.isEmpty() && (repeating.isFalse() || settings.get(Setting.TWENTY_FOUR_SEVEN).toBoolean())) {
             previousQueue.addAll(queue);
