@@ -649,7 +649,7 @@ public class Controller {
             return false;
         }
 
-        return startTrack(previousQueue.pollFirst(), true) || previousTrack();
+        return startTrack(previousQueue.pollLast(), true) || previousTrack();
     }
 
     public void clearQueue() {
