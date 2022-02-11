@@ -368,7 +368,7 @@ public class Controller {
             if (resetLastTrackId)
                 setLastTrack(0);
             else
-                setLastTrack(getPlayingTrack(), resetLastTrackId);
+                setLastTrack(getPlayingTrack(), resetLastTrackIdIfNull);
         }
     }
 
@@ -637,7 +637,7 @@ public class Controller {
      * @return True if playing another track, false if finished.
      */
     public boolean previousTrack(boolean removeTrack) {
-        finishPlaying(removeTrack, true);
+        finishPlaying(removeTrack, false);
 
         if (previousQueue.isEmpty() && !queue.isEmpty() && (repeating.isFalse() || settings.get(Setting.TWENTY_FOUR_SEVEN).toBoolean())) {
             previousQueue.addAll(queue);
