@@ -48,10 +48,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -137,6 +134,8 @@ public class StartupListener implements Listener {
             logger.info("Registering source managers and search providers.");
             Pulse.youtubeSearchProvider = new YoutubeSearchProvider();
             Pulse.youtubeAudioSourceManager = new YoutubeAudioSourceManager(true);
+            logger.info(Pulse.identityProperties.get(IdentityProperties.IPBLOCKS));
+            logger.info(Arrays.toString(Pulse.identityProperties.get(IdentityProperties.IPBLOCKS).split(", ")));
             String[] blocks = Pulse.identityProperties.get(IdentityProperties.IPBLOCKS).split(", ");
             if (blocks.length > 0) {
                 List<IpBlock> ipBlocks = Stream.of(blocks)
