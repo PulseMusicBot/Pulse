@@ -501,9 +501,9 @@ public class Controller {
         cancelTrack(remove, false);
         if (!remove)
             if (addToPrevious)
-                previousQueue.add(audioTrack);
+                previousQueue.addLast(audioTrack);
             else
-                queue.add(audioTrack);
+                queue.addFirst(audioTrack);
     }
 
     /*
