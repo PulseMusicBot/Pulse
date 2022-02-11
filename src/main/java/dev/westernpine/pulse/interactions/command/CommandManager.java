@@ -69,6 +69,7 @@ public class CommandManager {
                         new Move(),
                         new Remove(),
                         new Repeat(),
+                        new Shuffle(),
                         new SkipTo()
                 )
                 .sorted()
