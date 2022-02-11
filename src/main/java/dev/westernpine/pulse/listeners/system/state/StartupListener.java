@@ -138,8 +138,8 @@ public class StartupListener implements Listener {
             logger.info(Arrays.toString(Pulse.identityProperties.get(IdentityProperties.IPBLOCKS).split(", ")));
             String[] blocks = Pulse.identityProperties.get(IdentityProperties.IPBLOCKS).split(", ");
             if (blocks.length > 0) {
-                List<IpBlock> ipBlocks = Stream.of(blocks)
-                        .filter(String::isEmpty)
+                List<IpBlock> ipBlocks = Arrays.stream(blocks)
+                        .filter(string -> !string.isEmpty())
                         .filter(block -> Ipv4Block.isIpv4CidrBlock(block) || Ipv6Block.isIpv6CidrBlock(block))
                         .map(block -> (IpBlock) (Ipv4Block.isIpv4CidrBlock(block) ? new Ipv4Block(block) : new Ipv6Block(block)))
                         .toList();
