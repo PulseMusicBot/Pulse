@@ -21,16 +21,21 @@ public class GuildInitializer extends ListenerAdapter {
             guild
                     .updateCommands()
                     .addCommands(CommandManager.getComponentHandlers().stream().map(SlashCommandComponentHandler::commandData).collect(Collectors.toList()))
-                    .queue(success -> {}, initializeFailure -> {
+                    .queue(success -> {
+                    }, initializeFailure -> {
                         guild.retrieveOwner().queue(owner -> {
                             owner.getUser().openPrivateChannel().queue(privateChannel -> {
                                 privateChannel.sendMessage(Messenger.messageBuilder("I don't have permissions to update commands! Please re-invite me so I can initialize your guild properly. %s".formatted(Pulse.identityProperties.get(IdentityProperties.INVITE))).build()).queue(message -> {
                                     guild.leave().queue(leftGuild -> {
                                         logger.info("Left guild because of improper initialization! (%s) ".formatted(guild.getId()));
-                                    }, leaveFailure -> {});
-                                }, messageFailure -> {});
-                            }, channelFailure -> {});
-                        }, ownerFailure -> {});
+                                    }, leaveFailure -> {
+                                    });
+                                }, messageFailure -> {
+                                });
+                            }, channelFailure -> {
+                            });
+                        }, ownerFailure -> {
+                        });
                     });
         } catch (Exception e) {
             e.printStackTrace();

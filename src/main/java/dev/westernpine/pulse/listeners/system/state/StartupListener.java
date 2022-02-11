@@ -51,7 +51,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import static dev.westernpine.pulse.logging.Logger.logger;
 
@@ -132,6 +131,7 @@ public class StartupListener implements Listener {
             Initialize and register source managers.
              */
             logger.info("Registering source managers and search providers.");
+            Pulse.soundCloudAudioSourceManager = SoundCloudAudioSourceManager.createDefault();
             Pulse.youtubeSearchProvider = new YoutubeSearchProvider();
             Pulse.youtubeAudioSourceManager = new YoutubeAudioSourceManager(true);
             String[] blocks = Pulse.identityProperties.get(IdentityProperties.IPBLOCKS).split(", ");
@@ -152,7 +152,6 @@ public class StartupListener implements Listener {
                 }
             }
             Pulse.audioPlayerManager.registerSourceManager(new iHeartAudioSourceManager(Pulse.audioPlayerManager));
-            Pulse.soundCloudAudioSourceManager = SoundCloudAudioSourceManager.createDefault();
             Pulse.audioPlayerManager.registerSourceManager(Pulse.youtubeAudioSourceManager);
             Pulse.audioPlayerManager.registerSourceManager(Pulse.soundCloudAudioSourceManager);
             Pulse.audioPlayerManager.registerSourceManager(new HttpAudioSourceManager());

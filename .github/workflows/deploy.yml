@@ -16,18 +16,18 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
-          
+
       - name: Checkout code.
         uses: actions/checkout@v2
-        
+
       - name: Maven clean install
         run: mvn clean install --file pom.xml
-        
+
       - name: List target files.
         run: |
           cd target
           ls
-        
+
       - name: Stop pulse.
         uses: cross-the-world/ssh-pipeline@v1.2.0
         with:
@@ -35,7 +35,7 @@ jobs:
           user: root
           key: ${{ secrets.COM_RSA_SECRET }}
           script: screen -XS pulse quit
-          
+
       - name: Upload new build.
         uses: wlixcc/SFTP-Deploy-Action@v1.2.1
         with:
@@ -44,7 +44,7 @@ jobs:
           ssh_private_key: ${{ secrets.COM_RSA_SECRET }}
           local_path: ./target/Pulse.jar
           remote_path: /home/pulse/Pulse.jar
-        
+
       - name: Start pulse.
         uses: cross-the-world/ssh-pipeline@v1.2.0
         with:

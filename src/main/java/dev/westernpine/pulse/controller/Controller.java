@@ -685,7 +685,7 @@ public class Controller {
     }
 
     public void remove(int start, int items) {
-        for(;items > 0; items--) {
+        for (; items > 0; items--) {
             queue.remove(start);
         }
     }
