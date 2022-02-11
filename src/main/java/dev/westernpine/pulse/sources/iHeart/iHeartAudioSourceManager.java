@@ -121,7 +121,7 @@ public class iHeartAudioSourceManager extends ThirdPartyAudioSourceManager {
             if (!check(uri))
                 return null;
 
-            return TrackFactory.from(new AudioTrackInfo(title.getAsString(), author.getAsString(), -1L, channelMatcher.group(CHANNEL_ID_MATCHER_GROUP), false, reference));
+            return TrackFactory.from(new AudioTrackInfo(title.getAsString(), author.getAsString(), -1L, channelMatcher.group(CHANNEL_ID_MATCHER_GROUP), true, reference));
         } catch (Exception e) {
             e.printStackTrace();
         }
