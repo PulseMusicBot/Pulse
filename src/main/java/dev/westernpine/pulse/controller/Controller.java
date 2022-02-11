@@ -426,7 +426,7 @@ public class Controller {
     }
 
     public boolean isSeekable() {
-        return this.getPlayingTrack() != null && this.getPlayingTrack().isSeekable() && !this.getPlayingTrack().getInfo().isStream;
+        return this.getPlayingTrack() != null && this.getPlayingTrack().isSeekable();
     }
 
     public long getPosition() {

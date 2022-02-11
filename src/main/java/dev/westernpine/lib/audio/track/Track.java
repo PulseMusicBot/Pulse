@@ -46,7 +46,7 @@ public class Track extends DelegatedAudioTrack {
 
     @Override
     public boolean isSeekable() {
-        return this.audioTrack != null ? this.audioTrack.isSeekable() : !this.getInfo().isStream;
+        return this.audioTrack != null && this.audioTrack.isSeekable();
     }
 
     @Override

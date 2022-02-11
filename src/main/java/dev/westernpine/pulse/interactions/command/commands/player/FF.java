@@ -88,7 +88,7 @@ public class FF implements SlashCommandComponentHandler {
             return false;
         }
 
-        if (!audioTrack.isSeekable() || audioTrack.getInfo().isStream) {
+        if (!audioTrack.isSeekable()) {
             Messenger.replyTo(event, Embeds.error("Unable to fast-forward.", "This track is not seekable."), 15);
             return false;
         }
