@@ -88,7 +88,7 @@ public class Move implements SlashCommandComponentHandler {
 
         int size = controller.getQueue().size();
         int start = -1;
-        int items = 0;
+        int items = 1;
 
         Matcher range = Strings.getRangeMatcher(selection);
         if (Strings.isInteger(selection)) {
@@ -105,6 +105,7 @@ public class Move implements SlashCommandComponentHandler {
 
         int position = Numbers.setWithin(Long.valueOf(event.getOption("position").getAsLong()).intValue(), 1, size);
         controller.setLastChannelId(event.getChannel().getId());
+        controller.move(start, items, position);
         Messenger.replyTo(event, Embeds.success("Moved `%s` %s to `%s`.".formatted(items, items == 1 ? "item" : "items", position), ""), 15);
         return true;
     }

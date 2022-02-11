@@ -87,7 +87,7 @@ public class Remove implements SlashCommandComponentHandler {
 
         int size = controller.getQueue().size();
         int start = -1;
-        int items = 0;
+        int items = 1;
 
         Matcher range = Strings.getRangeMatcher(selection);
         if (Strings.isInteger(selection)) {
@@ -102,6 +102,7 @@ public class Remove implements SlashCommandComponentHandler {
             return false;
         }
         controller.setLastChannelId(event.getChannel().getId());
+        controller.remove(start, items);
         Messenger.replyTo(event, Embeds.success("Removed `%s` %s.".formatted(items, items == 1 ? "item" : "items"), ""), 15);
         return true;
     }

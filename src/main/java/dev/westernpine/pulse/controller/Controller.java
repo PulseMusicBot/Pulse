@@ -623,7 +623,10 @@ public class Controller {
             return false;
         }
 
-        return startTrack(queue.pollFirst(), true) || nextTrack();
+        AudioTrack next = queue.pollFirst();
+        if (next == null || !startTrack(next, true))
+            return nextTrack();
+        return true;
     }
 
     /**
@@ -649,7 +652,10 @@ public class Controller {
             return false;
         }
 
-        return startTrack(previousQueue.pollLast(), true) || previousTrack();
+        AudioTrack next = previousQueue.pollLast();
+        if (next == null || !startTrack(next, true))
+            return previousTrack();
+        return true;
     }
 
     public void clearQueue() {
@@ -676,6 +682,12 @@ public class Controller {
     public void move(int index, int items, int to) {
         for (int i = 0; i < items; i++)
             queue.move(index, to + i); //if we dont add i, then it will move items in reverse order, where the last added item will be at the requested to index.
+    }
+
+    public void remove(int start, int items) {
+        for(;items > 0; items--) {
+            queue.remove(start);
+        }
     }
 
     public boolean removeCurrent() {
