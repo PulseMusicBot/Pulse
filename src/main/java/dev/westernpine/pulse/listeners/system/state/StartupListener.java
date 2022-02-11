@@ -188,7 +188,6 @@ public class StartupListener implements Listener {
                     .setEnableShutdownHook(false)
                     .setStatus(OnlineStatus.DO_NOT_DISTURB)
                     .setActivity(Activity.playing("Starting up..."))
-                    .addEventListeners()
                     .addEventListeners(eventListeners)
                     .build();
 
