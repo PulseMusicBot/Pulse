@@ -101,7 +101,7 @@ public class Controller {
         }
 
         //Finally, initialize properly.
-        manageState();
+        manageStateWithStartup(true);
     }
 
     //Uses all connected members in the same channel.
@@ -153,7 +153,10 @@ public class Controller {
     }
 
     public void manageState() {
-        if (!isConnected() && this.audioPlayer != null)
+        manageStateWithStartup(false);
+    }
+    public void manageStateWithStartup(boolean startup) {
+        if (!startup && !isConnected() && this.audioPlayer != null)
             destroy(EndCase.DISCONNECTED);
         else {
             manageAlonePausing();
