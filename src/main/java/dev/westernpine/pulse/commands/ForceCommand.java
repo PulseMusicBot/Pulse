@@ -89,6 +89,9 @@ public class ForceCommand implements ConsoleCommandHandler {
             return false;
         }
 
+        if (playlist.isSearchResult())
+            playlist.setTracks(playlist.getTracks().get(0));
+
         Requester requester = RequesterFactory.from(Pulse.shardManager.retrieveUserById(Pulse.identityProperties.get(IdentityProperties.ADMINS).split(", ")[0]).complete());
         Request request = RequestFactory.from(query);
 
