@@ -71,7 +71,7 @@ public class Pulse {
     private static State state = State.OFFLINE;
 
     static {
-        if(locker.isLocked()) {
+        if(FileLocker.isLocked(locker.getFile())) {
             System.out.println(State.OFFLINE.getName() + " >> Active session detected. Waiting for session to end...");
             while (FileLocker.isLocked(locker.getFile()))
                 Try.to(() -> Thread.sleep(1000));
