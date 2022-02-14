@@ -95,7 +95,7 @@ public class Controller {
             this.lastTrack = lastTrack;
             this.setPaused(paused);
             if (track != null) {
-                this.startTrack(track, false);
+                this.startTrack(track, true);
                 this.setPosition(position);
             }
         }

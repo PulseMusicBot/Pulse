@@ -42,6 +42,12 @@ public class FileLocker {
         return this;
     }
 
+    public FileLocker lockBlocking() {
+        channel = Try.to(() -> new RandomAccessFile(getFile(), "rw")).getUnchecked().getChannel();
+        lock = Try.to(() -> channel.lock()).orElse(null);
+        return this;
+    }
+
     public boolean isLocked() {
         return FileLocker.isLocked(getFile());
     }
@@ -50,27 +56,5 @@ public class FileLocker {
         FileLocker.unlock(channel, lock);
         return this;
     }
-
-//    public boolean isAppActive() throws Exception{
-//        File file = new File(System.getProperty("user.home"),
-//                "FireZeMissiles1111" + ".tmp");
-//        channel = new RandomAccessFile(file, "rw").getChannel();
-//
-//        lock = channel.tryLock();
-//        if (lock == null) {
-//            return true;
-//        }
-//        Runtime.getRuntime().addShutdownHook(new Thread() {
-//            public void run() {
-//                try {
-//                    lock.release();
-//                    channel.close();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        return false;
-//    }
 
 }
