@@ -1,10 +1,10 @@
 package dev.westernpine.pulse.properties;
 
-import dev.westernpine.lib.object.SQL;
 import dev.westernpine.lib.properties.PropertiesFile;
 import dev.westernpine.lib.properties.Property;
 import dev.westernpine.lib.properties.PropertyField;
 import dev.westernpine.lib.properties.PropertyFile;
+import dev.westernpine.sql.Sql;
 
 public class SqlProperties extends PropertiesFile {
 
@@ -33,15 +33,13 @@ public class SqlProperties extends PropertiesFile {
         return this;
     }
 
-    public SQL toSql() {
-        return SQL.getBuilder()
+    public Sql toSql() {
+        return Sql.builder()
                 .setIp(this.get(HOST))
-                .setPort(this.get(PORT))
+                .setPort(Integer.parseInt(this.get(PORT)))
                 .setDatabase(this.get(DATABASE))
                 .setUsername(this.get(USERNAME))
                 .setPassword(this.get(PASSWORD))
-                .setUseSSLSuffix(true)
-                .setUseSSL(false)
                 .build();
     }
 }

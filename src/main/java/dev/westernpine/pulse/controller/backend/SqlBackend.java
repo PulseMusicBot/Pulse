@@ -1,7 +1,7 @@
 package dev.westernpine.pulse.controller.backend;
 
-import dev.westernpine.lib.object.SQL;
 import dev.westernpine.pulse.properties.SqlProperties;
+import dev.westernpine.sql.Sql;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import static dev.westernpine.pulse.logging.Logger.logger;
 
 public class SqlBackend implements ControllersBackend {
 
-    private SQL sql;
+    private Sql sql;
 
     private String tableName;
 
@@ -25,7 +25,7 @@ public class SqlBackend implements ControllersBackend {
         }
     }
 
-    public SQL getSql() {
+    public Sql getSql() {
         return this.sql;
     }
 
@@ -40,7 +40,7 @@ public class SqlBackend implements ControllersBackend {
 
     @Override
     public boolean isClosed() {
-        return !this.sql.getConnection().isOpen();
+        return !this.sql.isConnected();
     }
 
     @Override
@@ -65,6 +65,6 @@ public class SqlBackend implements ControllersBackend {
     @Override
     public void close() throws IOException {
         if (!isClosed())
-            this.sql.getConnection().close();
+            this.sql.close();
     }
 }

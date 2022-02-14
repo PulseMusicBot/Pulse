@@ -1,7 +1,7 @@
 package dev.westernpine.pulse.logging;
 
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.lib.object.SQL;
+import dev.westernpine.sql.Sql;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,7 +34,7 @@ public class LogManager extends Handler {
     private static PrintWriter fileWriter;
     private static boolean sqlLogging = false;
     private static Timer timer;
-    private static SQL sql;
+    private static Sql sql;
     private static Collection<Level> consoleLevels;
     private static Collection<Level> fileLevels;
     private static Collection<Level> sqlLevels;
@@ -46,7 +46,7 @@ public class LogManager extends Handler {
             LinkedList<LogRecord> finalLogs = new LinkedList<>(logs);
             logs = null;
             Try.to(() -> compileAndUpdate(finalLogs));
-            sql.getConnection().close();
+            sql.close();
         }
         if (fileLogging) {
             Try.to(() -> fileWriter.close());
@@ -57,7 +57,7 @@ public class LogManager extends Handler {
     public static void initialize(@Nonnull Function<LogRecord, String> logFormatter,
                                   @Nonnull String identifier,
                                   @Nullable File logFile,
-                                  @Nullable SQL sqlConsole,
+                                  @Nullable Sql sqlConsole,
                                   @Nullable Collection<Level> consoleLogLevels,
                                   @Nullable Collection<Level> fileLogLevels,
                                   @Nullable Collection<Level> sqlLogLevels) throws FileNotFoundException {
@@ -84,7 +84,7 @@ public class LogManager extends Handler {
             sql = sqlConsole;
             sqlLevels = sqlLogLevels;
             logs = new LinkedList<>();
-            sql.getConnection().open();
+            sql.connect();
             sql.update("CREATE TABLE IF NOT EXISTS `%s` (`id` int(255) NOT NULL AUTO_INCREMENT, `datetime` DATETIME NOT NULL DEFAULT now(), `identity` VARCHAR(255) NOT NULL, `severity` VARCHAR(10) NOT NULL, `log` LONGTEXT NOT NULL, PRIMARY KEY (`id`));".formatted(tableName));
             timer.schedule(new TimerTask() {
                 @Override
@@ -134,7 +134,7 @@ public class LogManager extends Handler {
     }
 
     private static boolean compileAndUpdate(LinkedList<LogRecord> logs) throws SQLException {
-        if (!sqlLogging || sql == null || Try.to(() -> sql.getConnection().getConnection().isClosed()).orElse(true) || logs == null || logs.isEmpty())
+        if (!sqlLogging || sql == null || Try.to(() -> !sql.isConnected()).orElse(true) || logs == null || logs.isEmpty())
             return false;
         String statement = "INSERT INTO `%s` VALUES(0,now(),?,?,?);".formatted(tableName);
         logs.forEach(log -> sql.update(statement, identity, log.getLevel().toString(), log.getMessage()));
@@ -173,7 +173,7 @@ public class LogManager extends Handler {
             LinkedList<LogRecord> finalLogs = new LinkedList<>(logs);
             logs = null;
             Try.to(() -> compileAndUpdate(finalLogs));
-            sql.getConnection().close();
+            sql.close();
         }
         if (fileLogging) {
             Try.to(() -> fileWriter.close());
