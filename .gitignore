@@ -31,3 +31,4 @@ hs_err_pid*
 # Any properties files created by the bot.
 *.properties
 /.idea/
+*tmp

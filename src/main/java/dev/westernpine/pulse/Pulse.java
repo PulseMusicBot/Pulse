@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeSearchProvider;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.eventapi.EventManager;
+import dev.westernpine.lib.object.FileLocker;
 import dev.westernpine.lib.object.Scheduler;
 import dev.westernpine.lib.object.State;
 import dev.westernpine.pulse.events.system.StateChangeEvent;
@@ -55,6 +56,7 @@ public class Pulse {
     public static final EventManager eventManager;
 
     public static final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    public static final FileLocker locker = new FileLocker("locker.tmp");
     public static SystemProperties systemProperties;
     public static IdentityProperties identityProperties;
     public static SqlProperties loggingSqlProperties;
@@ -69,6 +71,15 @@ public class Pulse {
     private static State state = State.OFFLINE;
 
     static {
+        if(locker.isLocked()) {
+            System.out.println(State.OFFLINE.getName() + " >> Active session detected. Waiting for session to end...");
+            while (FileLocker.isLocked(locker.getFile()))
+                Try.to(() -> Thread.sleep(1000));
+            System.out.println(State.OFFLINE.getName() + " >> Active session completed, starting up.");
+        }
+
+        locker.lock();
+
         eventManager = new EventManager();
 
         eventManager.registerListeners(new InitializeListener());
@@ -86,6 +97,7 @@ public class Pulse {
             System.out.println(State.SHUTDOWN.getName() + " >> System shutdown completed. Goodbye!");
             state = State.OFFLINE;
             Try.to(() -> Thread.sleep(1000));
+            locker.unlock();
         }));
 
         setState(State.INITIALIZATION);
