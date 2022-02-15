@@ -45,7 +45,7 @@ public class SessionLocker {
         while(lockExists()) {
             Try.to(() -> Thread.sleep(TimeUnit.MILLISECONDS.convert(checkInterval, timeUnit)));
         }
-        if(!Try.to(this::lock).orElse(false))
+        if(!Try.to(this::lock).onFailure(throwable -> {throw new RuntimeException(throwable);}).orElse(false))
             lockBlocking(checkInterval, timeUnit);
     }
 

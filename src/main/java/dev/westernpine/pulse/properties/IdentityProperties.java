@@ -8,6 +8,9 @@ import dev.westernpine.lib.properties.PropertyFile;
 public class IdentityProperties extends PropertiesFile {
 
     @PropertyField
+    public static final Property SESSION_LOCKER_PORT = new Property("Session Locker Server Port", "5211");
+
+    @PropertyField
     public static final Property TOKEN = new Property("token", "TokenHere");
 
     @PropertyField

@@ -58,10 +58,10 @@ public class Pulse {
     public static final EventManager eventManager;
 
     public static final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-    public static final SessionLocker locker = new SessionLocker(9999);
     public static SystemProperties systemProperties;
     public static IdentityProperties identityProperties;
     public static SqlProperties loggingSqlProperties;
+    public static SessionLocker locker;
     public static CompletableFuture<Boolean> readyNotifier;
     public static Consumer<ReadyEvent> readyHandler;
     public static AudioPlayerManager audioPlayerManager;
@@ -70,16 +70,9 @@ public class Pulse {
     public static SoundCloudAudioSourceManager soundCloudAudioSourceManager;
     public static ShardManager shardManager;
     public static LinkedList<Runnable> shutdownHooks = new LinkedList<>();
-    private static State state = State.OFFLINE;
+    public static State state = State.OFFLINE;
 
     static {
-        if(locker.lockExists())
-            System.out.println(state.getName() + " >> Active session detected. Waiting for session to end...");
-        else
-            System.out.println(state.getName() + " >> No active session detected, starting up...");
-
-        locker.lockBlocking(1, TimeUnit.SECONDS);
-
         eventManager = new EventManager();
 
         eventManager.registerListeners(new InitializeListener());
@@ -97,8 +90,8 @@ public class Pulse {
             System.out.println(state.getName() + " >> System shutdown completed. Goodbye!");
             state = State.OFFLINE;
             Try.to(() -> Thread.sleep(1000));
-            locker.unlock();
             System.out.println(state.getName() + " >> Releasing session lock.");
+            Try.to(locker::unlock);
         }));
 
         setState(State.INITIALIZATION);
