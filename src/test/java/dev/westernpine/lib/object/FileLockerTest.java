@@ -12,10 +12,20 @@ class FileLockerTest {
     public static void main(String[] args) {
         String filePath = "locker.tmp";
         FileLocker locker = new FileLocker(filePath);
-        assert !FileLocker.isLocked(new File(filePath));
-        assert locker.lock().isLocked();
-        Try.to(() -> Thread.sleep(5000));
-        assert !locker.unlock().isLocked();
-        System.out.println("Locker test completed.");
+        Runtime.getRuntime().addShutdownHook(new Thread(locker::unlock));
+        System.out.println("Is Locked: " + FileLocker.isLocked(new File(filePath)));
+        if(locker.isLocked()) {
+            locker.lockBlocking();
+            System.out.println("Lock aquired!");
+        } else {
+            locker.lockBlocking();
+        }
+
+        new Thread(() -> {
+            while(true) {
+                Try.to(() -> Thread.sleep(1000));
+            }
+        }).start();
+
     }
 }

@@ -71,8 +71,11 @@ public class Pulse {
     private static State state = State.OFFLINE;
 
     static {
-        if(FileLocker.isLocked(locker.getFile()))
-            System.out.println(State.OFFLINE.getName() + " >> Active session detected. Waiting for session to end...");
+        if(locker.isLocked())
+            System.out.println(state.getName() + " >> Active session detected. Waiting for session to end...");
+        else
+            System.out.println(state.getName() + " >> No active session detected, starting up...");
+
         locker.lockBlocking();
 
         eventManager = new EventManager();
@@ -85,14 +88,15 @@ public class Pulse {
         eventManager.registerListeners(new AudioPlayerListener());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (!state.isActive()) return;
+            if (!state.isActive() && !state.is(State.SHUTDOWN)) return;
             state = State.SHUTDOWN;
-            System.out.println(State.SHUTDOWN.getName() + " >> Initiating system shutdown.");
+            System.out.println(state.getName() + " >> Initiating system shutdown.");
             Pulse.shutdownHooks.forEach(Runnable::run);
-            System.out.println(State.SHUTDOWN.getName() + " >> System shutdown completed. Goodbye!");
+            System.out.println(state.getName() + " >> System shutdown completed. Goodbye!");
             state = State.OFFLINE;
-            Try.to(() -> Thread.sleep(1000));
             locker.unlock();
+            System.out.println(state.getName() + " >> Releasing session lock.");
+            Try.to(() -> Thread.sleep(1000));
         }));
 
         setState(State.INITIALIZATION);
