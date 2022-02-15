@@ -1,5 +1,6 @@
 package dev.westernpine.lib.audio.track;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack;
@@ -64,7 +65,7 @@ public class Track extends DelegatedAudioTrack {
                     .map(AudioFactory::toTrack)
                     .orElse(null);
             if (audioTrack != null
-                    && !this.equals(audioTrack) //Check to make sure we aren't resolving the same object.
+                    && (!this.equals(audioTrack) || !(audioTrack instanceof Track) || !this.getSourceManager().getSourceName().equals(audioTrack.getSourceManager().getSourceName())) //Check to make sure we aren't resolving the same object.
                     && audioTrack instanceof InternalAudioTrack internalAudioTrack) {
                 this.audioTrack = internalAudioTrack;
             }

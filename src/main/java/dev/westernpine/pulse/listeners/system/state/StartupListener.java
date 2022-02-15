@@ -36,9 +36,10 @@ import dev.westernpine.pulse.listeners.system.jda.InteractionListener;
 import dev.westernpine.pulse.listeners.system.jda.MessageDeletionRequestListener;
 import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
 import dev.westernpine.pulse.listeners.system.jda.controller.GuildVoiceListener;
+import dev.westernpine.pulse.player.sources.wrapper.Wrapper;
 import dev.westernpine.pulse.properties.IdentityProperties;
-import dev.westernpine.pulse.sources.Router;
-import dev.westernpine.pulse.sources.iHeart.iHeartAudioSourceManager;
+import dev.westernpine.pulse.player.Router;
+import dev.westernpine.pulse.player.sources.iHeart.iHeartAudioSourceManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -151,10 +152,10 @@ public class StartupListener implements Listener {
                             .setup();
                 }
             }
+            Pulse.audioPlayerManager.registerSourceManager(new HttpAudioSourceManager());
             Pulse.audioPlayerManager.registerSourceManager(new iHeartAudioSourceManager(Pulse.audioPlayerManager));
             Pulse.audioPlayerManager.registerSourceManager(Pulse.youtubeAudioSourceManager);
             Pulse.audioPlayerManager.registerSourceManager(Pulse.soundCloudAudioSourceManager);
-            Pulse.audioPlayerManager.registerSourceManager(new HttpAudioSourceManager());
             Pulse.audioPlayerManager.registerSourceManager(new VimeoAudioSourceManager());
             Pulse.audioPlayerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
             Pulse.audioPlayerManager.registerSourceManager(new BandcampAudioSourceManager());

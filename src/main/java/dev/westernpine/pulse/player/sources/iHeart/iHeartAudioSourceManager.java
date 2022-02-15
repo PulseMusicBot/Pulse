@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.sources.iHeart;
+package dev.westernpine.pulse.player.sources.iHeart;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -26,9 +27,13 @@ import java.util.concurrent.CompletableFuture;
 public class AudioFactory {
 
     public static CompletableFuture<AudioItem> query(String query) {
+        return query(Pulse.audioPlayerManager, query);
+    }
+
+    public static CompletableFuture<AudioItem> query(AudioPlayerManager audioPlayerManager, String query) {
         return CompletableFuture.supplyAsync(() -> {
             CompletableFuture<AudioItem> audioItemCompletableFuture = new CompletableFuture<>();
-            Pulse.audioPlayerManager.loadItemOrdered(Pulse.audioPlayerManager, query, new AudioLoadResultHandler() {
+            audioPlayerManager.loadItemOrdered(audioPlayerManager, query, new AudioLoadResultHandler() {
                 @Override
                 public void trackLoaded(AudioTrack track) {
                     audioItemCompletableFuture.complete(track);

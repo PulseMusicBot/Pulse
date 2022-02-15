@@ -75,7 +75,7 @@ public class Formatter {
         final int segments = 24;
         String[] markers = new String[segments];
         Arrays.fill(markers, "\u25ac");
-        Long knobPosition = duration == -1 ? segments - 1 : position / (duration / segments);
+        Long knobPosition = duration < 1 ? segments - 1 : position / (duration / segments);
         markers[knobPosition.intValue()] = "\uD83D\uDD18";
         return String.join("", markers);
     }

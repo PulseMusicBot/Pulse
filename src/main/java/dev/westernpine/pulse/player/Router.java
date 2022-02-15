@@ -1,4 +1,4 @@
-package dev.westernpine.pulse.sources;
+package dev.westernpine.pulse.player;
 
 import com.sedmelluq.lava.extensions.youtuberotator.planner.*;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;

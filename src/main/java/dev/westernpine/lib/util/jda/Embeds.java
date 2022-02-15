@@ -66,7 +66,7 @@ public class Embeds extends Messenger {
         return new EmbedBuilder()
                 .setTitle(EmojiParser.parseToUnicode(":musical_note: %s".formatted(title)))
                 .setDescription(EmojiParser.parseToUnicode(description))
-                .setFooter("Duration: %s".formatted(duration > -1 ? new Timestamp(TimeUnit.MILLISECONDS, duration).toSmallFrameStamp() : "Live"), null)
+                .setFooter("Duration: %s".formatted(duration > 0 ? new Timestamp(TimeUnit.MILLISECONDS, duration).toSmallFrameStamp() : "Live"), null)
                 .setColor(color);
     }
 

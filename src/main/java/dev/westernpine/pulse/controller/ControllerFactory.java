@@ -148,7 +148,7 @@ public class ControllerFactory {
             json.addProperty("previousQueue", AudioFactory.toJson(controller.getPreviousQueue()).toString());
             json.addProperty("queue", AudioFactory.toJson(controller.getQueue()).toString());
             json.addProperty("track", controller.getPlayingTrack() == null ? "" : AudioFactory.toJson(controller.getPlayingTrack()).toString());
-            json.addProperty("position", controller.getPlayingTrack() == null ? -1L : controller.getPlayingTrack().getPosition());
+            json.addProperty("position", controller.getPlayingTrack() == null || controller.getPlayingTrack().isSeekable() ? -1L : controller.getPlayingTrack().getPosition());
             json.addProperty("volume", controller.getVolume());
             json.addProperty("paused", controller.isPaused());
             json.addProperty("alone", controller.wasAlone());

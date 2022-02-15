@@ -42,11 +42,15 @@ public class SessionLocker {
     }
 
     public void lockBlocking(long checkInterval, TimeUnit timeUnit) {
+        long millis = TimeUnit.MILLISECONDS.convert(checkInterval, timeUnit);
         while(lockExists()) {
-            Try.to(() -> Thread.sleep(TimeUnit.MILLISECONDS.convert(checkInterval, timeUnit)));
+            Try.to(() -> Thread.sleep(millis));
         }
-        if(!Try.to(this::lock).onFailure(throwable -> {throw new RuntimeException(throwable);}).orElse(false))
+        if(!Try.to(this::lock).onFailure(throwable -> {throw new RuntimeException(throwable);}).orElse(false)) {
+            Try.to(() -> Thread.sleep(millis));
             lockBlocking(checkInterval, timeUnit);
+        }
+
     }
 
     public boolean unlock() {
