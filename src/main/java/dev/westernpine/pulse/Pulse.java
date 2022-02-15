@@ -9,6 +9,7 @@ import dev.westernpine.bettertry.Try;
 import dev.westernpine.eventapi.EventManager;
 import dev.westernpine.lib.object.FileLocker;
 import dev.westernpine.lib.object.Scheduler;
+import dev.westernpine.lib.object.SessionLocker;
 import dev.westernpine.lib.object.State;
 import dev.westernpine.pulse.events.system.StateChangeEvent;
 import dev.westernpine.pulse.listeners.console.ConsoleListener;
@@ -33,6 +34,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class Pulse {
@@ -56,7 +58,7 @@ public class Pulse {
     public static final EventManager eventManager;
 
     public static final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-    public static final FileLocker locker = new FileLocker("locker.tmp");
+    public static final SessionLocker locker = new SessionLocker(9999);
     public static SystemProperties systemProperties;
     public static IdentityProperties identityProperties;
     public static SqlProperties loggingSqlProperties;
@@ -71,12 +73,12 @@ public class Pulse {
     private static State state = State.OFFLINE;
 
     static {
-        if(locker.isLocked())
+        if(locker.lockExists())
             System.out.println(state.getName() + " >> Active session detected. Waiting for session to end...");
         else
             System.out.println(state.getName() + " >> No active session detected, starting up...");
 
-        locker.lockBlocking();
+        locker.lockBlocking(1, TimeUnit.SECONDS);
 
         eventManager = new EventManager();
 
@@ -94,9 +96,9 @@ public class Pulse {
             Pulse.shutdownHooks.forEach(Runnable::run);
             System.out.println(state.getName() + " >> System shutdown completed. Goodbye!");
             state = State.OFFLINE;
+            Try.to(() -> Thread.sleep(1000));
             locker.unlock();
             System.out.println(state.getName() + " >> Releasing session lock.");
-            Try.to(() -> Thread.sleep(1000));
         }));
 
         setState(State.INITIALIZATION);
