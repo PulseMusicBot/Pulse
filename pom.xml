@@ -68,7 +68,7 @@
         <dependency>
             <groupId>com.github.WearifulCupid0.lavaplayer</groupId>
             <artifactId>lavaplayer-ext-third-party-sources</artifactId>
-            <version>154bccbf3d</version>
+            <version>0ad99b7054</version>
         </dependency>
 
         <!-- IP Rotator for LavaPlayer -->

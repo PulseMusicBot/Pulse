@@ -1,6 +1,7 @@
 package dev.westernpine.lib.audio.track;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack;
@@ -37,12 +38,12 @@ public class Track extends DelegatedAudioTrack {
 
     @Override
     public AudioTrackInfo getInfo() {
-        return this.audioTrack != null ? this.audioTrack.getInfo() : this.originalAudioTrackInfo;
+        return this.originalAudioTrackInfo;
     }
 
     @Override
     public String getIdentifier() {
-        return this.getInfo().identifier;
+        return this.getInfo().identifier != null ? this.getInfo().identifier : this.getInfo().uri;
     }
 
     @Override
@@ -60,19 +61,39 @@ public class Track extends DelegatedAudioTrack {
     }
 
     public InternalAudioTrack getAudioTrack() {
-        if (this.getInfo().uri != null) {
-            AudioTrack audioTrack = Try.to(() -> AudioFactory.query(this.getInfo().uri).get())
-                    .map(AudioFactory::toTrack)
-                    .orElse(null);
-            if (audioTrack != null
-                    && (!this.equals(audioTrack) || !(audioTrack instanceof Track) || !this.getSourceManager().getSourceName().equals(audioTrack.getSourceManager().getSourceName())) //Check to make sure we aren't resolving the same object.
-                    && audioTrack instanceof InternalAudioTrack internalAudioTrack) {
-                this.audioTrack = internalAudioTrack;
-            }
+        if(this.audioTrack != null)
+            return this.audioTrack;
+
+        AudioTrack audioTrack = Try.to(() -> AudioFactory.query(this.getIdentifier()).get())
+                .map(AudioFactory::toTrack)
+                .orElse(null);
+        if (audioTrack != null
+                && (!this.equals(audioTrack) || !(audioTrack instanceof Track)) //Check to make sure we aren't resolving the same object.
+                && audioTrack instanceof InternalAudioTrack internalAudioTrack) {
+            this.audioTrack = internalAudioTrack;
         }
+
         if (this.audioTrack != null)
             return this.audioTrack;
         return this.audioTrack = UserDataFactory.from(this.getUserData()).preferredPlatform().getAudioTrackFactory().apply(this);
+    }
+
+    public InternalAudioTrack getAudioTrack(AudioPlayerManager audioPlayerManager) {
+        if(this.audioTrack != null)
+            return this.audioTrack;
+
+        AudioTrack audioTrack = Try.to(() -> AudioFactory.query(this.getIdentifier()).get())
+                .map(AudioFactory::toTrack)
+                .orElse(null);
+        if (audioTrack != null
+                && (!this.equals(audioTrack) || !(audioTrack instanceof Track)) //Check to make sure we aren't resolving the same object.
+                && audioTrack instanceof InternalAudioTrack internalAudioTrack) {
+            this.audioTrack = internalAudioTrack;
+        }
+
+//        if (this.audioTrack != null)
+            return this.audioTrack;
+//        return this.audioTrack = UserDataFactory.from(this.getUserData()).preferredPlatform().getAudioTrackFactory().apply(this);
     }
 
     @Override

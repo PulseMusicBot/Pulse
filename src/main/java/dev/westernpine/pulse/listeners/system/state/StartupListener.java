@@ -152,20 +152,20 @@ public class StartupListener implements Listener {
                             .setup();
                 }
             }
-            Pulse.audioPlayerManager.registerSourceManager(new HttpAudioSourceManager());
-            Pulse.audioPlayerManager.registerSourceManager(new iHeartAudioSourceManager(Pulse.audioPlayerManager));
             Pulse.audioPlayerManager.registerSourceManager(Pulse.youtubeAudioSourceManager);
             Pulse.audioPlayerManager.registerSourceManager(Pulse.soundCloudAudioSourceManager);
             Pulse.audioPlayerManager.registerSourceManager(new VimeoAudioSourceManager());
             Pulse.audioPlayerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
             Pulse.audioPlayerManager.registerSourceManager(new BandcampAudioSourceManager());
             Pulse.audioPlayerManager.registerSourceManager(new GetyarnAudioSourceManager());
+            Pulse.audioPlayerManager.registerSourceManager(new iHeartAudioSourceManager(Pulse.audioPlayerManager));
             Pulse.audioPlayerManager.registerSourceManager(new AppleMusicAudioSourceManager(Pulse.audioPlayerManager));
             Pulse.audioPlayerManager.registerSourceManager(new DeezerAudioSourceManager(Pulse.audioPlayerManager));
             Pulse.audioPlayerManager.registerSourceManager(new NapsterAudioSourceManager(Pulse.audioPlayerManager));
             Pulse.audioPlayerManager.registerSourceManager(new SpotifyAudioSourceManager(Pulse.audioPlayerManager));
             Pulse.audioPlayerManager.registerSourceManager(new TidalAudioSourceManager(Pulse.audioPlayerManager));
             Pulse.audioPlayerManager.registerSourceManager(new YandexMusicAudioSourceManager(Pulse.audioPlayerManager));
+            Pulse.audioPlayerManager.registerSourceManager(new HttpAudioSourceManager());
 
             /*
             Load up the shard manager.
