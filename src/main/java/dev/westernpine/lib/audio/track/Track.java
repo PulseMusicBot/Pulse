@@ -13,6 +13,13 @@ import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
 
 public class Track extends DelegatedAudioTrack {
 
+    /*
+    TODO:
+     - Add playerManager.
+     - Add source manager name. (getSourceManager will get source manager from player manaager from name.)
+     - Add search reference.
+     */
+
     private final AudioTrackInfo originalAudioTrackInfo;
     private InternalAudioTrack audioTrack;
 
@@ -48,7 +55,7 @@ public class Track extends DelegatedAudioTrack {
 
     @Override
     public boolean isSeekable() {
-        return this.audioTrack != null && this.audioTrack.isSeekable();
+        return getAudioTrack() != null && this.audioTrack.isSeekable();
     }
 
     @Override
