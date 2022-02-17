@@ -1,0 +1,36 @@
+name: Builder
+
+on:
+  push:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: asylum
+
+    steps:
+      - name: Move into this workflow directory.
+        run: cd pulse
+      
+      - name: Checkout code.
+        uses: actions/checkout@v2
+
+      - name: Maven clean install
+        run: mvn clean install --file pom.xml
+
+      - name: List target files.
+        run: |
+          cd target
+          ls
+          cd ..
+          
+      - name: Stop pulse.
+        run: sudo screen -XS pulse quit
+
+      - name: Replace jar.
+        run: sudo cp ./target/Pulse.jar /home/pulse/pulse/Pulse.jar
+
+      - name: Start pulse.
+        run: cd /home/pulse/pulse && screen -S pulse -dm ./start.sh && cd ~/actions-runner
