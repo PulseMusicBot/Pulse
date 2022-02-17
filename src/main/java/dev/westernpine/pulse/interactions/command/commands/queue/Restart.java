@@ -93,10 +93,7 @@ public class Restart implements SlashCommandComponentHandler {
         AudioTrack audioTrack = controller.getPlayingTrack();
 
         OptionMapping option = event.getOption(data.getName());
-        boolean value = Optional.ofNullable(option)
-                .map(optionMapping -> Boolean.parseBoolean(option.getAsString()))
-                .orElse(false);
-        if(value) {
+        if(Optional.ofNullable(option).map(optionMapping -> Boolean.parseBoolean(option.getAsString())).orElse(false)) {
             if (audioTrack == null) {
                 Messenger.replyTo(event, Embeds.error("Unable to restart.", "I'm not playing anything."), 15);
                 return false;
@@ -110,13 +107,12 @@ public class Restart implements SlashCommandComponentHandler {
             controller.setLastChannelId(event.getChannel().getId());
             controller.restartTrack();
             Messenger.replyTo(event, Embeds.success("Restarted track.", ""), 15);
-            return true;
         } else {
             controller.setLastChannelId(event.getChannel().getId());
             controller.restartQueue();
             Messenger.replyTo(event, Embeds.success("Restarted queue.", ""), 15);
-            return true;
         }
+        return true;
 
     }
 }
