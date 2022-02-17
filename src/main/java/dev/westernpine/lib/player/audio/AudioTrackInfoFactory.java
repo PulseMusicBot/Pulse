@@ -1,12 +1,15 @@
 package dev.westernpine.lib.player.audio;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
 public class AudioTrackInfoFactory {
 
-    public static String toJson(AudioTrackInfo audioTrackInfo) {
+    public static JsonObject toJson(AudioTrackInfo audioTrackInfo) {
+        if(audioTrackInfo == null)
+            return null;
         JsonObject json = new JsonObject();
         json.addProperty("title", audioTrackInfo.title);
         json.addProperty("author", audioTrackInfo.author);
@@ -14,11 +17,13 @@ public class AudioTrackInfoFactory {
         json.addProperty("identifier", audioTrackInfo.identifier);
         json.addProperty("isStream", audioTrackInfo.isStream);
         json.addProperty("uri", audioTrackInfo.uri);
-        return json.toString();
+        return json;
     }
 
-    public static AudioTrackInfo fromJson(String json) {
-        JsonObject audioTrackInfo = JsonParser.parseString(json).getAsJsonObject();
+    public static AudioTrackInfo fromJson(JsonElement jsonElement) {
+        if(jsonElement.isJsonNull())
+            return null;
+        JsonObject audioTrackInfo = jsonElement.getAsJsonObject();
         String title = audioTrackInfo.get("title").getAsString();
         String author = audioTrackInfo.get("author").getAsString();
         long length = audioTrackInfo.get("length").getAsLong();

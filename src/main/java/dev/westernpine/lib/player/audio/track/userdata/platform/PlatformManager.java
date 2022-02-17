@@ -1,5 +1,6 @@
 package dev.westernpine.lib.player.audio.track.userdata.platform;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
@@ -80,18 +81,18 @@ public class PlatformManager {
         register(PlatformFactory.from("Tidal", "tidal", "tdsearch:", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
     }
 
-    public static String toJson(Platform platform) {
+    public static JsonObject toJson(Platform platform) {
         if (platform == null)
-            return "";
+            return null;
         JsonObject json = new JsonObject();
         json.addProperty("platform", platform.getSourceName());
-        return json.toString();
+        return json;
     }
 
-    public static Platform fromJson(String json) {
-        if (json.isEmpty())
+    public static Platform fromJson(JsonElement jsonElement) {
+        if (jsonElement.isJsonNull())
             return null;
-        JsonObject platform = JsonParser.parseString(json).getAsJsonObject();
+        JsonObject platform = jsonElement.getAsJsonObject();
         return getFromSource(platform.get("platform").getAsString());
     }
 

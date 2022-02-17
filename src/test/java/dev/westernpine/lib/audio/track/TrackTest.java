@@ -1,5 +1,6 @@
 package dev.westernpine.lib.audio.track;
 
+import com.google.gson.JsonObject;
 import com.sedmelluq.discord.lavaplayer.source.iheart.iHeartAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
@@ -35,8 +36,8 @@ class TrackTest {
             System.out.println("Item null!");
         else {
             Track audioTrack = TrackFactory.from(manager, AudioFactory.toTrack(item));
-            String json = TrackFactory.toJson(audioTrack);
-            System.out.println(json);
+            JsonObject json = TrackFactory.toJson(audioTrack);
+            System.out.println(json.toString());
 
             Track track = TrackFactory.fromJson(manager, json);
             System.out.println(TrackFactory.toJson(track));

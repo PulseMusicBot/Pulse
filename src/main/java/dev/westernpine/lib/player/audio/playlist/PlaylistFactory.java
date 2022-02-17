@@ -30,7 +30,7 @@ public class PlaylistFactory {
         return new Playlist(name, tracks, selectedTrack, isSearchResult, creator, image, uri, type);
     }
 
-    public static String toJson(AudioPlaylist audioPlaylist) {
+    public static JsonObject toJson(AudioPlaylist audioPlaylist) {
         JsonObject json = new JsonObject();
         json.addProperty("name", audioPlaylist.getName());
         json.addProperty("isSearchResult", audioPlaylist.isSearchResult());
@@ -48,11 +48,13 @@ public class PlaylistFactory {
                 jsonTracks.add(TrackFactory.toJson(TrackFactory.from(null, audioTrack)));
         }
         json.add("tracks", jsonTracks);
-        return json.toString();
+        return json;
     }
 
-    public static Playlist fromJson(AudioPlayerManager audioPlayerManager, String json) {
-        JsonObject audioPlaylist = JsonParser.parseString(json).getAsJsonObject();
+    public static Playlist fromJson(AudioPlayerManager audioPlayerManager, JsonElement jsonElement) {
+        if(jsonElement.isJsonNull())
+            return null;
+        JsonObject audioPlaylist = jsonElement.getAsJsonObject();
         String name = audioPlaylist.get("name").getAsString();
         boolean isSearchResult = audioPlaylist.get("isSearchResult").getAsBoolean();
         AudioTrack selectedTrack = null;
@@ -63,14 +65,14 @@ public class PlaylistFactory {
             int index = -1;
             for (JsonElement jsonTrack : audioPlaylist.get("tracks").getAsJsonArray()) {
                 index++;
-                AudioTrack audioTrack = TrackFactory.fromJson(audioPlayerManager, jsonTrack.getAsString());
+                AudioTrack audioTrack = TrackFactory.fromJson(audioPlayerManager, jsonTrack);
                 if (index == selectedTrackIndex)
                     selectedTrack = audioTrack;
                 audioTracks.add(audioTrack);
             }
         } else {
             for (JsonElement jsonTrack : audioPlaylist.get("tracks").getAsJsonArray())
-                audioTracks.add(TrackFactory.fromJson(audioPlayerManager, jsonTrack.getAsString()));
+                audioTracks.add(TrackFactory.fromJson(audioPlayerManager, jsonTrack));
         }
         return new Playlist(name, audioTracks, selectedTrack, isSearchResult);
     }
