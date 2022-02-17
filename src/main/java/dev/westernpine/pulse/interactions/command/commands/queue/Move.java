@@ -97,7 +97,7 @@ public class Move implements SlashCommandComponentHandler {
             int first = Numbers.setWithin(Integer.parseInt(range.group(1)), 1, size);
             int end = Numbers.setWithin(Integer.parseInt(range.group(2)), 1, size);
             start = Math.min(first, end);
-            items = Math.abs(first - end);
+            items = Math.abs(start - end);
         } else {
             Messenger.replyTo(event, Embeds.error("Unable to move.", "Invalid selection. (Single item, or range only [1-5])"), 15);
             return false;
@@ -105,7 +105,7 @@ public class Move implements SlashCommandComponentHandler {
 
         int position = Numbers.setWithin(Long.valueOf(event.getOption("position").getAsLong()).intValue(), 1, size);
         controller.setLastChannelId(event.getChannel().getId());
-        controller.move(start, items, position);
+        controller.move(start-1, items, position-1);    // -1 Because indexes are 0-based.
         Messenger.replyTo(event, Embeds.success("Moved `%s` %s to `%s`.".formatted(items, items == 1 ? "item" : "items", position), ""), 15);
         return true;
     }

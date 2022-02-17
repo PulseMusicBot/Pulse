@@ -96,13 +96,13 @@ public class Remove implements SlashCommandComponentHandler {
             int first = Numbers.setWithin(Integer.parseInt(range.group(1)), 1, size);
             int end = Numbers.setWithin(Integer.parseInt(range.group(2)), 1, size);
             start = Math.min(first, end);
-            items = Math.abs(first - end);
+            items = Math.abs(start - end);
         } else {
             Messenger.replyTo(event, Embeds.error("Unable to remove.", "Invalid selection. (Single item, or range only [1-5])"), 15);
             return false;
         }
         controller.setLastChannelId(event.getChannel().getId());
-        controller.remove(start, items);
+        controller.remove(start-1, items);  // -1 Because indexes are 0-based.
         Messenger.replyTo(event, Embeds.success("Removed `%s` %s.".formatted(items, items == 1 ? "item" : "items"), ""), 15);
         return true;
     }
