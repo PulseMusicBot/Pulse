@@ -1,11 +1,13 @@
 package dev.westernpine.pulse.interactions.command.commands.queue;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.authentication.Authenticator;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
+import dev.westernpine.pulse.controller.settings.setting.Setting;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -71,6 +73,21 @@ public class ForceNext implements SlashCommandComponentHandler {
         if (!controller.getVoiceState(event.getMember()).inAudioChannel() || !connectedChannel.get().getId().equals(controller.getVoiceState(event.getMember()).getChannel().getId())) {
             Messenger.replyTo(event, Embeds.error("Unable to force-skip.", "We must be in the same channel."), 15);
             return false;
+        }
+
+        AudioTrack audioTrack = controller.getPlayingTrack();
+        if (audioTrack == null) {    //If current track is null
+            //And future queue isn't empty, or controller is in repeating state and previous queue isnt empty... then automatically skip to next track.
+            if ((controller.getPreviousQueue().isEmpty() && !controller.getQueue().isEmpty())
+                    || ((controller.getRepeating().isFalse() || controller.getSettings().get(Setting.TWENTY_FOUR_SEVEN).toBoolean()) && !controller.getPreviousQueue().isEmpty())) {
+                controller.setLastChannelId(event.getChannel().getId());
+                controller.nextTrack();
+                Messenger.replyTo(event, Embeds.success("Skipped to the next track.", ""), 15);
+                return true;
+            } else {    //Otherwise fail.
+                Messenger.replyTo(event, Embeds.error("Unable to skip.", "I'm not playing anything, and theres nothing to skip to."), 15);
+                return false;
+            }
         }
 
         controller.setLastChannelId(event.getChannel().getId());
