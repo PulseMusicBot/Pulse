@@ -1,8 +1,11 @@
 package dev.westernpine.pulse.interactions.command.commands.management;
 
-import dev.westernpine.lib.audio.track.userdata.platform.PlatformFactory;
+import dev.westernpine.lib.player.audio.track.userdata.platform.Platform;
+import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformFactory;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.object.Value;
+import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformManager;
+import dev.westernpine.lib.util.EntryUtil;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
@@ -18,17 +21,20 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DefaultPlatform implements SlashCommandComponentHandler {
 
-    private static final Collection<String> choices = PlatformFactory.getPlatforms().keySet();
+    private static final Map<String, String> choices = PlatformManager.getPlatforms().stream().filter(Platform::canSearch).collect(Collectors.toMap(Platform::getOfficialName, Platform::getSearchPrefix));
 
     private static final Setting setting = Setting.DEFAULT_PLATFORM;
 
     private static final OptionData data = new OptionData(OptionType.STRING, "platform", "The default search platform.");
 
     static {
-        choices.forEach(choice -> data.addChoice(choice, choice));
+        choices.forEach((official, search) -> data.addChoice(official + " (%s)".formatted(search), official));
     }
 
     /**
@@ -82,10 +88,10 @@ public class DefaultPlatform implements SlashCommandComponentHandler {
         }
 
         if (option == null) {
-            Messenger.replyTo(event, Embeds.info("%s %s".formatted(setting.getEmoji(), setting.getLabel()), "`%s`".formatted(settings.get(setting).toString()), Pulse.color(event.getGuild())), 15);
+            Messenger.replyTo(event, Embeds.info("%s %s".formatted(setting.getEmoji(), setting.getLabel()), "`%s`".formatted(PlatformManager.getFromSource(settings.get(setting).toString()).getOfficialName()), Pulse.color(event.getGuild())), 15);
         } else {
-            settings.set(setting, Value.of(option.getAsString()));
-            Messenger.replyTo(event, Embeds.success("%s Updated".formatted(setting.getLabel()), "`%s`".formatted(settings.get(setting).toString())), 15);
+            settings.set(setting, Value.of(PlatformManager.getFromOfficial(option.getAsString()).getSourceName()));
+            Messenger.replyTo(event, Embeds.success("%s Updated".formatted(setting.getLabel()), "`%s`".formatted(option.getAsString())), 15);
         }
         return true;
     }

@@ -1,7 +1,7 @@
 package dev.westernpine.lib.util;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import dev.westernpine.lib.audio.track.userdata.requester.Requester;
+import dev.westernpine.lib.player.audio.track.userdata.requester.Requester;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;

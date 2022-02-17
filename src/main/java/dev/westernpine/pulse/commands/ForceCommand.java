@@ -1,15 +1,17 @@
 package dev.westernpine.pulse.commands;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.lib.audio.AudioFactory;
-import dev.westernpine.lib.audio.playlist.SortedPlaylist;
-import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
-import dev.westernpine.lib.audio.track.userdata.platform.Platform;
-import dev.westernpine.lib.audio.track.userdata.platform.PlatformFactory;
-import dev.westernpine.lib.audio.track.userdata.request.Request;
-import dev.westernpine.lib.audio.track.userdata.request.RequestFactory;
-import dev.westernpine.lib.audio.track.userdata.requester.Requester;
-import dev.westernpine.lib.audio.track.userdata.requester.RequesterFactory;
+import dev.westernpine.lib.player.audio.AudioFactory;
+import dev.westernpine.lib.player.audio.playlist.Playlist;
+import dev.westernpine.lib.player.audio.playlist.PlaylistFactory;
+import dev.westernpine.lib.player.audio.track.userdata.UserDataFactory;
+import dev.westernpine.lib.player.audio.track.userdata.platform.Platform;
+import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformManager;
+import dev.westernpine.lib.player.audio.track.userdata.request.Request;
+import dev.westernpine.lib.player.audio.track.userdata.request.RequestFactory;
+import dev.westernpine.lib.player.audio.track.userdata.requester.Requester;
+import dev.westernpine.lib.player.audio.track.userdata.requester.RequesterFactory;
 import dev.westernpine.lib.interaction.ConsoleCommandHandler;
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.Strings;
@@ -73,16 +75,19 @@ public class ForceCommand implements ConsoleCommandHandler {
 
         String query = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
-        Platform platform = PlatformFactory.defaultPlatform();
+        Platform platform = PlatformManager.defaultPlatform();
 
-        SortedPlaylist playlist = Try.to(() -> AudioFactory.query(query).get())
+        Playlist playlist = Try.to(() -> AudioFactory.query(Pulse.audioPlayerManager, query).get())
+                .flatMap(result -> result != null && result != AudioReference.NO_TRACK
+                        ? Try.successful(result)
+                        : Try.failure(null))
+                .orElseTry(() -> AudioFactory.query(Pulse.audioPlayerManager, platform.getSearchPrefix() + query).get())
+                .flatMap(result -> result != null && result != AudioReference.NO_TRACK
+                        ? Try.successful(result)
+                        : Try.failure(null))
                 .map(AudioFactory::toPlaylist)
+                .map(PlaylistFactory::from)
                 .orElse(null);
-
-        if (playlist == null)
-            playlist = Try.to(() -> AudioFactory.query(platform.getPrefix() + query).get())
-                    .map(AudioFactory::toPlaylist)
-                    .orElse(null);
 
         if (playlist == null || playlist.isEmpty()) {
             logger.info("Unable to find anything playable with: " + args[0]);

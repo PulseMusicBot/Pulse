@@ -4,7 +4,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import dev.westernpine.eventapi.objects.EventHandler;
 import dev.westernpine.eventapi.objects.Listener;
-import dev.westernpine.lib.audio.AudioFactory;
+import dev.westernpine.lib.player.audio.AudioFactory;
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.Formatter;
 import dev.westernpine.lib.util.ImageCrawler;

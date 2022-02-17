@@ -1,19 +1,22 @@
 package dev.westernpine.pulse.interactions.command.commands.player;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.lib.audio.AudioFactory;
-import dev.westernpine.lib.audio.playlist.SortedPlaylist;
-import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
-import dev.westernpine.lib.audio.track.userdata.platform.Platform;
-import dev.westernpine.lib.audio.track.userdata.platform.PlatformFactory;
-import dev.westernpine.lib.audio.track.userdata.request.Request;
-import dev.westernpine.lib.audio.track.userdata.request.RequestFactory;
-import dev.westernpine.lib.audio.track.userdata.requester.Requester;
-import dev.westernpine.lib.audio.track.userdata.requester.RequesterFactory;
+import dev.westernpine.lib.player.audio.AudioFactory;
+import dev.westernpine.lib.player.audio.playlist.Playlist;
+import dev.westernpine.lib.player.audio.playlist.PlaylistFactory;
+import dev.westernpine.lib.player.audio.track.userdata.UserDataFactory;
+import dev.westernpine.lib.player.audio.track.userdata.platform.Platform;
+import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformManager;
+import dev.westernpine.lib.player.audio.track.userdata.request.Request;
+import dev.westernpine.lib.player.audio.track.userdata.request.RequestFactory;
+import dev.westernpine.lib.player.audio.track.userdata.requester.Requester;
+import dev.westernpine.lib.player.audio.track.userdata.requester.RequesterFactory;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
+import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.authentication.Authenticator;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
@@ -96,16 +99,19 @@ public class Join implements SlashCommandComponentHandler {
         String query = controller.getSettings().get(Setting.JOIN_MUSIC).toString();
 
         if (!query.isEmpty()) {
-            Platform platform = PlatformFactory.get(controller.getSettings().get(Setting.DEFAULT_PLATFORM).toString());
+            Platform platform = PlatformManager.getFromSource(controller.getSettings().get(Setting.DEFAULT_PLATFORM).toString());
 
-            SortedPlaylist playlist = Try.to(() -> AudioFactory.query(query).get())
+            Playlist playlist = Try.to(() -> AudioFactory.query(Pulse.audioPlayerManager, query).get())
+                    .flatMap(result -> result != null && result != AudioReference.NO_TRACK
+                            ? Try.successful(result)
+                            : Try.failure(null))
+                    .orElseTry(() -> AudioFactory.query(Pulse.audioPlayerManager, platform.getSearchPrefix() + query).get())
+                    .flatMap(result -> result != null && result != AudioReference.NO_TRACK
+                            ? Try.successful(result)
+                            : Try.failure(null))
                     .map(AudioFactory::toPlaylist)
+                    .map(PlaylistFactory::from)
                     .orElse(null);
-
-            if (playlist == null)
-                playlist = Try.to(() -> AudioFactory.query(platform.getPrefix() + query).get())
-                        .map(AudioFactory::toPlaylist)
-                        .orElse(null);
 
             if (playlist == null || playlist.isEmpty()) {
                 Messenger.replyTo(event, Embeds.error("Unable play default request.", "No playable results were found."), 15);

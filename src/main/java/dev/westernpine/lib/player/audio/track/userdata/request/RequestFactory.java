@@ -1,4 +1,4 @@
-package dev.westernpine.lib.audio.track.userdata.request;
+package dev.westernpine.lib.player.audio.track.userdata.request;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

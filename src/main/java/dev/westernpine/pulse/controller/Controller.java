@@ -3,11 +3,12 @@ package dev.westernpine.pulse.controller;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import dev.westernpine.lib.audio.AudioFactory;
-import dev.westernpine.lib.audio.playlist.SortedPlaylist;
-import dev.westernpine.lib.audio.track.Track;
-import dev.westernpine.lib.audio.track.userdata.UserData;
-import dev.westernpine.lib.audio.track.userdata.UserDataFactory;
+import dev.westernpine.lib.player.audio.AudioFactory;
+import dev.westernpine.lib.player.audio.playlist.Playlist;
+import dev.westernpine.lib.player.audio.playlist.PlaylistFactory;
+import dev.westernpine.lib.player.audio.track.Track;
+import dev.westernpine.lib.player.audio.track.userdata.UserData;
+import dev.westernpine.lib.player.audio.track.userdata.UserDataFactory;
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
@@ -43,8 +44,8 @@ public class Controller {
     private String lastChannelId;
     private boolean premium = false;
     private Settings settings;
-    private SortedPlaylist previousQueue;
-    private SortedPlaylist queue;
+    private Playlist previousQueue;
+    private Playlist queue;
     private AudioPlayer audioPlayer;
     private AudioReceiver audioReceiver;
     private AudioSender audioSender;
@@ -65,21 +66,21 @@ public class Controller {
     Controller(String guildId) {
         this.guildId = guildId;
         this.settings = SettingsFactory.from(this);
-        this.previousQueue = new SortedPlaylist(getGuild().getName() + "'s Previous Queue");
-        this.queue = new SortedPlaylist(getGuild().getName() + "'s Queue");
+        this.previousQueue = new Playlist(getGuild().getName() + "'s Previous Queue");
+        this.queue = new Playlist(getGuild().getName() + "'s Queue");
     }
 
     public Controller(String guildId, long lifetime, Status status, String lastChannelId) {
         this.guildId = guildId;
         this.settings = SettingsFactory.from(this);
-        this.previousQueue = new SortedPlaylist(getGuild().getName() + "'s Previous Queue");
-        this.queue = new SortedPlaylist(getGuild().getName() + "'s Queue");
+        this.previousQueue = new Playlist(getGuild().getName() + "'s Previous Queue");
+        this.queue = new Playlist(getGuild().getName() + "'s Queue");
         this.lifetime = lifetime;
         this.status = status;
         this.lastChannelId = lastChannelId;
     }
 
-    public Controller(String guildId, SortedPlaylist previousQueue, SortedPlaylist queue, long lifetime, Status status, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone, TriState repeating, int lastTrack) {
+    public Controller(String guildId, Playlist previousQueue, Playlist queue, long lifetime, Status status, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone, TriState repeating, int lastTrack) {
         this.guildId = guildId;
         this.settings = SettingsFactory.from(this);
         this.previousQueue = previousQueue;
@@ -461,11 +462,11 @@ public class Controller {
         return previousQueue.size() + queue.size();
     }
 
-    public SortedPlaylist getPreviousQueue() {
+    public Playlist getPreviousQueue() {
         return previousQueue;
     }
 
-    public SortedPlaylist getQueue() {
+    public Playlist getQueue() {
         return queue;
     }
 
@@ -517,7 +518,7 @@ public class Controller {
      * FALSE -> Last
      */
     public int enqueue(AudioItem audioItem, TriState asap) {
-        SortedPlaylist playlist = AudioFactory.toPlaylist(audioItem);
+        Playlist playlist = PlaylistFactory.from(AudioFactory.toPlaylist(audioItem));
 
         if (playlist.getTracks().isEmpty())
             return 0;

@@ -1,4 +1,4 @@
-package dev.westernpine.lib.audio.track.userdata.request;
+package dev.westernpine.lib.player.audio.track.userdata.request;
 
 import dev.westernpine.bettertry.Try;
 

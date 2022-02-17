@@ -1,30 +1,22 @@
 package dev.westernpine.pulse.listeners.system.state;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeSearchProvider;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv4Block;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
-import com.sedmelluq.lavaplayer.extensions.thirdpartysources.applemusic.AppleMusicAudioSourceManager;
-import com.sedmelluq.lavaplayer.extensions.thirdpartysources.deezer.DeezerAudioSourceManager;
-import com.sedmelluq.lavaplayer.extensions.thirdpartysources.napster.NapsterAudioSourceManager;
-import com.sedmelluq.lavaplayer.extensions.thirdpartysources.spotify.SpotifyAudioSourceManager;
-import com.sedmelluq.lavaplayer.extensions.thirdpartysources.tidal.TidalAudioSourceManager;
-import com.sedmelluq.lavaplayer.extensions.thirdpartysources.yamusic.YandexMusicAudioSourceManager;
+import com.sedmelluq.lavaplayer.extensions.thirdpartysources.ThirdPartyAudioSourceManagers;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.eventapi.objects.EventHandler;
 import dev.westernpine.eventapi.objects.Listener;
 import dev.westernpine.lib.object.Scheduler;
 import dev.westernpine.lib.object.State;
+import dev.westernpine.lib.player.Router;
+import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformManager;
+import dev.westernpine.lib.player.manager.OpenAudioPlayerManager;
+import dev.westernpine.lib.player.source.WrappedSource;
+import dev.westernpine.lib.player.source.iHeartAudioSourceManager;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import dev.westernpine.pulse.controller.EndCase;
@@ -36,10 +28,7 @@ import dev.westernpine.pulse.listeners.system.jda.InteractionListener;
 import dev.westernpine.pulse.listeners.system.jda.MessageDeletionRequestListener;
 import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
 import dev.westernpine.pulse.listeners.system.jda.controller.GuildVoiceListener;
-import dev.westernpine.pulse.player.sources.wrapper.Wrapper;
 import dev.westernpine.pulse.properties.IdentityProperties;
-import dev.westernpine.pulse.player.Router;
-import dev.westernpine.pulse.player.sources.iHeart.iHeartAudioSourceManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -122,7 +111,7 @@ public class StartupListener implements Listener {
             Initialize the audio player manager.
              */
             logger.info("Building and initializing the audio player manager.");
-            Pulse.audioPlayerManager = new DefaultAudioPlayerManager();
+            Pulse.audioPlayerManager = new OpenAudioPlayerManager();
             Pulse.audioPlayerManager.setFrameBufferDuration(3000);
             Pulse.audioPlayerManager.getConfiguration().setFilterHotSwapEnabled(true);
             Pulse.audioPlayerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
@@ -131,10 +120,15 @@ public class StartupListener implements Listener {
             /*
             Initialize and register source managers.
              */
-            logger.info("Registering source managers and search providers.");
-            Pulse.soundCloudAudioSourceManager = SoundCloudAudioSourceManager.createDefault();
-            Pulse.youtubeSearchProvider = new YoutubeSearchProvider();
-            Pulse.youtubeAudioSourceManager = new YoutubeAudioSourceManager(true);
+            logger.info("Registering source managers.");
+            ThirdPartyAudioSourceManagers.registerThirdPartySources(Pulse.audioPlayerManager);
+            Pulse.audioPlayerManager.registerSourceManager(new iHeartAudioSourceManager(Pulse.audioPlayerManager));
+            AudioSourceManagers.registerRemoteSources(Pulse.audioPlayerManager);
+
+            /*
+            Initialize the IP rotation for YouTube.
+             */
+            logger.info("Configuring IP rotator.");
             String[] blocks = Pulse.identityProperties.get(IdentityProperties.IPBLOCKS).split(", ");
             if (blocks.length > 0) {
                 List<IpBlock> ipBlocks = Arrays.stream(blocks)
@@ -146,26 +140,16 @@ public class StartupListener implements Listener {
                     Router router = Router.ROTATING_NANO_SWITCH;
                     logger.info("Implementing IP Rotating router %s with %d IP Block(s).".formatted(router.name(), ipBlocks.size()));
                     new YoutubeIpRotatorSetup(router.getRouter(ipBlocks))
-                            .forSource(Pulse.youtubeAudioSourceManager)
-                            .forConfiguration(Pulse.youtubeSearchProvider.getHttpConfiguration(), true)
+                            .forManager(Pulse.audioPlayerManager)
                             .withRetryLimit(Integer.MAX_VALUE)
                             .setup();
                 }
             }
-            Pulse.audioPlayerManager.registerSourceManager(Pulse.youtubeAudioSourceManager);
-            Pulse.audioPlayerManager.registerSourceManager(Pulse.soundCloudAudioSourceManager);
-            Pulse.audioPlayerManager.registerSourceManager(new VimeoAudioSourceManager());
-            Pulse.audioPlayerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
-            Pulse.audioPlayerManager.registerSourceManager(new BandcampAudioSourceManager());
-            Pulse.audioPlayerManager.registerSourceManager(new GetyarnAudioSourceManager());
-            Pulse.audioPlayerManager.registerSourceManager(new iHeartAudioSourceManager(Pulse.audioPlayerManager));
-            Pulse.audioPlayerManager.registerSourceManager(new AppleMusicAudioSourceManager(Pulse.audioPlayerManager));
-            Pulse.audioPlayerManager.registerSourceManager(new DeezerAudioSourceManager(Pulse.audioPlayerManager));
-            Pulse.audioPlayerManager.registerSourceManager(new NapsterAudioSourceManager(Pulse.audioPlayerManager));
-            Pulse.audioPlayerManager.registerSourceManager(new SpotifyAudioSourceManager(Pulse.audioPlayerManager));
-            Pulse.audioPlayerManager.registerSourceManager(new TidalAudioSourceManager(Pulse.audioPlayerManager));
-            Pulse.audioPlayerManager.registerSourceManager(new YandexMusicAudioSourceManager(Pulse.audioPlayerManager));
-            Pulse.audioPlayerManager.registerSourceManager(new HttpAudioSourceManager());
+
+            /*
+            Initialize platforms AFTER initializing the player manager.
+             */
+            PlatformManager.registerKnown(() -> Pulse.audioPlayerManager);
 
             /*
             Load up the shard manager.

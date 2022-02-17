@@ -57,11 +57,32 @@
             <version>5.0.0-alpha.4</version>
         </dependency>
 
-        <!-- LavaPlayer API -->
+        <!-- Forked LavaPlayer API -->
+<!--        <dependency>-->
+<!--            <groupId>com.github.walkyst</groupId>-->
+<!--            <artifactId>lavaplayer-fork</artifactId>-->
+<!--            <version>1.3.97</version>-->
+<!--        </dependency>-->
+
+        <!-- Forked Forked LavaPlayer API w/ More sources! -->
         <dependency>
-            <groupId>com.github.walkyst</groupId>
-            <artifactId>lavaplayer-fork</artifactId>
-            <version>1.3.97</version>
+            <groupId>com.github.WearifulCupid0.lavaplayer</groupId>
+            <artifactId>lavaplayer</artifactId>
+            <version>0ad99b7054</version>
+        </dependency>
+
+        <!-- Forked Forked LavaPlayer API Commons. -->
+        <dependency>
+            <groupId>com.github.WearifulCupid0.lavaplayer</groupId>
+            <artifactId>lava-common</artifactId>
+            <version>0ad99b7054</version>
+        </dependency>
+
+        <!-- Forked Forked LavaPlayer API XML formats. -->
+        <dependency>
+            <groupId>com.github.WearifulCupid0.lavaplayer</groupId>
+            <artifactId>lavaplayer-ext-format-xm</artifactId>
+            <version>0ad99b7054</version>
         </dependency>
 
         <!-- Third-party sources! :D -->
@@ -71,18 +92,18 @@
             <version>0ad99b7054</version>
         </dependency>
 
-        <!-- IP Rotator for LavaPlayer -->
+        <!-- Forked Forked IP Rotator for LavaPlayer -->
         <dependency>
-            <groupId>com.sedmelluq</groupId>
+            <groupId>com.github.WearifulCupid0.lavaplayer</groupId>
             <artifactId>lavaplayer-ext-youtube-rotator</artifactId>
-            <version>0.2.3</version>
+            <version>0ad99b7054</version>
         </dependency>
 
-        <!-- Spotify API -->
+        <!-- Forked Forked StreamMerger for LavaPlayer -->
         <dependency>
-            <groupId>se.michaelthelin.spotify</groupId>
-            <artifactId>spotify-web-api-java</artifactId>
-            <version>7.0.0</version>
+            <groupId>com.github.WearifulCupid0.lavaplayer</groupId>
+            <artifactId>lavaplayer-stream-merger</artifactId>
+            <version>0ad99b7054</version>
         </dependency>
 
         <!-- WebSocket Client API -->

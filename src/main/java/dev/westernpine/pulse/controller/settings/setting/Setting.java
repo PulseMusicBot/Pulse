@@ -1,7 +1,8 @@
 package dev.westernpine.pulse.controller.settings.setting;
 
-import dev.westernpine.lib.audio.track.userdata.platform.PlatformFactory;
+import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformFactory;
 import dev.westernpine.lib.object.TriState;
+import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformManager;
 
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class Setting {
             ":station:",
             "Default Search Platform",
             "The default platform to search on.",
-            PlatformFactory.defaultPlatform().getName(),
+            PlatformManager.defaultPlatform().getSourceName(),
             "platform");
 
     public static final Setting SHUFFLE_PLAYLISTS = SettingFactory.from(
@@ -95,12 +96,12 @@ public class Setting {
             "",
             "joinmusic");
 
-    private UUID uuid;
-    private String emoji;
-    private String label;
-    private String description;
-    private String defaultValue;
-    private String[] ids;
+    private final UUID uuid;
+    private final String emoji;
+    private final String label;
+    private final String description;
+    private final String defaultValue;
+    private final String[] ids;
 
     public Setting(UUID uuid, String emoji, String label, String description, String defaultValue, String... ids) {
         this.uuid = uuid;
