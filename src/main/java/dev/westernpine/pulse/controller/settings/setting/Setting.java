@@ -30,7 +30,7 @@ public class Setting {
             "Default Search Platform",
             "The default platform to search on.",
             PlatformManager.defaultPlatform().getSourceName(),
-            "platform");
+            "defaultplatform");
 
     public static final Setting SHUFFLE_PLAYLISTS = SettingFactory.from(
             UUID.fromString("c1f44a6a-b4d9-4053-8b91-ddf6a0b38985"),
