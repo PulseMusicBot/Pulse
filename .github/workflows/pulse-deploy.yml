@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Move into directory.
-        run: cd Pulse
+        run: ls
 
       - name: Maven clean install
         run: mvn clean install --file pom.xml
