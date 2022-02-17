@@ -1,22 +1,16 @@
 package dev.westernpine.lib.player.audio;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.*;
+import com.sedmelluq.discord.lavaplayer.track.AudioItem;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.lib.player.audio.playlist.Playlist;
 import dev.westernpine.lib.player.audio.playlist.PlaylistFactory;
-import dev.westernpine.lib.player.audio.track.Track;
-import dev.westernpine.lib.player.audio.track.TrackFactory;
 import dev.westernpine.lib.player.audio.track.userdata.UserData;
-import dev.westernpine.lib.player.audio.track.userdata.UserDataFactory;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -52,7 +46,7 @@ public class AudioFactory {
     }
 
     public static AudioPlaylist toPlaylist(AudioItem audioItem) {
-        if(audioItem instanceof AudioPlaylist audioPlaylist)
+        if (audioItem instanceof AudioPlaylist audioPlaylist)
             return audioPlaylist;
         else if (audioItem instanceof AudioTrack audioTrack)
             return PlaylistFactory.from(audioTrack.getInfo().title, List.of(audioTrack), audioTrack, false);

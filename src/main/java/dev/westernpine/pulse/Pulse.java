@@ -1,13 +1,8 @@
 package dev.westernpine.pulse;
 
 import com.google.gson.Gson;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeSearchProvider;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.eventapi.EventManager;
-import dev.westernpine.lib.object.FileLocker;
 import dev.westernpine.lib.object.Scheduler;
 import dev.westernpine.lib.object.SessionLocker;
 import dev.westernpine.lib.object.State;
@@ -35,7 +30,6 @@ import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class Pulse {

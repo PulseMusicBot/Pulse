@@ -1,10 +1,7 @@
 package dev.westernpine.lib.audio.track;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.google.gson.JsonObject;
 import com.sedmelluq.discord.lavaplayer.source.iheart.iHeartAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -15,7 +12,6 @@ import dev.westernpine.lib.player.audio.track.TrackFactory;
 import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformManager;
 import dev.westernpine.lib.player.manager.OpenAudioPlayerManager;
 import dev.westernpine.lib.player.source.WrappedSource;
-import dev.westernpine.pulse.Pulse;
 
 class TrackTest {
 
@@ -36,12 +32,12 @@ class TrackTest {
 //                "https://www.youtube.com/playlist?list=PLZQCnHsR-SG4MVOk6WKS2rS6__H3VCivx"
         ).get()).orElse(null);
 
-        if(item == null)
+        if (item == null)
             System.out.println("Item null!");
         else {
             Track audioTrack = TrackFactory.from(manager, AudioFactory.toTrack(item));
-            String json = TrackFactory.toJson(audioTrack);
-            System.out.println(json);
+            JsonObject json = TrackFactory.toJson(audioTrack);
+            System.out.println(json.toString());
 
             Track track = TrackFactory.fromJson(manager, json);
             System.out.println(TrackFactory.toJson(track));

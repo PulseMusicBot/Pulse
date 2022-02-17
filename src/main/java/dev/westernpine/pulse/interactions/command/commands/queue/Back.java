@@ -1,10 +1,10 @@
 package dev.westernpine.pulse.interactions.command.commands.queue;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.player.audio.track.userdata.UserDataFactory;
 import dev.westernpine.lib.player.audio.track.userdata.requester.Requester;
 import dev.westernpine.lib.player.audio.track.userdata.requester.RequesterFactory;
-import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.controller.Controller;
@@ -75,13 +75,14 @@ public class Back implements SlashCommandComponentHandler {
         AudioTrack audioTrack = controller.getPlayingTrack();
         if (audioTrack == null) {    //If current track is null
             //And future queue isn't empty, or controller is in repeating state and previous queue isnt empty... then automatically skip to previous track.
-            if (!controller.getQueue().isEmpty() || ((controller.getRepeating().isFalse() || controller.getSettings().get(Setting.TWENTY_FOUR_SEVEN).toBoolean()) && !controller.getPreviousQueue().isEmpty())) {
+            if ((controller.getQueue().isEmpty() && !controller.getPreviousQueue().isEmpty())
+                    || ((controller.getRepeating().isFalse() || controller.getSettings().get(Setting.TWENTY_FOUR_SEVEN).toBoolean()) && !controller.getPreviousQueue().isEmpty())) {
                 controller.setLastChannelId(event.getChannel().getId());
                 controller.previousTrack();
                 Messenger.replyTo(event, Embeds.success("Skipped to the previous track.", ""), 15);
                 return true;
             } else {    //Otherwise fail.
-                Messenger.replyTo(event, Embeds.error("Unable to skip.", "I'm not playing anything."), 15);
+                Messenger.replyTo(event, Embeds.error("Unable to skip.", "I'm not playing anything, and theres nothing to skip to."), 15);
                 return false;
             }
         }

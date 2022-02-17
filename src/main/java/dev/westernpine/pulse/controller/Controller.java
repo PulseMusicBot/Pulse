@@ -3,13 +3,13 @@ package dev.westernpine.pulse.controller;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.player.audio.AudioFactory;
 import dev.westernpine.lib.player.audio.playlist.Playlist;
 import dev.westernpine.lib.player.audio.playlist.PlaylistFactory;
 import dev.westernpine.lib.player.audio.track.Track;
 import dev.westernpine.lib.player.audio.track.userdata.UserData;
 import dev.westernpine.lib.player.audio.track.userdata.UserDataFactory;
-import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
@@ -156,6 +156,7 @@ public class Controller {
     public void manageState() {
         manageStateWithStartup(false);
     }
+
     public void manageStateWithStartup(boolean startup) {
         if (!startup && !isConnected() && this.audioPlayer != null)
             destroy(EndCase.DISCONNECTED);

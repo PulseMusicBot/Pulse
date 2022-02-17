@@ -1,9 +1,6 @@
 package dev.westernpine.lib.object;
 
 import dev.westernpine.bettertry.Try;
-import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
-import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
@@ -14,7 +11,7 @@ class FileLockerTest {
         FileLocker locker = new FileLocker(filePath);
         Runtime.getRuntime().addShutdownHook(new Thread(locker::unlock));
         System.out.println("Is Locked: " + FileLocker.isLocked(new File(filePath)));
-        if(locker.isLocked()) {
+        if (locker.isLocked()) {
             locker.lockBlocking();
             System.out.println("Lock aquired!");
         } else {
@@ -22,7 +19,7 @@ class FileLockerTest {
         }
 
         new Thread(() -> {
-            while(true) {
+            while (true) {
                 Try.to(() -> Thread.sleep(1000));
             }
         }).start();

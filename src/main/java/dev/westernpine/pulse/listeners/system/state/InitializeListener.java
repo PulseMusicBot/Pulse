@@ -48,7 +48,7 @@ public class InitializeListener implements Listener {
 
 
             Pulse.locker = new SessionLocker(Integer.parseInt(Pulse.identityProperties.get(IdentityProperties.SESSION_LOCKER_PORT)));
-            if(Pulse.locker.lockExists())
+            if (Pulse.locker.lockExists())
                 System.out.println(Pulse.state.getName() + " >> Active session detected. Waiting for session to end...");
             else
                 System.out.println(Pulse.state.getName() + " >> No active session detected, starting up...");

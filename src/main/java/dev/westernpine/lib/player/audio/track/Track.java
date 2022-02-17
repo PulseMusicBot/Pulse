@@ -2,7 +2,10 @@ package dev.westernpine.lib.player.audio.track;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.track.*;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import com.sedmelluq.discord.lavaplayer.track.DelegatedAudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.InternalAudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
 import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.player.audio.AudioFactory;
@@ -97,7 +100,7 @@ public class Track extends DelegatedAudioTrack {
     }
 
     public InternalAudioTrack getAudioTrack() {
-        if(this.internalAudioTrack != null)
+        if (this.internalAudioTrack != null)
             return this.internalAudioTrack;
 
         AudioTrack audioTrack = Try.to(() -> AudioFactory.query(audioPlayerManager, reference).get())

@@ -10,6 +10,7 @@ import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
 import net.dv8tion.jda.api.entities.AudioChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -54,7 +55,7 @@ public class Remove implements SlashCommandComponentHandler {
     @Override
     public LinkedList<OptionData> options() {
         LinkedList<OptionData> options = new LinkedList<>();
-        options.add(new OptionData(OptionType.STRING, "selection", "The selected track or range of tracks to remove.", true));
+        options.add(new OptionData(OptionType.STRING, "selection", "The selected track or range of tracks to remove.", false));
         return options;
     }
 
@@ -83,27 +84,34 @@ public class Remove implements SlashCommandComponentHandler {
             return false;
         }
 
-        String selection = event.getOption("selection").getAsString();
+        OptionMapping selection = event.getOption("selection");
 
-        int size = controller.getQueue().size();
-        int start = -1;
-        int items = 1;
-
-        Matcher range = Strings.getRangeMatcher(selection);
-        if (Strings.isInteger(selection)) {
-            start = Integer.parseInt(selection);
-        } else if (range.matches()) {
-            int first = Numbers.setWithin(Integer.parseInt(range.group(1)), 1, size);
-            int end = Numbers.setWithin(Integer.parseInt(range.group(2)), 1, size);
-            start = Math.min(first, end);
-            items = Math.abs(start - end);
+        if(selection == null) {
+            controller.setLastChannelId(event.getChannel().getId());
+            controller.nextTrack(true);
+            Messenger.replyTo(event, Embeds.success("Removed current track.", ""), 15);
+            return true;
         } else {
-            Messenger.replyTo(event, Embeds.error("Unable to remove.", "Invalid selection. (Single item, or range only [1-5])"), 15);
-            return false;
+            int size = controller.getQueue().size();
+            int start = -1;
+            int items = 1;
+
+            Matcher range = Strings.getRangeMatcher(selection.getAsString());
+            if (Strings.isInteger(selection.getAsString())) {
+                start = Integer.parseInt(selection.getAsString());
+            } else if (range.matches()) {
+                int first = Numbers.setWithin(Integer.parseInt(range.group(1)), 1, size);
+                int end = Numbers.setWithin(Integer.parseInt(range.group(2)), 1, size);
+                start = Math.min(first, end);
+                items = Math.abs(start - end);
+            } else {
+                Messenger.replyTo(event, Embeds.error("Unable to remove.", "Invalid selection. (Single item, or range only [1-5])"), 15);
+                return false;
+            }
+            controller.setLastChannelId(event.getChannel().getId());
+            controller.remove(start - 1, items);  // -1 Because indexes are 0-based.
+            Messenger.replyTo(event, Embeds.success("Removed `%s` %s.".formatted(items, items == 1 ? "item" : "items"), ""), 15);
+            return true;
         }
-        controller.setLastChannelId(event.getChannel().getId());
-        controller.remove(start-1, items);  // -1 Because indexes are 0-based.
-        Messenger.replyTo(event, Embeds.success("Removed `%s` %s.".formatted(items, items == 1 ? "item" : "items"), ""), 15);
-        return true;
     }
 }

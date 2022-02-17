@@ -3,18 +3,24 @@ package dev.westernpine.lib.object;
 import dev.westernpine.bettertry.Try;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
 public class FileLocker {
 
+    private final String filePath;
+    private FileChannel channel;
+    private FileLock lock;
+    public FileLocker(String filePath) {
+        this.filePath = filePath;
+    }
+
     public static boolean isLocked(File file) {
         FileChannel fileChannel = Try.to(() -> new RandomAccessFile(file, "rw")).getUnchecked().getChannel();
         FileLock fileLock = Try.to(() -> fileChannel.tryLock()).orElse(null);
         boolean alreadyLocked = fileLock == null;
-        if(!alreadyLocked)
+        if (!alreadyLocked)
             unlock(fileChannel, fileLock);
         return alreadyLocked;
     }
@@ -22,14 +28,6 @@ public class FileLocker {
     public static void unlock(FileChannel fileChannel, FileLock fileLock) {
         Try.to(fileLock::release);
         Try.to(fileChannel::close);
-    }
-
-    private final String filePath;
-    private FileChannel channel;
-    private FileLock lock;
-
-    public FileLocker(String filePath) {
-        this.filePath = filePath;
     }
 
     public File getFile() {

@@ -2,9 +2,11 @@ package dev.westernpine.lib.player.audio.track.userdata.platform;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.track.*;
+import com.sedmelluq.discord.lavaplayer.track.AudioItem;
+import com.sedmelluq.discord.lavaplayer.track.AudioReference;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface Platform {
@@ -40,7 +42,7 @@ public interface Platform {
 
     public default AudioItem search(String query) {
         String search = getSearchPrefix();
-        if(!query.startsWith(search))
+        if (!query.startsWith(search))
             query = search + query;
         AudioSourceManager sourceManager = getAudioSourceManager().get();
         return sourceManager.loadItem(getAudioPlayerManager().get(), new AudioReference(query, null));
@@ -57,7 +59,7 @@ public interface Platform {
 
     public default AudioItem searchSimilar(String query) {
         String similar = getSimilarSearchPrefix();
-        if(!query.startsWith(similar))
+        if (!query.startsWith(similar))
             query = similar + query;
         AudioSourceManager sourceManager = getAudioSourceManager().get();
         return sourceManager.loadItem(getAudioPlayerManager().get(), new AudioReference(query, null));

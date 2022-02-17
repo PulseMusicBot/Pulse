@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class SessionLocker {
 
-    private static final InetAddress localhost = Try.to(() -> InetAddress.getByAddress(new byte[] {127,0,0,1})).getUnchecked();
+    private static final InetAddress localhost = Try.to(() -> InetAddress.getByAddress(new byte[]{127, 0, 0, 1})).getUnchecked();
 
     private final int port;
     private ServerSocket serverSocket;
@@ -28,13 +28,13 @@ public class SessionLocker {
     }
 
     public boolean lock() {
-        Try<ServerSocket> serverSocketTry = Try.to(() -> new ServerSocket(port,0, localhost));
-        if(serverSocketTry.isSuccessful()) {
+        Try<ServerSocket> serverSocketTry = Try.to(() -> new ServerSocket(port, 0, localhost));
+        if (serverSocketTry.isSuccessful()) {
             this.serverSocket = serverSocketTry.getUnchecked();
             return true;
         }
 
-        if(serverSocketTry.getFailureCause() instanceof BindException) {
+        if (serverSocketTry.getFailureCause() instanceof BindException) {
             return false;
         }
 
@@ -43,10 +43,12 @@ public class SessionLocker {
 
     public void lockBlocking(long checkInterval, TimeUnit timeUnit) {
         long millis = TimeUnit.MILLISECONDS.convert(checkInterval, timeUnit);
-        while(lockExists()) {
+        while (lockExists()) {
             Try.to(() -> Thread.sleep(millis));
         }
-        if(!Try.to(this::lock).onFailure(throwable -> {throw new RuntimeException(throwable);}).orElse(false)) {
+        if (!Try.to(this::lock).onFailure(throwable -> {
+            throw new RuntimeException(throwable);
+        }).orElse(false)) {
             Try.to(() -> Thread.sleep(millis));
             lockBlocking(checkInterval, timeUnit);
         }
@@ -54,7 +56,7 @@ public class SessionLocker {
     }
 
     public boolean unlock() {
-        if(serverSocket == null)
+        if (serverSocket == null)
             return false;
 
         return Try.to(() -> serverSocket.close()).map(success -> true).getUnchecked();

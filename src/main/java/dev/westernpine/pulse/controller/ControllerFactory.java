@@ -3,11 +3,10 @@ package dev.westernpine.pulse.controller;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.lib.player.audio.AudioFactory;
+import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.player.audio.playlist.Playlist;
 import dev.westernpine.lib.player.audio.playlist.PlaylistFactory;
 import dev.westernpine.lib.player.audio.track.Track;
-import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.player.audio.track.TrackFactory;
 import dev.westernpine.lib.util.EntryUtil;
 import dev.westernpine.pulse.Pulse;
@@ -147,9 +146,9 @@ public class ControllerFactory {
         json.addProperty("isConnected", isConnected);
         if (isConnected) {
             json.addProperty("connectedChannel", connectedChannel.map(ISnowflake::getId).orElse(""));
-            json.addProperty("previousQueue", PlaylistFactory.toJson(controller.getPreviousQueue()).toString());
-            json.addProperty("queue", PlaylistFactory.toJson(controller.getQueue()).toString());
-            json.addProperty("track", controller.getPlayingTrack() == null ? "" : TrackFactory.toJson(TrackFactory.from(null, controller.getPlayingTrack())).toString());
+            json.add("previousQueue", PlaylistFactory.toJson(controller.getPreviousQueue()));
+            json.add("queue", PlaylistFactory.toJson(controller.getQueue()));
+            json.add("track", controller.getPlayingTrack() == null ? null : TrackFactory.toJson(TrackFactory.from(null, controller.getPlayingTrack())));
             json.addProperty("position", controller.getPlayingTrack() == null || !controller.getPlayingTrack().isSeekable() ? -1L : controller.getPlayingTrack().getPosition());
             json.addProperty("volume", controller.getVolume());
             json.addProperty("paused", controller.isPaused());
@@ -173,9 +172,9 @@ public class ControllerFactory {
         } else {
             String connectedChannel = controller.get("connectedChannel").getAsString();
             connectedChannel = connectedChannel.isEmpty() ? null : connectedChannel;
-            Playlist previousQueue = PlaylistFactory.fromJson(Pulse.audioPlayerManager, controller.get("previousQueue").getAsString());
-            Playlist queue = PlaylistFactory.fromJson(Pulse.audioPlayerManager, controller.get("queue").getAsString());
-            Track track = controller.get("track").getAsString().isEmpty() ? null : TrackFactory.fromJson(Pulse.audioPlayerManager, controller.get("track").getAsString());
+            Playlist previousQueue = PlaylistFactory.fromJson(Pulse.audioPlayerManager, controller.get("previousQueue"));
+            Playlist queue = PlaylistFactory.fromJson(Pulse.audioPlayerManager, controller.get("queue"));
+            Track track = TrackFactory.fromJson(Pulse.audioPlayerManager, controller.get("track"));
             long position = controller.get("position").getAsLong();
             int volume = controller.get("volume").getAsInt();
             boolean paused = controller.get("paused").getAsBoolean();
