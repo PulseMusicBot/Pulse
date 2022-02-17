@@ -1,12 +1,8 @@
 package dev.westernpine.lib.player.audio.track.userdata.platform;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import dev.westernpine.lib.player.manager.OpenAudioPlayerManager;
 
-import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -18,22 +14,27 @@ public class PlatformFactory {
             public String getOfficialName() {
                 return officialName;
             }
+
             @Override
             public String getSourceName() {
                 return sourceName;
             }
+
             @Override
             public String getSearchPrefix() {
                 return searchPrefix;
             }
+
             @Override
             public String getSimilarSearchPrefix() {
                 return similarSearchPrefix;
             }
+
             @Override
             public Supplier<? extends AudioPlayerManager> getAudioPlayerManager() {
                 return audioPlayerManagerSupplier;
             }
+
             @Override
             public Supplier<AudioSourceManager> getAudioSourceManager() {
                 return () -> audioSourceManagerFunction.apply(getSourceName());
@@ -47,22 +48,27 @@ public class PlatformFactory {
             public String getOfficialName() {
                 return officialName;
             }
+
             @Override
             public String getSourceName() {
                 return sourceName;
             }
+
             @Override
             public String getSearchPrefix() {
                 return searchPrefix;
             }
+
             @Override
             public String getSimilarSearchPrefix() {
                 return similarSearchPrefix;
             }
+
             @Override
             public Supplier<? extends AudioPlayerManager> getAudioPlayerManager() {
                 return audioPlayerManagerSupplier;
             }
+
             @Override
             public Supplier<AudioSourceManager> getAudioSourceManager() {
                 return audioSourceManagerSupplier;

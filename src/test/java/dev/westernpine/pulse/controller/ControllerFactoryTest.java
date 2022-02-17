@@ -1,12 +1,7 @@
 package dev.westernpine.pulse.controller;
 
 import dev.westernpine.bettertry.Try;
-import dev.westernpine.lib.object.Scheduler;
 import dev.westernpine.pulse.Pulse;
-
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ControllerFactoryTest {
 
@@ -15,7 +10,7 @@ class ControllerFactoryTest {
 
         new Thread(() -> {
 
-            while(ControllerFactory.getControllers().isEmpty())
+            while (ControllerFactory.getControllers().isEmpty())
                 Try.to(() -> Thread.sleep(10000));
 
             Pulse.scheduler.run(() -> {
@@ -33,7 +28,6 @@ class ControllerFactoryTest {
             });
 
         }).start();
-
 
 
     }

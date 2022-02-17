@@ -2,6 +2,8 @@ package dev.westernpine.pulse.commands;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import dev.westernpine.bettertry.Try;
+import dev.westernpine.lib.interaction.ConsoleCommandHandler;
+import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.player.audio.AudioFactory;
 import dev.westernpine.lib.player.audio.playlist.Playlist;
 import dev.westernpine.lib.player.audio.playlist.PlaylistFactory;
@@ -12,13 +14,10 @@ import dev.westernpine.lib.player.audio.track.userdata.request.Request;
 import dev.westernpine.lib.player.audio.track.userdata.request.RequestFactory;
 import dev.westernpine.lib.player.audio.track.userdata.requester.Requester;
 import dev.westernpine.lib.player.audio.track.userdata.requester.RequesterFactory;
-import dev.westernpine.lib.interaction.ConsoleCommandHandler;
-import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.util.Strings;
 import dev.westernpine.pulse.Pulse;
 import dev.westernpine.pulse.controller.Controller;
 import dev.westernpine.pulse.controller.ControllerFactory;
-import dev.westernpine.pulse.controller.settings.setting.Setting;
 import dev.westernpine.pulse.properties.IdentityProperties;
 
 import java.util.Arrays;
@@ -49,26 +48,26 @@ public class ForceCommand implements ConsoleCommandHandler {
 
     @Override
     public boolean handle(String command, String[] args) {
-        if(args.length < 2) {
+        if (args.length < 2) {
             logger.info("Invalid usage:");
             for (String usage : usages())
                 logger.info(" - " + usage);
             return false;
         }
 
-        if(!Strings.isNumeric(args[0])) {
+        if (!Strings.isNumeric(args[0])) {
             logger.info("The first argument must be a guild id!");
             return false;
         }
 
         Controller controller = ControllerFactory.get(args[0], false);
 
-        if(controller == null) {
+        if (controller == null) {
             logger.info("Unable to find controller with guildid: " + args[0]);
             return false;
         }
 
-        if(!controller.isConnected()) {
+        if (!controller.isConnected()) {
             logger.info("The controller is no longer connected for guildid: " + args[0]);
             return false;
         }

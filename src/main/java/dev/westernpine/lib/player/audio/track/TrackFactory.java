@@ -6,7 +6,6 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.InternalAudioTrack;
-import dev.westernpine.lib.player.audio.AudioFactory;
 import dev.westernpine.lib.player.audio.AudioTrackInfoFactory;
 import dev.westernpine.lib.player.audio.track.userdata.UserData;
 import dev.westernpine.lib.player.audio.track.userdata.UserDataFactory;
@@ -14,11 +13,11 @@ import dev.westernpine.lib.player.audio.track.userdata.UserDataFactory;
 public class TrackFactory {
 
     public static Track from(AudioPlayerManager audioPlayerManager, AudioTrack audioTrack) {
-        Track trackResult =  audioTrack instanceof Track track
+        Track trackResult = audioTrack instanceof Track track
                 ? track
                 : audioTrack instanceof InternalAudioTrack internalAudioTrack
-                    ? new Track(audioPlayerManager, internalAudioTrack)
-                    : new Track(audioPlayerManager, audioTrack.getSourceManager().getSourceName(), audioTrack.getInfo(), audioTrack.getInfo().uri);
+                ? new Track(audioPlayerManager, internalAudioTrack)
+                : new Track(audioPlayerManager, audioTrack.getSourceManager().getSourceName(), audioTrack.getInfo(), audioTrack.getInfo().uri);
         trackResult.setUserData(audioTrack.getUserData());
         return trackResult;
     }

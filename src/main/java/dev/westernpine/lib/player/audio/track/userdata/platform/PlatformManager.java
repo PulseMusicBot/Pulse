@@ -14,7 +14,7 @@ public class PlatformManager {
     private static List<Platform> platforms = new ArrayList<>();
 
     public static void register(Platform platform) {
-        if(platform.getAudioSourceManager().get() != null)
+        if (platform.getAudioSourceManager().get() != null)
             platforms.add(platform);
     }
 

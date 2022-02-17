@@ -2,10 +2,7 @@ package dev.westernpine.lib.object;
 
 import dev.westernpine.bettertry.Try;
 
-import java.io.File;
 import java.util.concurrent.TimeUnit;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SessionLockerTest {
 
@@ -19,7 +16,7 @@ class SessionLockerTest {
         }));
         System.out.println("Is Locked: " + locker.lockExists());
 
-        if(locker.lockExists()) {
+        if (locker.lockExists()) {
             locker.lockBlocking(1, TimeUnit.SECONDS);
             System.out.println("Lock aquired!");
         } else {
@@ -27,7 +24,7 @@ class SessionLockerTest {
         }
 
         new Thread(() -> {
-            while(true) {
+            while (true) {
                 Try.to(() -> Thread.sleep(1000));
             }
         }).start();

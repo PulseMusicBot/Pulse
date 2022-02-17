@@ -102,7 +102,7 @@ public class Remove implements SlashCommandComponentHandler {
             return false;
         }
         controller.setLastChannelId(event.getChannel().getId());
-        controller.remove(start-1, items);  // -1 Because indexes are 0-based.
+        controller.remove(start - 1, items);  // -1 Because indexes are 0-based.
         Messenger.replyTo(event, Embeds.success("Removed `%s` %s.".formatted(items, items == 1 ? "item" : "items"), ""), 15);
         return true;
     }

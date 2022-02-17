@@ -1,11 +1,9 @@
 package dev.westernpine.pulse.interactions.command.commands.management;
 
-import dev.westernpine.lib.player.audio.track.userdata.platform.Platform;
-import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformFactory;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.object.Value;
+import dev.westernpine.lib.player.audio.track.userdata.platform.Platform;
 import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformManager;
-import dev.westernpine.lib.util.EntryUtil;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.Pulse;
@@ -19,10 +17,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DefaultPlatform implements SlashCommandComponentHandler {

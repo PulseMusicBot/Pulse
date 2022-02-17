@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.westernpine.lib.player.audio.track.TrackFactory;
@@ -17,7 +16,7 @@ import java.util.List;
 public class PlaylistFactory {
 
     public static Playlist from(AudioPlaylist audioPlaylist) {
-        if(audioPlaylist instanceof Playlist playlist)
+        if (audioPlaylist instanceof Playlist playlist)
             return playlist;
         else
             return new Playlist(audioPlaylist);

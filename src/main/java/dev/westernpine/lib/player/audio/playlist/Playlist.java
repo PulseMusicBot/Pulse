@@ -79,13 +79,22 @@ public class Playlist extends LinkedList<AudioTrack> implements AudioPlaylist {
         return this.name;
     }
 
+    /**
+     * Set the name of this playlist.
+     *
+     * @param name The new name for the playlist.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String getCreator() {
         return Optional.ofNullable(creator).orElse(Try.to(() -> {
             AudioTrack audioTrack = getTracks().get(0);
             Requester requester = UserDataFactory.from(audioTrack.getUserData()).requester();
-                    return requester.getName() + "#" + requester.getDiscriminator();
-                }).orElse(null));
+            return requester.getName() + "#" + requester.getDiscriminator();
+        }).orElse(null));
     }
 
     @Override
@@ -104,15 +113,6 @@ public class Playlist extends LinkedList<AudioTrack> implements AudioPlaylist {
     @Override
     public String getType() {
         return Optional.ofNullable(this.type).orElse("Custom");
-    }
-
-    /**
-     * Set the name of this playlist.
-     *
-     * @param name The new name for the playlist.
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**

@@ -22,18 +22,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- {@link com.sedmelluq.discord.lavaplayer.source.AudioSourceManager#loadItem(AudioPlayerManager, AudioReference)} Returning null:                         Means that the player manager should look at other sources.
- {@link com.sedmelluq.discord.lavaplayer.source.AudioSourceManager#loadItem(AudioPlayerManager, AudioReference)} Returning AudioReference#NO_TRACK:      Means that this IS the correct source, but there is nothing playable.
-
- When attempting to load in this SourceManager, we ALWAYS return null, because there is another iHeart source manager that loads all kinds of items.
- This source exists for generic web-urls, which can't be found in the main iHeart Source Manager.
-
- These two are the same:
- A. https://www.iheart.com/live/b985-5887/
- B. https://www.iheart.com/live/5887/
-
- Link A can be resolved in this source, but B can't.
- Link B can be resolved in the main source, but not in this one.
+ * {@link com.sedmelluq.discord.lavaplayer.source.AudioSourceManager#loadItem(AudioPlayerManager, AudioReference)} Returning null:                         Means that the player manager should look at other sources.
+ * {@link com.sedmelluq.discord.lavaplayer.source.AudioSourceManager#loadItem(AudioPlayerManager, AudioReference)} Returning AudioReference#NO_TRACK:      Means that this IS the correct source, but there is nothing playable.
+ * <p>
+ * When attempting to load in this SourceManager, we ALWAYS return null, because there is another iHeart source manager that loads all kinds of items.
+ * This source exists for generic web-urls, which can't be found in the main iHeart Source Manager.
+ * <p>
+ * These two are the same:
+ * A. https://www.iheart.com/live/b985-5887/
+ * B. https://www.iheart.com/live/5887/
+ * <p>
+ * Link A can be resolved in this source, but B can't.
+ * Link B can be resolved in the main source, but not in this one.
  */
 public class iHeartAudioSourceManager extends ThirdPartyAudioSourceManager {
 

@@ -1,10 +1,10 @@
 package dev.westernpine.pulse.interactions.command.commands.queue;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.player.audio.track.userdata.UserDataFactory;
 import dev.westernpine.lib.player.audio.track.userdata.requester.Requester;
 import dev.westernpine.lib.player.audio.track.userdata.requester.RequesterFactory;
-import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.lib.util.jda.Embeds;
 import dev.westernpine.lib.util.jda.Messenger;
 import dev.westernpine.pulse.controller.Controller;

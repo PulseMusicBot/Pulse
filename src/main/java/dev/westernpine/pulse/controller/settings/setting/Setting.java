@@ -1,6 +1,5 @@
 package dev.westernpine.pulse.controller.settings.setting;
 
-import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformFactory;
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.player.audio.track.userdata.platform.PlatformManager;
 

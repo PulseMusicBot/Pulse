@@ -105,7 +105,7 @@ public class Move implements SlashCommandComponentHandler {
 
         int position = Numbers.setWithin(Long.valueOf(event.getOption("position").getAsLong()).intValue(), 1, size);
         controller.setLastChannelId(event.getChannel().getId());
-        controller.move(start-1, items, position-1);    // -1 Because indexes are 0-based.
+        controller.move(start - 1, items, position - 1);    // -1 Because indexes are 0-based.
         Messenger.replyTo(event, Embeds.success("Moved `%s` %s to `%s`.".formatted(items, items == 1 ? "item" : "items", position), ""), 15);
         return true;
     }
