@@ -3,10 +3,8 @@ package dev.westernpine.pulse.interactions.command;
 import dev.westernpine.lib.interaction.component.command.SlashCommandComponentHandler;
 import dev.westernpine.pulse.interactions.command.commands.help.Commands;
 import dev.westernpine.pulse.interactions.command.commands.help.Help;
-import dev.westernpine.pulse.interactions.command.commands.informative.NowPlaying;
+import dev.westernpine.pulse.interactions.command.commands.informative.*;
 import dev.westernpine.pulse.interactions.command.commands.informative.Queue;
-import dev.westernpine.pulse.interactions.command.commands.informative.Save;
-import dev.westernpine.pulse.interactions.command.commands.informative.Status;
 import dev.westernpine.pulse.interactions.command.commands.management.*;
 import dev.westernpine.pulse.interactions.command.commands.player.*;
 import dev.westernpine.pulse.interactions.command.commands.queue.*;
@@ -30,6 +28,7 @@ public class CommandManager {
                         new NowPlaying(),
                         new Save(),
                         new Status(),
+                        new Sources(),
                         new Queue(),
 
                         //Management

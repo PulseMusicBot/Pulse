@@ -66,37 +66,43 @@ public class Sources implements SlashCommandComponentHandler {
         List<String> searchableAndSimilar = PlatformManager.getPlatforms()
                 .stream()
                 .filter(platform -> platform.canSearch() && platform.canSearchSimilar())
-                .map(Platform::getOfficialName)
+                .map(platform -> "`" + platform.getOfficialName() + "`")
                 .toList();
 
         List<String> searchable = PlatformManager.getPlatforms()
                 .stream()
                 .filter(platform -> platform.canSearch() && !platform.canSearchSimilar())
-                .map(Platform::getOfficialName)
+                .map(platform -> "`" + platform.getOfficialName() + "`")
                 .toList();
 
         List<String> similar = PlatformManager.getPlatforms()
                 .stream()
                 .filter(platform -> !platform.canSearch() && platform.canSearchSimilar())
-                .map(Platform::getOfficialName)
+                .map(platform -> "`" + platform.getOfficialName() + "`")
                 .toList();
 
-        List<String> none = PlatformManager.getPlatforms()
+        List<String> others = PlatformManager.getPlatforms()
                 .stream()
                 .filter(platform -> !platform.canSearch() && !platform.canSearchSimilar())
-                .map(Platform::getOfficialName)
+                .map(platform -> "`" + platform.getOfficialName() + "`")
                 .toList();
 
         controller.setLastChannelId(event.getChannel().getId());
 
         //The actual playing message.
-        EmbedBuilder embedBuilder = Embeds.info(":information_source: Sources", "", Pulse.color(event.getGuild()))
-                .addField("Searchable and Similar", Strings.join(", ", searchableAndSimilar), true)
-                .addField("Only Searchable", Strings.join(", ", searchable), true)
-                .addField("Only Similar Searchable", Strings.join(", ", similar), true)
-                .addField("Others", Strings.join(", ", none), true);
-
+        EmbedBuilder embedBuilder = Embeds.info(":information_source: Sources", "", Pulse.color(event.getGuild()));
+        addFieldIfPresent(embedBuilder, "Searchable & Similar-Searchable", searchableAndSimilar);
+        addFieldIfPresent(embedBuilder, "Only Searchable", searchable);
+        addFieldIfPresent(embedBuilder, "Only Similar-Searchable", similar);
+        addFieldIfPresent(embedBuilder, "Others", others);
+        embedBuilder.setFooter("Total Sources: " + PlatformManager.getPlatforms().size());
         Messenger.replyTo(event, embedBuilder, 15);
         return true;
+    }
+
+    public void addFieldIfPresent(EmbedBuilder embedBuilder, String title, List<String> items) {
+        if(items.isEmpty())
+            return;
+        embedBuilder.addField(title, String.join(", ", items), false);
     }
 }

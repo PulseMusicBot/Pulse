@@ -28,7 +28,7 @@ public interface Platform {
     }
 
     public default boolean canSearchSimilar() {
-        return getSearchPrefix() != null && !getSearchPrefix().isBlank();
+        return getSimilarSearchPrefix() != null && !getSimilarSearchPrefix().isBlank();
     }
 
     public default AudioItem search(AudioTrack audioTrack) {
