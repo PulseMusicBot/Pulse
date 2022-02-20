@@ -1,7 +1,5 @@
 package dev.westernpine.lib.properties;
 
-import dev.westernpine.lib.util.PropertiesUtil;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;

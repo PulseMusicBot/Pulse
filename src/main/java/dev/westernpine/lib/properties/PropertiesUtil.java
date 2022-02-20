@@ -1,4 +1,4 @@
-package dev.westernpine.lib.util;
+package dev.westernpine.lib.properties;
 
 import dev.westernpine.bettertry.Try;
 
