@@ -27,6 +27,7 @@ import dev.westernpine.pulse.listeners.system.jda.InteractionListener;
 import dev.westernpine.pulse.listeners.system.jda.MessageDeletionRequestListener;
 import dev.westernpine.pulse.listeners.system.jda.ReadyListener;
 import dev.westernpine.pulse.listeners.system.jda.controller.GuildVoiceListener;
+import dev.westernpine.pulse.manager.Manager;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -105,6 +106,13 @@ public class StartupListener implements Listener {
                 if (!Pulse.readyNotifier.isDone() && Pulse.shardManager.getShardsQueued() <= 0)
                     Pulse.readyNotifier.complete(true);
             };
+
+            /*
+            Initialize the Manager.
+            This indicated the real Systems Startup section.
+            This isn't important to close on shutdown.
+             */
+            Pulse.manager = new Manager(Pulse.identityProperties.get(IdentityProperties.MANAGER_URI), Pulse.identityProperties.get(IdentityProperties.MANAGER_TOKEN));
 
             /*
             Initialize the audio player manager.

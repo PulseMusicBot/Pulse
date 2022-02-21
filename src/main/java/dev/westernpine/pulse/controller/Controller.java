@@ -22,6 +22,7 @@ import dev.westernpine.pulse.controller.settings.setting.Setting;
 import dev.westernpine.pulse.events.system.player.FinishedPlayingEvent;
 import dev.westernpine.pulse.events.system.player.PlayerDestroyedEvent;
 import dev.westernpine.pulse.events.system.player.PreviousQueueReachedEndEvent;
+import dev.westernpine.pulse.events.system.premium.PremiumUpdateEvent;
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -68,6 +69,7 @@ public class Controller {
         this.settings = SettingsFactory.from(this);
         this.previousQueue = new Playlist(getGuild().getName() + "'s Previous Queue");
         this.queue = new Playlist(getGuild().getName() + "'s Queue");
+        this.setPremium(Pulse.manager.isPremium(this.getGuild().getOwnerId()));
     }
 
     public Controller(String guildId, long lifetime, Status status, String lastChannelId) {
@@ -78,6 +80,7 @@ public class Controller {
         this.lifetime = lifetime;
         this.status = status;
         this.lastChannelId = lastChannelId;
+        this.setPremium(Pulse.manager.isPremium(this.getGuild().getOwnerId()));
     }
 
     public Controller(String guildId, Playlist previousQueue, Playlist queue, long lifetime, Status status, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone, TriState repeating, int lastTrack) {
@@ -103,6 +106,7 @@ public class Controller {
 
         //Finally, initialize properly.
         manageStateWithStartup(true);
+        this.setPremium(Pulse.manager.isPremium(this.getGuild().getOwnerId()));
     }
 
     //Uses all connected members in the same channel.
@@ -213,7 +217,11 @@ public class Controller {
     }
 
     public void setPremium(boolean premium) {
-        this.premium = premium;
+        boolean premiumChanged = this.premium != premium;
+        if(premiumChanged) {
+            this.premium = premium;
+            Pulse.eventManager.call(new PremiumUpdateEvent(this, !premium, premium));
+        }
     }
 
     public Controller resetStatus(Status status) {

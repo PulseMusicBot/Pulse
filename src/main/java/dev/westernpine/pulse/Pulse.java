@@ -10,10 +10,12 @@ import dev.westernpine.lib.player.manager.OpenAudioPlayerManager;
 import dev.westernpine.pulse.events.system.StateChangeEvent;
 import dev.westernpine.pulse.listeners.console.ConsoleListener;
 import dev.westernpine.pulse.listeners.system.player.AudioPlayerListener;
+import dev.westernpine.pulse.listeners.system.premium.PremiumUpdateListener;
 import dev.westernpine.pulse.listeners.system.state.InitializeListener;
 import dev.westernpine.pulse.listeners.system.state.RunningListener;
 import dev.westernpine.pulse.listeners.system.state.ShutdownListener;
 import dev.westernpine.pulse.listeners.system.state.StartupListener;
+import dev.westernpine.pulse.manager.Manager;
 import dev.westernpine.pulse.properties.IdentityProperties;
 import dev.westernpine.pulse.properties.SqlProperties;
 import dev.westernpine.pulse.properties.SystemProperties;
@@ -59,6 +61,7 @@ public class Pulse {
     public static SessionLocker locker;
     public static CompletableFuture<Boolean> readyNotifier;
     public static Consumer<ReadyEvent> readyHandler;
+    public static Manager manager;
     public static OpenAudioPlayerManager audioPlayerManager;
     public static ShardManager shardManager;
     public static LinkedList<Runnable> shutdownHooks = new LinkedList<>();
@@ -73,6 +76,7 @@ public class Pulse {
         eventManager.registerListeners(new ShutdownListener());
         eventManager.registerListeners(new ConsoleListener());
         eventManager.registerListeners(new AudioPlayerListener());
+        eventManager.registerListeners(new PremiumUpdateListener());
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (!state.isActive() && !state.is(State.SHUTDOWN)) return;

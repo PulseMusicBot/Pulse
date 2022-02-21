@@ -8,7 +8,7 @@ import dev.westernpine.lib.properties.PropertyFile;
 public class IdentityProperties extends PropertiesFile {
 
     @PropertyField
-    public static final Property SESSION_LOCKER_PORT = new Property("Session Locker Server Port", "5211");
+    public static final Property SESSION_LOCKER_PORT = new Property("session locker server port", "5211");
 
     @PropertyField
     public static final Property TOKEN = new Property("token", "TokenHere");
@@ -45,6 +45,12 @@ public class IdentityProperties extends PropertiesFile {
 
     @PropertyField
     public static final Property SUPPORT = new Property("support", "https://pulsebot.gg/support");
+
+    @PropertyField
+    public static final Property MANAGER_URI = new Property("manager uri", "ws://localhost:8080/backend");
+
+    @PropertyField
+    public static final Property MANAGER_TOKEN= new Property("manager token", "token");
 
     public IdentityProperties(String identity) throws Throwable {
         super(identity + ".properties", PropertyFile.getDeclaredProperties(IdentityProperties.class));

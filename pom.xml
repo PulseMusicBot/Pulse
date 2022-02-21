@@ -32,6 +32,13 @@
 
     <dependencies>
 
+        <!-- Pipeline -->
+        <dependency>
+            <groupId>com.github.WesternPine</groupId>
+            <artifactId>Pipeline</artifactId>
+            <version>df6c25e38f</version>
+        </dependency>
+
         <!-- Better Try -->
         <dependency>
             <groupId>com.github.WesternPine</groupId>
@@ -120,14 +127,14 @@
         <dependency>
             <groupId>org.java-websocket</groupId>
             <artifactId>Java-WebSocket</artifactId>
-            <version>1.5.1</version>
+            <version>1.5.2</version>
         </dependency>
 
         <!-- MySQL Driver -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.16</version>
+            <version>8.0.25</version>
         </dependency>
 
         <!-- JSON Dependency -->
