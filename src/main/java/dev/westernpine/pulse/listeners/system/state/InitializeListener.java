@@ -46,7 +46,14 @@ public class InitializeListener implements Listener {
             System.out.println(Pulse.state.getName() + " >> Loading " + Pulse.identityProperties.get(IdentityProperties.LOGGING_SQL_BACKEND) + " sql properties.");
             Pulse.loggingSqlProperties = new SqlProperties(Pulse.identityProperties.get(IdentityProperties.LOGGING_SQL_BACKEND));
 
+            /*
+            Lock to a specific port to allow only one active session of the bot at a time.
 
+            This is required because Pulse saves controller instances to MySQL.
+            If another bot starts before the last session closes, then sessions will be lost, along with other things.
+
+            The reason we use a Port instead of a File locker or something similar, is because this is the most dependable way to lock a session.
+             */
             Pulse.locker = new SessionLocker(Integer.parseInt(Pulse.identityProperties.get(IdentityProperties.SESSION_LOCKER_PORT)));
             if (Pulse.locker.lockExists())
                 System.out.println(Pulse.state.getName() + " >> Active session detected. Waiting for session to end...");
