@@ -112,6 +112,7 @@ public class StartupListener implements Listener {
             This indicated the real Systems Startup section.
             This isn't important to close on shutdown.
              */
+            logger.info("Initializing manager.");
             Pulse.manager = new Manager(Pulse.identityProperties.get(IdentityProperties.MANAGER_URI), Pulse.identityProperties.get(IdentityProperties.MANAGER_TOKEN));
 
             /*

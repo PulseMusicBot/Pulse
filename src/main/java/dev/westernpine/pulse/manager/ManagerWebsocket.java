@@ -22,7 +22,7 @@ public class ManagerWebsocket extends WebSocketClient {
         super(uri, headers);
         this.manager = manager;
         this.pipeline = new Pipeline(this::send, manager::received);
-        if(Boolean.parseBoolean(Pulse.identityProperties.get(IdentityProperties.PREMIUM)))
+        if(Boolean.parseBoolean(Pulse.identityProperties.get(IdentityProperties.USE_MANAGER)))
             Try.to(this::connect);
     }
 
