@@ -14,6 +14,9 @@ public class IdentityProperties extends PropertiesFile {
     public static final Property TOKEN = new Property("token", "TokenHere");
 
     @PropertyField
+    public static final Property USE_MANAGER = new Property("use manager", "false");
+
+    @PropertyField
     public static final Property PREMIUM = new Property("premium", "false");
 
     @PropertyField
