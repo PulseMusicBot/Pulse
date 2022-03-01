@@ -53,7 +53,8 @@ public class Manager implements Listener {
         if(this.websocket.isClosed())
             return false;
 
-        Message response = Try.to(() -> this.websocket.getPipeline().send(new Message().withType(MessageType.REQUEST).write("user.premium").write(userId)).get(5, TimeUnit.SECONDS)).orElse(null);
+        //Try to get the premium state in less than 2 seconds, because an interaction on discord times out after 3, and we still need time to process.
+        Message response = Try.to(() -> this.websocket.getPipeline().send(new Message().withType(MessageType.REQUEST).write("user.premium").write(userId)).get(2, TimeUnit.SECONDS)).orElse(null);
         if(response == null)
             return false;
 

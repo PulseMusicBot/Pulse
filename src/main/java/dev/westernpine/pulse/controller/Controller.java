@@ -3,6 +3,7 @@ package dev.westernpine.pulse.controller;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.westernpine.bettertry.Try;
 import dev.westernpine.lib.object.TriState;
 import dev.westernpine.lib.player.audio.AudioFactory;
 import dev.westernpine.lib.player.audio.playlist.Playlist;
@@ -29,6 +30,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -43,7 +45,7 @@ public class Controller {
     protected Set<String> votesToNext = new HashSet<>();
     protected Set<String> votesToPrevious = new HashSet<>();
     private String lastChannelId;
-    private boolean premium = false;
+    private CompletableFuture<Boolean> premium = CompletableFuture.supplyAsync(() -> Pulse.manager.isPremium(this.getGuild().getOwnerId())).exceptionally(throwable -> false);
     private Settings settings;
     private Playlist previousQueue;
     private Playlist queue;
@@ -69,7 +71,6 @@ public class Controller {
         this.settings = SettingsFactory.from(this);
         this.previousQueue = new Playlist(getGuild().getName() + "'s Previous Queue");
         this.queue = new Playlist(getGuild().getName() + "'s Queue");
-        this.setPremium(Pulse.manager.isPremium(this.getGuild().getOwnerId()));
     }
 
     public Controller(String guildId, long lifetime, Status status, String lastChannelId) {
@@ -80,7 +81,6 @@ public class Controller {
         this.lifetime = lifetime;
         this.status = status;
         this.lastChannelId = lastChannelId;
-        this.setPremium(Pulse.manager.isPremium(this.getGuild().getOwnerId()));
     }
 
     public Controller(String guildId, Playlist previousQueue, Playlist queue, long lifetime, Status status, String connectedChannel, String lastChannelId, Track track, long position, int volume, boolean paused, boolean alone, TriState repeating, int lastTrack) {
@@ -106,7 +106,9 @@ public class Controller {
 
         //Finally, initialize properly.
         manageStateWithStartup(true);
-        this.setPremium(Pulse.manager.isPremium(this.getGuild().getOwnerId()));
+
+        //If the bot comes back online, and the premium state changes, and this bot is a premium bot, this line will disconnect it, and inform them their premium is expired.
+        this.setPremium(this.isPremium());
     }
 
     //Uses all connected members in the same channel.
@@ -213,13 +215,13 @@ public class Controller {
     }
 
     public boolean isPremium() {
-        return premium;
+        return Try.to(() -> premium.get()).orElse(false);
     }
 
     public void setPremium(boolean premium) {
-        boolean premiumChanged = this.premium != premium;
+        boolean premiumChanged = isPremium() != premium;
         if(premiumChanged) {
-            this.premium = premium;
+            this.premium = CompletableFuture.completedFuture(premium);
             Pulse.eventManager.call(new PremiumUpdateEvent(this, !premium, premium));
         }
     }
