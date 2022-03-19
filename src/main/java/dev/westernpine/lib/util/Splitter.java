@@ -1,24 +1,15 @@
 package dev.westernpine.lib.util;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Splitter {
 
-    public static <T> LinkedList<T[]> split(T[] array, int chunkSize) {
-        LinkedList<T[]> split = new LinkedList<>();
-        for (int counter = 0; counter < array.length / chunkSize; counter++)
-            split.add(Arrays.copyOfRange(array, counter * chunkSize, counter * chunkSize + chunkSize));
-        return split;
-    }
-
-    public static <T> LinkedList<LinkedList<T>> split(Collection<T> collection, int chunkSize) {
-        T[] array = (T[]) collection.toArray();
-        LinkedList<LinkedList<T>> split = new LinkedList<>();
-        for (int counter = 0; counter < collection.size() / chunkSize; counter++)
-            split.add(new LinkedList<>(List.of(Arrays.copyOfRange(array, counter * chunkSize, counter * chunkSize + chunkSize))));
+    public static <T> List<List<T>> split(Collection<T> collection, int chunkSize) {
+        List<T> list = new ArrayList<>(collection);
+        List<List<T>> split = new ArrayList<>();
+        for(int counter = 0; counter <= collection.size()-1; counter += chunkSize)
+            split.add(list.subList(counter, Math.min(counter + chunkSize, list.size()))); //Don't go out of bounds! so always get max chunk index, or max list index if chunk index is out of bounds.
         return split;
     }
 

@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 public class Queue implements SlashCommandComponentHandler {
@@ -79,10 +80,10 @@ public class Queue implements SlashCommandComponentHandler {
 
         //Actual formatting of the message.
         int pageSize = 5;
-        LinkedList<LinkedList<AudioTrack>> splitQueue = Splitter.split(controller.getQueue(), pageSize);
+        List<List<AudioTrack>> splitQueue = Splitter.split(controller.getQueue(), pageSize);
         int maxPages = splitQueue.size();
         int page = Numbers.setWithin(Long.valueOf(event.getOption("page") == null ? 1L : event.getOption("page").getAsLong()).intValue(), 1, maxPages);
-        LinkedList<AudioTrack> pageTracks = splitQueue.get(page - 1);
+        List<AudioTrack> pageTracks = splitQueue.get(page - 1);
         EmbedBuilder embedBuilder = Embeds.info(":scroll: %s's Queue".formatted(event.getGuild().getName()), "", Pulse.color(event.getGuild()));
         embedBuilder.setFooter("Page: %d/%d".formatted(page, maxPages), event.getGuild().getIconUrl());
         for (int i = 0; i < pageTracks.size(); i++)
