@@ -64,8 +64,9 @@ public class PlatformManager {
         register(PlatformFactory.from("OverClocked Remix", "ocremix", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
         register(PlatformFactory.from("TuneIn", "tunein", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
         register(PlatformFactory.from("Reddit", "reddit", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
-        register(PlatformFactory.from("Instagram", "instagram", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
-        register(PlatformFactory.from("Smule", "smule", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
+        register(PlatformFactory.from("Twitter", "twitter", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
+//        register(PlatformFactory.from("Instagram", "instagram", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
+//        register(PlatformFactory.from("Smule", "smule", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
         register(PlatformFactory.from("TikTok", "tiktok", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
         register(PlatformFactory.from("Vimeo", "vimeo", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));
         register(PlatformFactory.from("Twitch", "twitch", "", "", openAudioPlayerManagerSupplier, sourceName -> openAudioPlayerManagerSupplier.get().source(sourceName)));

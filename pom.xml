@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <ForkedLavaplayerVersion>0ad99b7054</ForkedLavaplayerVersion>
+        <ForkedLavaplayerVersion>67c78a0a13</ForkedLavaplayerVersion>
     </properties>
 
 
