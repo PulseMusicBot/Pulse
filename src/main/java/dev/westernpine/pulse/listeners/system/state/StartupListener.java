@@ -120,7 +120,7 @@ public class StartupListener implements Listener {
              */
             logger.info("Building and initializing the audio player manager.");
             Pulse.audioPlayerManager = new OpenAudioPlayerManager();
-            Pulse.audioPlayerManager.setFrameBufferDuration(200);
+            Pulse.audioPlayerManager.setFrameBufferDuration(30000); //30 seconds buffer time.
             Pulse.audioPlayerManager.getConfiguration().setFilterHotSwapEnabled(true);
             Pulse.audioPlayerManager.getConfiguration().setResamplingQuality(AudioConfiguration.ResamplingQuality.HIGH);
 
