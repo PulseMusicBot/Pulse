@@ -20,6 +20,9 @@ public class MessageDeletionRequestListener extends ListenerAdapter {
     @Override
     public void onRawGateway(@Nonnull RawGatewayEvent event) {
         JsonObject packet = JsonParser.parseString(event.getPackage().toString()).getAsJsonObject();
+
+        System.out.println(packet.toString());
+
         if (!packet.get("t").getAsString().equals("MESSAGE_REACTION_ADD"))
             return;
         JsonObject payload = packet.get("d").getAsJsonObject();
