@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <ForkedLavaplayerVersion>67c78a0a13</ForkedLavaplayerVersion>
+        <ForkedLavaplayerVersion>9ebed4429b</ForkedLavaplayerVersion>
     </properties>
 
 
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.4</version>
+            <version>5.0.0-alpha.17</version>
         </dependency>
 
         <!-- Forked LavaPlayer API -->
